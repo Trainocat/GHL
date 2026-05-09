@@ -11,7 +11,6 @@ content="width=device-width, initial-scale=1.0">
 <title>Draft</title>
 
 <link rel="stylesheet" href="style.css">
-
 <script src="helpers.js"></script>
 
 <style>
@@ -387,7 +386,7 @@ function latestRating(player) {
 
 }
 
-function currentSeasonStats(player, currentSeason(data)) {
+function latestStats(player) {
 
     return player.stats?.[
         player.stats.length - 1
@@ -586,7 +585,7 @@ loadLeague().then(data => {
                 <div class="pick-change pick-up">
 
                     ▲ ${Math.floor(
-                        0 * 3
+                        Math.random() * 3
                     )}
 
                 </div>

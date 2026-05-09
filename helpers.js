@@ -1,3 +1,4 @@
+
 async function loadLeague() {
 
     const response =
@@ -94,21 +95,5 @@ function formatTOI(minutes) {
         );
 
     return `${mins}:${secs.toString().padStart(2,"0")}`;
-
-}
-
-function getTeamLogo(team) {
-
-    return (
-        team.imgURL ||
-        team.imgURLSmall ||
-        "GHL.png"
-    );
-
-}
-
-function getTeamName(team) {
-
-    return `${team.region} ${team.name}`;
 
 }

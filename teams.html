@@ -11,7 +11,6 @@ content="width=device-width, initial-scale=1.0">
 <title>Teams</title>
 
 <link rel="stylesheet" href="style.css">
-
 <script src="helpers.js"></script>
 
 <style>
@@ -271,7 +270,7 @@ async function loadLeague() {
 
 }
 
-function currentSeasonTeam(team, currentSeason(data)) {
+function latestSeason(team) {
 
     return team.seasons?.[
         team.seasons.length - 1
@@ -337,7 +336,7 @@ loadLeague().then(data => {
         teams.map(team => {
 
             const season =
-                currentSeasonTeam(team, currentSeason(data));
+                latestSeason(team);
 
             const conference =
                 conferences.find(c => {
