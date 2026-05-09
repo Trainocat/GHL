@@ -1,68 +1,806 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
 <title>Draft</title>
+
 <link rel="stylesheet" href="style.css">
+
+<style>
+
+.draft-grid{
+
+display:grid;
+
+grid-template-columns:
+1fr 2fr;
+
+gap:24px;
+
+margin-bottom:24px;
+
+}
+
+.draft-card{
+
+background:#111827;
+
+border:
+1px solid #334155;
+
+border-radius:12px;
+
+overflow:hidden;
+
+}
+
+.draft-card-title{
+
+background:#172033;
+
+padding:14px 18px;
+
+font-size:22px;
+font-weight:800;
+
+}
+
+.draft-card-body{
+
+padding:18px;
+
+}
+
+.lottery-row{
+
+display:flex;
+align-items:center;
+justify-content:space-between;
+
+padding:12px 0;
+
+border-bottom:
+1px solid #334155;
+
+}
+
+.lottery-row:last-child{
+
+border-bottom:none;
+
+}
+
+.pick-number{
+
+font-size:24px;
+font-weight:900;
+
+color:#ef4444;
+
+width:50px;
+
+}
+
+.pick-team{
+
+display:flex;
+align-items:center;
+
+gap:10px;
+
+font-weight:700;
+
+flex:1;
+
+}
+
+.pick-team img{
+
+width:34px;
+height:34px;
+
+object-fit:contain;
+
+}
+
+.pick-change{
+
+font-weight:700;
+
+font-size:14px;
+
+}
+
+.pick-up{
+
+color:#22c55e;
+
+}
+
+.pick-down{
+
+color:#ef4444;
+
+}
+
+.table-wrapper{
+
+overflow-x:auto;
+
+background:#111827;
+
+border:
+1px solid #334155;
+
+border-radius:12px;
+
+}
+
+.draft-table{
+
+width:100%;
+
+border-collapse:collapse;
+
+min-width:1200px;
+
+}
+
+.draft-table th,
+.draft-table td{
+
+padding:10px;
+
+border-bottom:
+1px solid #334155;
+
+text-align:left;
+
+white-space:nowrap;
+
+}
+
+.draft-table th{
+
+background:#172033;
+
+cursor:pointer;
+
+position:sticky;
+top:78px;
+
+z-index:2;
+
+}
+
+.draft-table tr:nth-child(even){
+
+background:
+rgba(255,255,255,0.02);
+
+}
+
+.draft-table tr:hover td{
+
+background:#1b2432;
+
+}
+
+.player-cell{
+
+display:flex;
+align-items:center;
+
+gap:10px;
+
+font-weight:700;
+
+}
+
+.player-face{
+
+width:38px;
+height:38px;
+
+border-radius:6px;
+
+background:#1b2432;
+
+padding:2px;
+
+}
+
+.rating{
+
+display:inline-block;
+
+padding:4px 8px;
+
+border-radius:6px;
+
+background:#1e293b;
+
+font-size:13px;
+font-weight:700;
+
+}
+
+@media(max-width:1200px){
+
+.draft-grid{
+
+grid-template-columns:1fr;
+
+}
+
+}
+
+</style>
+
 </head>
 <body>
 
 <header>
+
 <div class="nav">
+
 <a class="brand" href="index.html">
+
 <img src="GHL.png">
+
 <span>GHL</span>
+
 </a>
 
 <div class="links">
+
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
 <a href="players.html">Players</a>
 <a href="schedule.html">Schedule</a>
-<a href="draft.html">Draft</a>
 <a href="playoffs.html">Playoffs</a>
+<a href="draft.html" class="active">Draft</a>
+
 </div>
+
 </div>
+
 </header>
 
 <div class="container">
 
-<div class="page-title">Draft Prospects</div>
+<div class="page-title">
 
-<table id="draftTable">
+GHL Draft
+
+</div>
+
+<!-- =========================
+     TOP GRID
+========================= -->
+
+<div class="draft-grid">
+
+<!-- LOTTERY -->
+
+<div class="draft-card">
+
+<div class="draft-card-title">
+
+Draft Lottery Results
+
+</div>
+
+<div
+class="draft-card-body"
+id="lotteryResults">
+
+</div>
+
+</div>
+
+<!-- DRAFT ORDER -->
+
+<div class="draft-card">
+
+<div class="draft-card-title">
+
+First Round Draft Order
+
+</div>
+
+<div
+class="draft-card-body"
+id="draftOrder">
+
+</div>
+
+</div>
+
+</div>
+
+<!-- =========================
+     PROSPECTS
+========================= -->
+
+<div class="table-wrapper">
+
+<table
+class="draft-table"
+id="prospectsTable">
+
 <thead>
+
 <tr>
-<th onclick="sortTable('draftTable',0)">Player</th>
-<th onclick="sortTable('draftTable',1)">Pos</th>
-<th onclick="sortTable('draftTable',2)">POT</th>
+
+<th>Rank</th>
+<th>Player</th>
+<th>Pos</th>
+<th>Age</th>
+<th>OVR</th>
+<th>POT</th>
+<th>Team</th>
+<th>GP</th>
+<th>G</th>
+<th>A</th>
+<th>PTS</th>
+<th>Shots</th>
+<th>+/-</th>
+
 </tr>
+
 </thead>
-<tbody id="draftBody"></tbody>
+
+<tbody id="prospectsBody"></tbody>
+
 </table>
 
 </div>
-<script src="app.js"></script>
+
+</div>
+
 <script>
 
-loadLeague().then(data=>{
+async function loadLeague() {
 
-document.getElementById('draftBody').innerHTML =
-data.players.map(p=>{
-const r = latestRating(p);
+    const response =
+        await fetch("league.json");
 
-return `
-<tr>
-<td>${p.firstName} ${p.lastName}</td>
-<td>${r.pos||''}</td>
-<td>${r.pot||0}</td>
-</tr>
-`;
-}).join('');
+    return await response.json();
+
+}
+
+function latestRating(player) {
+
+    return player.ratings?.[
+        player.ratings.length - 1
+    ] || {};
+
+}
+
+function latestStats(player) {
+
+    return player.stats?.[
+        player.stats.length - 1
+    ] || {};
+
+}
+
+function getGoals(stats) {
+
+    return (
+        (stats.evG || 0) +
+        (stats.ppG || 0) +
+        (stats.shG || 0)
+    );
+
+}
+
+function getAssists(stats) {
+
+    return (
+        (stats.evA || 0) +
+        (stats.ppA || 0) +
+        (stats.shA || 0)
+    );
+
+}
+
+function getPoints(stats) {
+
+    return (
+        getGoals(stats) +
+        getAssists(stats)
+    );
+
+}
+
+function sortableTable(table) {
+
+    const headers =
+        table.querySelectorAll("th");
+
+    headers.forEach((header, index) => {
+
+        header.onclick = () => {
+
+            const tbody =
+                table.querySelector("tbody");
+
+            const rows = [
+                ...tbody.querySelectorAll("tr")
+            ];
+
+            const asc =
+                !header.classList.contains(
+                    "asc"
+                );
+
+            headers.forEach(h => {
+
+                h.classList.remove(
+                    "asc"
+                );
+
+                h.classList.remove(
+                    "desc"
+                );
+
+            });
+
+            header.classList.add(
+                asc ? "asc" : "desc"
+            );
+
+            rows.sort((a, b) => {
+
+                const aText =
+                    a.children[index]
+                    .innerText
+                    .replace(/[^\d.-]/g,"");
+
+                const bText =
+                    b.children[index]
+                    .innerText
+                    .replace(/[^\d.-]/g,"");
+
+                const aNum =
+                    parseFloat(aText);
+
+                const bNum =
+                    parseFloat(bText);
+
+                if (
+                    !isNaN(aNum) &&
+                    !isNaN(bNum)
+                ) {
+
+                    return asc
+                        ? aNum - bNum
+                        : bNum - aNum;
+
+                }
+
+                return asc
+                    ? a.children[index]
+                        .innerText
+                        .localeCompare(
+                            b.children[index]
+                            .innerText
+                        )
+                    : b.children[index]
+                        .innerText
+                        .localeCompare(
+                            a.children[index]
+                            .innerText
+                        );
+
+            });
+
+            tbody.innerHTML = "";
+
+            rows.forEach(row => {
+
+                tbody.appendChild(row);
+
+            });
+
+        };
+
+    });
+
+}
+
+loadLeague().then(data => {
+
+    const teams = {};
+
+    data.teams.forEach(team => {
+
+        teams[team.tid] = team;
+
+    });
+
+    // =========================
+    // DRAFT ORDER
+    // =========================
+
+    const draftTeams =
+        [...data.teams]
+        .sort((a, b) => {
+
+            return (
+                (a.seasons?.at(-1)?.pts || 0)
+                -
+                (b.seasons?.at(-1)?.pts || 0)
+            );
+
+        });
+
+    // LOTTERY RESULTS
+
+    document
+    .getElementById("lotteryResults")
+    .innerHTML =
+        draftTeams
+        .slice(0,10)
+        .map((team, index) => {
+
+            return `
+
+            <div class="lottery-row">
+
+                <div class="pick-number">
+
+                    ${index + 1}
+
+                </div>
+
+                <div class="pick-team">
+
+                    <img
+                    src="${
+                        team.imgURL ||
+                        team.imgURLSmall ||
+                        "GHL.png"
+                    }">
+
+                    <span>
+
+                        ${team.region}
+                        ${team.name}
+
+                    </span>
+
+                </div>
+
+                <div class="pick-change pick-up">
+
+                    ▲ ${Math.floor(
+                        Math.random() * 3
+                    )}
+
+                </div>
+
+            </div>
+
+            `;
+
+        }).join("");
+
+    // DRAFT ORDER
+
+    document
+    .getElementById("draftOrder")
+    .innerHTML =
+        draftTeams
+        .slice(0,16)
+        .map((team, index) => {
+
+            return `
+
+            <div class="lottery-row">
+
+                <div class="pick-number">
+
+                    ${index + 1}
+
+                </div>
+
+                <div class="pick-team">
+
+                    <img
+                    src="${
+                        team.imgURL ||
+                        team.imgURLSmall ||
+                        "GHL.png"
+                    }">
+
+                    <span>
+
+                        ${team.region}
+                        ${team.name}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+            `;
+
+        }).join("");
+
+    // =========================
+    // PROSPECTS
+    // =========================
+
+    const prospects =
+        [...data.players]
+        .filter(player => {
+
+            const rating =
+                latestRating(player);
+
+            return (
+                player.tid < 0 ||
+                rating.pot >= 60
+            );
+
+        })
+        .sort((a, b) => {
+
+            return (
+                latestRating(b).pot || 0
+            ) - (
+                latestRating(a).pot || 0
+            );
+
+        });
+
+    document
+    .getElementById("prospectsBody")
+    .innerHTML =
+        prospects
+        .slice(0,100)
+        .map((player, index) => {
+
+            const rating =
+                latestRating(player);
+
+            const stats =
+                latestStats(player);
+
+            return `
+
+            <tr>
+
+                <td>
+
+                    ${index + 1}
+
+                </td>
+
+                <td>
+
+                    <a
+                    href="player.html?pid=${player.pid}">
+
+                        <div class="player-cell">
+
+                            <img
+                            class="player-face"
+                            src="https://zengm.com/files/facegen/default.svg">
+
+                            <span>
+
+                                ${player.firstName}
+                                ${player.lastName}
+
+                            </span>
+
+                        </div>
+
+                    </a>
+
+                </td>
+
+                <td>
+
+                    ${rating.pos || ""}
+
+                </td>
+
+                <td>
+
+                    ${
+                        data.gameAttributes.season
+                        -
+                        player.born.year
+                    }
+
+                </td>
+
+                <td>
+
+                    <span class="rating">
+
+                        ${rating.ovr || 0}
+
+                    </span>
+
+                </td>
+
+                <td>
+
+                    ${rating.pot || 0}
+
+                </td>
+
+                <td>
+
+                    ${stats.abbrev || "-"}
+
+                </td>
+
+                <td>
+
+                    ${stats.gp || 0}
+
+                </td>
+
+                <td>
+
+                    ${getGoals(stats)}
+
+                </td>
+
+                <td>
+
+                    ${getAssists(stats)}
+
+                </td>
+
+                <td>
+
+                    ${getPoints(stats)}
+
+                </td>
+
+                <td>
+
+                    ${stats.s || 0}
+
+                </td>
+
+                <td>
+
+                    ${stats.pm || 0}
+
+                </td>
+
+            </tr>
+
+            `;
+
+        }).join("");
+
+    sortableTable(
+        document.getElementById(
+            "prospectsTable"
+        )
+    );
 
 });
 
 </script>
+
 </body>
 </html>

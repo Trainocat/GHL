@@ -3,6 +3,7 @@
 <head>
 
 <meta charset="UTF-8">
+
 <meta
 name="viewport"
 content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,264 @@ content="width=device-width, initial-scale=1.0">
 <title>GHL</title>
 
 <link rel="stylesheet" href="style.css">
+
+<style>
+
+.home-layout{
+
+display:grid;
+
+grid-template-columns:
+2fr 1fr;
+
+gap:24px;
+
+}
+
+.home-column{
+
+display:flex;
+flex-direction:column;
+
+gap:24px;
+
+}
+
+.home-card{
+
+background:#111827;
+
+border:
+1px solid #334155;
+
+border-radius:14px;
+
+overflow:hidden;
+
+}
+
+.home-card-header{
+
+display:flex;
+align-items:center;
+justify-content:space-between;
+
+padding:16px 20px;
+
+background:#172033;
+
+border-bottom:
+1px solid #334155;
+
+}
+
+.home-card-title{
+
+font-size:28px;
+font-weight:900;
+
+}
+
+.home-card-body{
+
+padding:18px;
+
+}
+
+/* =========================
+   NEWS
+========================= */
+
+.news-list{
+
+display:flex;
+flex-direction:column;
+
+gap:16px;
+
+}
+
+.news-item{
+
+padding-bottom:16px;
+
+border-bottom:
+1px solid #334155;
+
+}
+
+.news-item:last-child{
+
+border-bottom:none;
+padding-bottom:0;
+
+}
+
+.news-headline{
+
+font-size:20px;
+font-weight:800;
+
+line-height:1.4;
+
+margin-bottom:8px;
+
+}
+
+.news-meta{
+
+font-size:14px;
+color:#94a3b8;
+
+margin-bottom:10px;
+
+}
+
+.news-text{
+
+font-size:15px;
+
+line-height:1.6;
+
+color:#e2e8f0;
+
+}
+
+/* =========================
+   GAMES
+========================= */
+
+.games-list{
+
+display:flex;
+flex-direction:column;
+
+gap:12px;
+
+}
+
+.game-card{
+
+display:flex;
+align-items:center;
+justify-content:space-between;
+
+background:#1b2432;
+
+border:
+1px solid #334155;
+
+border-radius:12px;
+
+padding:14px 18px;
+
+transition:.15s;
+
+}
+
+.game-card:hover{
+
+background:#243246;
+
+transform:translateY(-1px);
+
+}
+
+.game-team{
+
+display:flex;
+align-items:center;
+
+gap:12px;
+
+width:220px;
+
+}
+
+.game-team img{
+
+width:40px;
+height:40px;
+
+object-fit:contain;
+
+}
+
+.game-team-name{
+
+font-size:17px;
+font-weight:700;
+
+}
+
+.game-center{
+
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+
+gap:4px;
+
+min-width:160px;
+
+}
+
+.game-score{
+
+font-size:30px;
+font-weight:900;
+
+}
+
+.game-status{
+
+font-size:13px;
+font-weight:700;
+
+color:#94a3b8;
+
+}
+
+.game-date{
+
+font-size:13px;
+
+color:#94a3b8;
+
+}
+
+@media(max-width:1200px){
+
+.home-layout{
+
+grid-template-columns:1fr;
+
+}
+
+}
+
+@media(max-width:850px){
+
+.game-card{
+
+flex-direction:column;
+
+gap:14px;
+
+}
+
+.game-team{
+
+width:100%;
+
+justify-content:center;
+
+}
+
+}
+
+</style>
 
 </head>
 <body>
@@ -28,7 +287,7 @@ content="width=device-width, initial-scale=1.0">
 
 <div class="links">
 
-<a href="index.html">Home</a>
+<a href="index.html" class="active">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
 <a href="players.html">Players</a>
@@ -45,51 +304,152 @@ content="width=device-width, initial-scale=1.0">
 <div class="container">
 
 <div class="page-title">
+
 Global Hockey League
-</div>
-
-<div class="grid">
-
-<div class="card">
-
-<h2>Recent Games</h2>
-
-<div id="recentGames"></div>
 
 </div>
 
-<div class="card">
+<div class="home-layout">
 
-<h2>League Leaders</h2>
+<!-- =========================
+     LEFT
+========================= -->
 
-<table id="leadersTable">
+<div class="home-column">
 
-<thead>
+<!-- NEWS -->
 
-<tr>
+<div class="home-card">
 
-<th>Player</th>
-<th>G</th>
-<th>A</th>
-<th>PTS</th>
+<div class="home-card-header">
 
-</tr>
+<div class="home-card-title">
 
-</thead>
-
-<tbody id="leadersBody"></tbody>
-
-</table>
+League News
 
 </div>
 
 </div>
 
+<div
+class="home-card-body"
+id="newsFeed">
+
 </div>
 
-<script src="app.js"></script>
+</div>
+
+<!-- RECENT GAMES -->
+
+<div class="home-card">
+
+<div class="home-card-header">
+
+<div class="home-card-title">
+
+Recent Games
+
+</div>
+
+</div>
+
+<div
+class="home-card-body"
+id="recentGames">
+
+</div>
+
+</div>
+
+</div>
+
+<!-- =========================
+     RIGHT
+========================= -->
+
+<div class="home-column">
+
+<!-- UPCOMING -->
+
+<div class="home-card">
+
+<div class="home-card-header">
+
+<div class="home-card-title">
+
+Upcoming Games
+
+</div>
+
+</div>
+
+<div
+class="home-card-body"
+id="upcomingGames">
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
 
 <script>
+
+async function loadLeague() {
+
+    const response =
+        await fetch("league.json");
+
+    return await response.json();
+
+}
+
+function latestStats(player) {
+
+    return player.stats?.[
+        player.stats.length - 1
+    ] || {};
+
+}
+
+function getPlayerPoints(stats) {
+
+    return (
+        (stats.evG || 0) +
+        (stats.ppG || 0) +
+        (stats.shG || 0) +
+        (stats.evA || 0) +
+        (stats.ppA || 0) +
+        (stats.shA || 0)
+    );
+
+}
+
+function formatDate(day) {
+
+    if (!day) {
+
+        return "";
+
+    }
+
+    return new Date(day)
+    .toLocaleDateString(
+        "en-US",
+        {
+
+            weekday:"short",
+            month:"short",
+            day:"numeric"
+
+        }
+    );
+
+}
 
 loadLeague().then(data => {
 
@@ -102,109 +462,317 @@ loadLeague().then(data => {
     });
 
     // =========================
-    // RECENT GAMES
+    // NEWS
     // =========================
 
+    const leaders =
+        [...data.players]
+        .sort((a, b) => {
+
+            return (
+                getPlayerPoints(
+                    latestStats(b)
+                )
+            ) - (
+                getPlayerPoints(
+                    latestStats(a)
+                )
+            );
+
+        })
+        .slice(0,6);
+
     document
-    .getElementById("recentGames")
-    .innerHTML = data.games
-    .slice(-10)
-    .reverse()
-    .map(game => {
+    .getElementById("newsFeed")
+    .innerHTML =
+        `
+        <div class="news-list">
 
-        return `
+        ${leaders.map(player => {
 
-        <a href="game.html?gid=${game.gid}">
+            const stats =
+                latestStats(player);
 
-            <div class="scorecard">
+            const team =
+                teams[player.tid];
 
-                <div>
-                    ${teams[game.awayTid]?.abbrev || ""}
+            return `
+
+            <div class="news-item">
+
+                <div class="news-headline">
+
+                    <a
+                    href="player.html?pid=${player.pid}">
+
+                        ${player.firstName}
+                        ${player.lastName}
+
+                    </a>
+
+                    continues dominant season
+
                 </div>
 
-                <div class="score">
-                    ${game.awayPts} - ${game.homePts}
+                <div class="news-meta">
+
+                    ${
+                        team?.region || ""
+                    }
+                    ${
+                        team?.name || ""
+                    }
+
                 </div>
 
-                <div>
-                    ${teams[game.homeTid]?.abbrev || ""}
+                <div class="news-text">
+
+                    ${
+                        player.firstName
+                    }
+                    ${
+                        player.lastName
+                    }
+
+                    now has
+
+                    <strong>
+
+                        ${
+                            getPlayerPoints(
+                                stats
+                            )
+                        }
+                        points
+
+                    </strong>
+
+                    in
+
+                    ${
+                        stats.gp || 0
+                    }
+                    games this season.
+
                 </div>
 
             </div>
 
-        </a>
+            `;
 
+        }).join("")}
+
+        </div>
         `;
 
-    }).join("");
-
     // =========================
-    // LEADERS
+    // RECENT GAMES
     // =========================
 
-    const leaders = data.players
-    .map(player => {
+    const completedGames =
+        [...data.games]
+        .filter(game => {
 
-        const stats =
-            latestStats(player);
+            return (
+                game.homePts !== undefined
+            );
 
-        return {
-
-            name:
-                getPlayerName(player),
-
-            goals:
-                getPlayerGoals(stats),
-
-            assists:
-                getPlayerAssists(stats),
-
-            points:
-                getPlayerPoints(stats),
-
-            pid:
-                player.pid
-
-        };
-
-    })
-    .sort((a, b) => {
-
-        return b.points - a.points;
-
-    })
-    .slice(0, 10);
+        })
+        .slice(-10)
+        .reverse();
 
     document
-    .getElementById("leadersBody")
-    .innerHTML = leaders
-    .map(player => {
+    .getElementById("recentGames")
+    .innerHTML =
+        `
+        <div class="games-list">
 
-        return `
+        ${completedGames.map(game => {
 
-        <tr>
+            const home =
+                teams[game.homeTid];
 
-            <td>
+            const away =
+                teams[game.awayTid];
 
-                <a href="player.html?pid=${player.pid}">
+            return `
 
-                    ${player.name}
+            <a
+            href="game.html?gid=${game.gid}">
 
-                </a>
+                <div class="game-card">
 
-            </td>
+                    <!-- AWAY -->
 
-            <td>${player.goals}</td>
-            <td>${player.assists}</td>
-            <td>${player.points}</td>
+                    <div class="game-team">
 
-        </tr>
+                        <img
+                        src="${
+                            away.imgURL ||
+                            away.imgURLSmall ||
+                            "GHL.png"
+                        }">
 
+                        <div class="game-team-name">
+
+                            ${away.region}
+
+                        </div>
+
+                    </div>
+
+                    <!-- CENTER -->
+
+                    <div class="game-center">
+
+                        <div class="game-score">
+
+                            ${game.awayPts}
+                            -
+                            ${game.homePts}
+
+                        </div>
+
+                        <div class="game-status">
+
+                            FINAL
+
+                        </div>
+
+                        <div class="game-date">
+
+                            ${formatDate(game.day)}
+
+                        </div>
+
+                    </div>
+
+                    <!-- HOME -->
+
+                    <div class="game-team">
+
+                        <img
+                        src="${
+                            home.imgURL ||
+                            home.imgURLSmall ||
+                            "GHL.png"
+                        }">
+
+                        <div class="game-team-name">
+
+                            ${home.region}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </a>
+
+            `;
+
+        }).join("")}
+
+        </div>
         `;
 
-    }).join("");
+    // =========================
+    // UPCOMING GAMES
+    // =========================
 
-    makeSortable("leadersTable");
+    const upcoming =
+        (data.schedule || [])
+        .slice(0,10);
+
+    document
+    .getElementById("upcomingGames")
+    .innerHTML =
+        `
+        <div class="games-list">
+
+        ${upcoming.map(game => {
+
+            const home =
+                teams[game.homeTid];
+
+            const away =
+                teams[game.awayTid];
+
+            return `
+
+            <div class="game-card">
+
+                <!-- AWAY -->
+
+                <div class="game-team">
+
+                    <img
+                    src="${
+                        away.imgURL ||
+                        away.imgURLSmall ||
+                        "GHL.png"
+                    }">
+
+                    <div class="game-team-name">
+
+                        ${away.region}
+
+                    </div>
+
+                </div>
+
+                <!-- CENTER -->
+
+                <div class="game-center">
+
+                    <div class="game-score">
+
+                        VS
+
+                    </div>
+
+                    <div class="game-status">
+
+                        UPCOMING
+
+                    </div>
+
+                    <div class="game-date">
+
+                        ${formatDate(game.day)}
+
+                    </div>
+
+                </div>
+
+                <!-- HOME -->
+
+                <div class="game-team">
+
+                    <img
+                    src="${
+                        home.imgURL ||
+                        home.imgURLSmall ||
+                        "GHL.png"
+                    }">
+
+                    <div class="game-team-name">
+
+                        ${home.region}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            `;
+
+        }).join("")}
+
+        </div>
+        `;
 
 });
 
