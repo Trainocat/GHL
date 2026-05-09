@@ -1,83 +1,354 @@
-
 <!DOCTYPE html>
 <html>
 <head>
-<title>Standings</title>
-<link rel="stylesheet" href="style.css">
+  <title>GHL Standings</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .standings-controls {
+      margin-bottom: 25px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    select {
+      background: #1a2744;
+      color: white;
+      border: 1px solid #24385f;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+
+    .conference-title {
+      font-size: 30px;
+      margin: 35px 0 18px;
+      font-weight: bold;
+    }
+
+    .division-title {
+      font-size: 22px;
+      margin: 22px 0 12px;
+      color: #cbd5e1;
+    }
+
+    .standings-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+    }
+
+    .standings-table th {
+      background: #18243f;
+      color: white;
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #24385f;
+    }
+
+    .standings-table td {
+      padding: 12px;
+      border-bottom: 1px solid #24385f;
+    }
+
+    .standings-row:hover {
+      background: rgba(255,255,255,0.03);
+    }
+
+    .team-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .team-logo {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+    }
+
+    .pts {
+      font-weight: bold;
+      color: #60a5fa;
+    }
+
+    .green {
+      color: #4ade80;
+    }
+
+    .red {
+      color: #f87171;
+    }
+
+    .team-link {
+      color: white;
+      text-decoration: none;
+    }
+
+    .team-link:hover {
+      color: #60a5fa;
+    }
+  </style>
+
 </head>
+
 <body>
 
-
 <header>
-<div class="navbar">
-<div class="logo">GHL</div>
+  <div class="navbar">
 
-<nav>
-<a href="index.html">Home</a>
-<a href="standings.html">Standings</a>
-<a href="teams.html">Teams</a>
-<a href="players.html">Players</a>
-<a href="schedule.html">Schedule</a>
-<a href="playoffs.html">Playoffs</a>
-</nav>
+    <div class="logo">
+      GHL
+    </div>
 
-</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="standings.html">Standings</a>
+      <a href="teams.html">Teams</a>
+      <a href="players.html">Players</a>
+      <a href="schedule.html">Schedule</a>
+      <a href="playoffs.html">Playoffs</a>
+    </nav>
+
+  </div>
 </header>
-
 
 <div class="page">
 
-<div class="page-title">Standings</div>
+  <div class="page-title">
+    Standings
+  </div>
 
-<div class="panel">
+  <div class="standings-controls">
 
-<table class="table">
+    <select id="viewMode">
 
-<thead>
-<tr>
-<th>Team</th>
-<th>W</th>
-<th>L</th>
-<th>OTL</th>
-<th>PTS</th>
-</tr>
-</thead>
+      <option value="league">League</option>
+      <option value="conference">Conference</option>
+      <option value="division">Division</option>
 
-<tbody id="standings"></tbody>
+    </select>
 
-</table>
+  </div>
 
-</div>
+  <div id="standings"></div>
 
 </div>
 
 <script>
+
+let leagueData;
+
 fetch("league.json")
-.then(r=>r.json())
-.then(data=>{
+.then(r => r.json())
+.then(data => {
 
-document.getElementById("standings").innerHTML =
-data.teams.map(t=>{
+  leagueData = data;
 
-const s = t.seasons?.[0];
+  renderStandings();
 
-return `
-<tr>
-<td>
-<a href="team.html?tid=${t.tid}">
-${t.region} ${t.name}
-</a>
-</td>
-<td>${s?.won || 0}</td>
-<td>${s?.lost || 0}</td>
-<td>${s?.otl || 0}</td>
-<td>${s?.pts || 0}</td>
-</tr>
-`;
-
-}).join("");
+  document.getElementById("viewMode")
+    .addEventListener("change", renderStandings);
 
 });
+
+function renderStandings() {
+
+  const mode =
+    document.getElementById("viewMode").value;
+
+  const standings =
+    document.getElementById("standings");
+
+  standings.innerHTML = "";
+
+  const teams =
+    [...leagueData.teams];
+
+  teams.forEach(t => {
+
+    t.season = t.seasons?.[0] || {};
+
+  });
+
+  teams.sort((a,b) =>
+    (b.season.pts || 0) -
+    (a.season.pts || 0)
+  );
+
+  if (mode === "league") {
+
+    standings.innerHTML +=
+      buildTable("League Standings", teams);
+
+  }
+
+  else if (mode === "conference") {
+
+    const east =
+      teams.filter(t =>
+        t.cid === 0
+      );
+
+    const west =
+      teams.filter(t =>
+        t.cid === 1
+      );
+
+    standings.innerHTML +=
+      buildTable("Eastern Conference", east);
+
+    standings.innerHTML +=
+      buildTable("Western Conference", west);
+
+  }
+
+  else if (mode === "division") {
+
+    const divisions = {};
+
+    teams.forEach(t => {
+
+      const key =
+        `${t.cid}-${t.did}`;
+
+      if (!divisions[key]) {
+        divisions[key] = [];
+      }
+
+      divisions[key].push(t);
+
+    });
+
+    Object.entries(divisions)
+      .forEach(([key, divTeams]) => {
+
+      standings.innerHTML +=
+        buildTable(
+          getDivisionName(key),
+          divTeams
+        );
+
+    });
+
+  }
+
+}
+
+function buildTable(title, teams) {
+
+  return `
+
+  <div class="conference-title">
+    ${title}
+  </div>
+
+  <table class="standings-table">
+
+    <thead>
+
+      <tr>
+
+        <th>Team</th>
+        <th>W</th>
+        <th>L</th>
+        <th>OTL</th>
+        <th>PTS</th>
+        <th>GF</th>
+        <th>GA</th>
+        <th>Diff</th>
+
+      </tr>
+
+    </thead>
+
+    <tbody>
+
+      ${teams.map(t => {
+
+        const s = t.season;
+
+        const diff =
+          (s.gp ? (s.ptsFor || 0) : 0) -
+          (s.ptsAgainst || 0);
+
+        return `
+
+        <tr class="standings-row">
+
+          <td>
+
+            <a
+            class="team-link"
+            href="team.html?tid=${t.tid}">
+
+              <div class="team-cell">
+
+                <img
+                class="team-logo"
+                src="${t.imgURL || ''}">
+
+                <div>
+                  ${t.region} ${t.name}
+                </div>
+
+              </div>
+
+            </a>
+
+          </td>
+
+          <td>${s.won || 0}</td>
+          <td>${s.lost || 0}</td>
+          <td>${s.otl || 0}</td>
+
+          <td class="pts">
+            ${s.pts || 0}
+          </td>
+
+          <td>${s.ptsFor || 0}</td>
+          <td>${s.ptsAgainst || 0}</td>
+
+          <td class="${
+            diff >= 0 ? 'green' : 'red'
+          }">
+
+            ${diff > 0 ? '+' : ''}
+            ${diff}
+
+          </td>
+
+        </tr>
+
+        `;
+
+      }).join("")}
+
+    </tbody>
+
+  </table>
+
+  `;
+
+}
+
+function getDivisionName(key) {
+
+  const names = {
+
+    "0-0": "Northeast Division",
+    "0-1": "Southern Division",
+
+    "1-0": "Central Division",
+    "1-1": "Pacific Division"
+
+  };
+
+  return names[key] || "Division";
+
+}
+
 </script>
 
 </body>
