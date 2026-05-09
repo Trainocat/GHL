@@ -307,17 +307,29 @@ loadLeague().then(data => {
         data.gameAttributes
         ?.divs || [];
 
+    // =========================
+    // ALPHABETICAL SORT
+    // =========================
+
     const teams =
         [...data.teams]
         .sort((a, b) => {
 
-            return (
-                latestSeason(b).pts || 0
-            ) - (
-                latestSeason(a).pts || 0
+            const nameA =
+                `${a.region} ${a.name}`;
+
+            const nameB =
+                `${b.region} ${b.name}`;
+
+            return nameA.localeCompare(
+                nameB
             );
 
         });
+
+    // =========================
+    // RENDER
+    // =========================
 
     grid.innerHTML =
         teams.map(team => {
