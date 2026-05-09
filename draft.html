@@ -1,1 +1,53 @@
-<!-- Full draft centre page from previous rewrite goes here -->
+
+<html><head><title>Draft</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header>
+<div class="nav">
+<a class="brand" href="index.html">
+<img src="GHL.png">
+<span>GHL</span>
+</a>
+<div class="links">
+<a href="index.html">Home</a>
+<a href="standings.html">Standings</a>
+<a href="teams.html">Teams</a>
+<a href="players.html">Players</a>
+<a href="draft.html">Draft</a>
+<a href="schedule.html">Schedule</a>
+<a href="playoffs.html">Playoffs</a>
+</div>
+</div>
+</header>
+
+<div class="container">
+<h1 class="section-title">2026 GHL Draft</h1>
+<div class="grid">
+<div class="card">
+<h2>Draft Order</h2>
+<table id="draftTable">
+<tr>
+<th onclick="sortTable(0,'draftTable')">Pick</th>
+<th onclick="sortTable(1,'draftTable')">Team</th>
+</tr>
+<tr><td>1</td><td>Upstate Ironclads</td></tr>
+<tr><td>2</td><td>Saskatchewan Scythes</td></tr>
+<tr><td>3</td><td>Portland Hatchets</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h2>Top Prospects</h2>
+<table id="prospectsTable">
+<tr>
+<th onclick="sortTable(0,'prospectsTable')">Player</th>
+<th onclick="sortTable(1,'prospectsTable')">Pos</th>
+<th onclick="sortTable(2,'prospectsTable')">OVR</th>
+</tr>
+<tr><td>Liam Eriksson</td><td>C</td><td>72</td></tr>
+<tr><td>Jacob Moreau</td><td>D</td><td>70</td></tr>
+</table>
+</div>
+</div>
+</div>
+<script src="app.js"></script>
+</body></html>

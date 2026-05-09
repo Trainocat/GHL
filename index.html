@@ -1,20 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Home</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
 
+<html><head><title>GHL</title><link rel="stylesheet" href="style.css"></head>
+<body>
 <header>
 <div class="nav">
-<div class="brand">
+<a class="brand" href="index.html">
 <img src="GHL.png">
 <span>GHL</span>
-</div>
-
+</a>
 <div class="links">
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
@@ -22,52 +14,24 @@
 <a href="players.html">Players</a>
 <a href="draft.html">Draft</a>
 <a href="schedule.html">Schedule</a>
+<a href="playoffs.html">Playoffs</a>
 </div>
 </div>
 </header>
 
-<div class="page">
-
+<div class="container">
 <div class="hero">
-<div>
-<div class="section">Global Hockey League</div>
-<p>Modern hockey coverage, standings, stats and game centre.</p>
-</div>
-<img src="GHL.png">
+<h1>Global Hockey League</h1>
+<p>Modern Hockey. Global Competition.</p>
 </div>
 
-<div class="section">Latest Games</div>
-<div class="grid" id="games"></div>
-
+<h2 class="section-title">Latest News</h2>
+<div class="grid">
+<div class="card"><div class="badge">Playoffs</div><h3>Minnesota wins championship</h3><p>The Snowbirds captured the GHL title in Game 7.</p></div>
+<div class="card"><div class="badge">Draft</div><h3>Draft Lottery Complete</h3><p>The Upstate Ironclads hold the 1st overall pick.</p></div>
+<div class="card"><div class="badge">Awards</div><h3>League Awards Announced</h3><p>Stars from across the league earned recognition.</p></div>
 </div>
-
+</div>
+<footer>GHL Website</footer>
 <script src="app.js"></script>
-<script>
-
-loadLeague().then(data=>{
-
-const teams={};
-data.teams.forEach(t=>teams[t.tid]=t);
-
-document.getElementById('games').innerHTML =
-data.games.slice(-8).reverse().map(g=>`
-<a href="game.html?gid=${g.gid}">
-<div class="card">
-<div class="teamcell">
-<img class="small-logo" src="${teams[g.won.tid]?.imgURL||''}">
-<div>${teams[g.won.tid]?.abbrev} ${g.won.pts}</div>
-</div>
-<div class="teamcell" style="margin-top:12px">
-<img class="small-logo" src="${teams[g.lost.tid]?.imgURL||''}">
-<div>${teams[g.lost.tid]?.abbrev} ${g.lost.pts}</div>
-</div>
-</div>
-</a>
-`).join('');
-
-});
-
-</script>
-
-</body>
-</html>
+</body></html>

@@ -1,64 +1,24 @@
 
-async function loadLeague(){
-const r = await fetch('league.json');
-return await r.json();
+function sortTable(n,tableId){
+const table=document.getElementById(tableId);
+let switching=true,dir='asc',switchcount=0;
+while(switching){
+switching=false;
+let rows=table.rows;
+for(let i=1;i<rows.length-1;i++){
+let shouldSwitch=false;
+let x=rows[i].getElementsByTagName('TD')[n];
+let y=rows[i+1].getElementsByTagName('TD')[n];
+let xv=isNaN(x.innerHTML)?x.innerHTML.toLowerCase():Number(x.innerHTML);
+let yv=isNaN(y.innerHTML)?y.innerHTML.toLowerCase():Number(y.innerHTML);
+if((dir==='asc'&&xv>yv)||(dir==='desc'&&xv<yv)){shouldSwitch=true;break;}
 }
-
-function latestSeason(team){
-return team.seasons?.[team.seasons.length-1] || {};
+if(shouldSwitch){
+rows[i].parentNode.insertBefore(rows[i+1],rows[i]);
+switching=true;
+switchcount++;
+}else{
+if(switchcount===0&&dir==='asc'){dir='desc';switching=true;}
 }
-
-function getTeam(data,tid){
-return data.teams.find(t=>t.tid==tid);
 }
-
-function getPlayer(data,pid){
-return data.players.find(p=>p.pid==pid);
-}
-
-function makeSortable(table){
-
-const headers = table.querySelectorAll("th");
-
-headers.forEach((header,index)=>{
-
-header.addEventListener("click",()=>{
-
-const tbody = table.querySelector("tbody");
-const rows = [...tbody.querySelectorAll("tr")];
-
-const asc = !header.classList.contains("asc");
-
-headers.forEach(h=>{
-h.classList.remove("asc");
-h.classList.remove("desc");
-});
-
-header.classList.add(asc ? "asc":"desc");
-
-rows.sort((a,b)=>{
-
-const at = a.children[index].innerText.trim();
-const bt = b.children[index].innerText.trim();
-
-const an = parseFloat(at);
-const bn = parseFloat(bt);
-
-if(!isNaN(an) && !isNaN(bn)){
-return asc ? an-bn : bn-an;
-}
-
-return asc
-? at.localeCompare(bt)
-: bt.localeCompare(at);
-
-});
-
-tbody.innerHTML='';
-rows.forEach(r=>tbody.appendChild(r));
-
-});
-
-});
-
 }

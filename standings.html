@@ -1,20 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Standings</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
 
+<html><head><title>Standings</title><link rel="stylesheet" href="style.css"></head>
+<body>
 <header>
 <div class="nav">
-<div class="brand">
+<a class="brand" href="index.html">
 <img src="GHL.png">
 <span>GHL</span>
-</div>
-
+</a>
 <div class="links">
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
@@ -22,77 +14,31 @@
 <a href="players.html">Players</a>
 <a href="draft.html">Draft</a>
 <a href="schedule.html">Schedule</a>
+<a href="playoffs.html">Playoffs</a>
 </div>
 </div>
 </header>
 
-<div class="page">
-
-<div class="section">Standings</div>
-
-<div class="controls">
-<button class="active">League</button>
-<button>Conference</button>
-<button>Division</button>
-</div>
-
+<div class="container">
+<h1 class="section-title">Standings</h1>
+<div class="card">
+<select><option>League</option><option>Conference</option><option>Division</option></select>
+</div><br>
 <table id="standingsTable">
-<thead>
 <tr>
-<th>Team</th>
-<th>W</th>
-<th>L</th>
-<th>OTL</th>
-<th>PTS</th>
-<th>GF</th>
-<th>GA</th>
-<th>DIFF</th>
+<th onclick="sortTable(0,'standingsTable')">Team</th>
+<th onclick="sortTable(1,'standingsTable')">W</th>
+<th onclick="sortTable(2,'standingsTable')">L</th>
+<th onclick="sortTable(3,'standingsTable')">OTL</th>
+<th onclick="sortTable(4,'standingsTable')">PTS</th>
+<th onclick="sortTable(5,'standingsTable')">GF</th>
+<th onclick="sortTable(6,'standingsTable')">GA</th>
+<th onclick="sortTable(7,'standingsTable')">DIFF</th>
 </tr>
-</thead>
-<tbody id="standingsBody"></tbody>
+<tr><td>Minnesota Snowbirds</td><td>52</td><td>16</td><td>6</td><td>110</td><td>287</td><td>201</td><td>+86</td></tr>
+<tr><td>Kansas City Grillers</td><td>45</td><td>25</td><td>4</td><td>94</td><td>251</td><td>212</td><td>+39</td></tr>
+<tr><td>Bay Area Robots</td><td>41</td><td>28</td><td>5</td><td>87</td><td>236</td><td>224</td><td>+12</td></tr>
 </table>
-
 </div>
-
 <script src="app.js"></script>
-<script>
-
-loadLeague().then(data=>{
-
-const body=document.getElementById('standingsBody');
-
-body.innerHTML = [...data.teams]
-.sort((a,b)=>(latestSeason(b).pts||0)-(latestSeason(a).pts||0))
-.map(t=>{
-
-const s=latestSeason(t);
-const diff=(s.gf||0)-(s.ga||0);
-
-return `
-<tr>
-<td>
-<div class="teamcell">
-<img class="small-logo" src="${t.imgURL||''}">
-<a href="team.html?tid=${t.tid}">${t.region} ${t.name}</a>
-</div>
-</td>
-<td>${s.won||0}</td>
-<td>${s.lost||0}</td>
-<td>${s.otl||0}</td>
-<td>${s.pts||0}</td>
-<td>${s.gf||0}</td>
-<td>${s.ga||0}</td>
-<td>${diff}</td>
-</tr>
-`;
-
-}).join('');
-
-makeSortable(document.getElementById('standingsTable'));
-
-});
-
-</script>
-
-</body>
-</html>
+</body></html>

@@ -1,1 +1,38 @@
-<!-- Players leaderboard -->
+
+<html><head><title>Players</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header>
+<div class="nav">
+<a class="brand" href="index.html">
+<img src="GHL.png">
+<span>GHL</span>
+</a>
+<div class="links">
+<a href="index.html">Home</a>
+<a href="standings.html">Standings</a>
+<a href="teams.html">Teams</a>
+<a href="players.html">Players</a>
+<a href="draft.html">Draft</a>
+<a href="schedule.html">Schedule</a>
+<a href="playoffs.html">Playoffs</a>
+</div>
+</div>
+</header>
+
+<div class="container">
+<h1 class="section-title">Players</h1>
+<table id="playersTable">
+<tr>
+<th onclick="sortTable(0,'playersTable')">Player</th>
+<th onclick="sortTable(1,'playersTable')">Team</th>
+<th onclick="sortTable(2,'playersTable')">Pos</th>
+<th onclick="sortTable(3,'playersTable')">Goals</th>
+<th onclick="sortTable(4,'playersTable')">Assists</th>
+<th onclick="sortTable(5,'playersTable')">Points</th>
+</tr>
+<tr><td>Jani Eronen</td><td>Sacramento</td><td>C</td><td>20</td><td>76</td><td>96</td></tr>
+<tr><td>Tevonn McLean</td><td>Kansas City</td><td>C</td><td>27</td><td>68</td><td>95</td></tr>
+</table>
+</div>
+<script src="app.js"></script>
+</body></html>

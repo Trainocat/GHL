@@ -1,32 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>GHL Playoffs</title>
-
-<link rel="stylesheet" href="style.css">
-
-</head>
-
+<html><head><title>Playoffs</title><link rel="stylesheet" href="style.css"></head>
 <body>
-
 <header>
-
 <div class="nav">
-
-<div class="brand">
-
+<a class="brand" href="index.html">
 <img src="GHL.png">
-
 <span>GHL</span>
-
-</div>
-
+</a>
 <div class="links">
-
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
@@ -34,158 +15,20 @@
 <a href="draft.html">Draft</a>
 <a href="schedule.html">Schedule</a>
 <a href="playoffs.html">Playoffs</a>
-
 </div>
-
 </div>
-
 </header>
 
-<div class="page">
-
-<div class="section">
-2026 GHL Playoffs
-</div>
-
-<div class="hero">
-
+<div class="container">
+<h1 class="section-title">Playoff Bracket</h1>
+<div class="bracket">
 <div>
-
-<h1>
-Playoff Bracket
-</h1>
-
-<p class="meta">
-Follow the road to the GHL Championship.
-</p>
-
+<div class="matchup"><b>Minnesota</b><br>4-1 vs Quebec</div>
+<div class="matchup"><b>Bay Area</b><br>4-2 vs Arizona</div>
 </div>
-
-<img src="GHL.png">
-
+<div>
+<div class="matchup"><b>Minnesota</b><br>4-3 vs Bay Area</div>
 </div>
-
-<div class="bracket" id="bracket"></div>
-
 </div>
-
-<script>
-
-fetch("league.json")
-
-.then(r => r.json())
-
-.then(data => {
-
-const teams = {};
-
-data.teams.forEach(t => {
-teams[t.tid] = t;
-});
-
-/*
-===================================
-GET PLAYOFF SERIES
-===================================
-*/
-
-const rounds =
-data.playoffSeries?.series || [];
-
-let html = '';
-
-rounds.forEach((round,index)=>{
-
-html += `
-
-<div class="round">
-
-<div class="round-title">
-
-Round ${index + 1}
-
 </div>
-
-`;
-
-round.forEach(series=>{
-
-if(!series.home || !series.away) return;
-
-const home =
-teams[series.home.tid];
-
-const away =
-teams[series.away.tid];
-
-html += `
-
-<div class="series-card">
-
-<div class="series-team">
-
-<div class="teamcell">
-
-<img
-class="small-logo"
-src="${home?.imgURL || ''}">
-
-<span>
-
-${home?.abbrev || ''}
-
-</span>
-
-</div>
-
-<div class="series-score">
-
-${series.home.won || 0}
-
-</div>
-
-</div>
-
-<div class="series-team">
-
-<div class="teamcell">
-
-<img
-class="small-logo"
-src="${away?.imgURL || ''}">
-
-<span>
-
-${away?.abbrev || ''}
-
-</span>
-
-</div>
-
-<div class="series-score">
-
-${series.away.won || 0}
-
-</div>
-
-</div>
-
-</div>
-
-`;
-
-});
-
-html += `</div>`;
-
-});
-
-document.getElementById("bracket")
-.innerHTML = html;
-
-});
-
-</script>
-
-</body>
-</html>
+</body></html>

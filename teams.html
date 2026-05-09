@@ -1,20 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Teams</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
 
+<html><head><title>Teams</title><link rel="stylesheet" href="style.css"></head>
+<body>
 <header>
 <div class="nav">
-<div class="brand">
+<a class="brand" href="index.html">
 <img src="GHL.png">
 <span>GHL</span>
-</div>
-
+</a>
 <div class="links">
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
@@ -22,52 +14,24 @@
 <a href="players.html">Players</a>
 <a href="draft.html">Draft</a>
 <a href="schedule.html">Schedule</a>
+<a href="playoffs.html">Playoffs</a>
 </div>
 </div>
 </header>
 
-<div class="page">
-
-<div class="section">Teams</div>
-<div class="grid" id="teams"></div>
-
+<div class="container">
+<h1 class="section-title">Teams</h1>
+<table id="teamsTable">
+<tr>
+<th onclick="sortTable(0,'teamsTable')">Team</th>
+<th onclick="sortTable(1,'teamsTable')">Conference</th>
+<th onclick="sortTable(2,'teamsTable')">Division</th>
+<th onclick="sortTable(3,'teamsTable')">PTS</th>
+</tr>
+<tr><td>Minnesota Snowbirds</td><td>Eastern</td><td>Northeast</td><td>110</td></tr>
+<tr><td>Bay Area Robots</td><td>Western</td><td>Pacific</td><td>87</td></tr>
+<tr><td>Arizona Dragonflies</td><td>Western</td><td>Pacific</td><td>82</td></tr>
+</table>
 </div>
-
 <script src="app.js"></script>
-<script>
-
-loadLeague().then(data=>{
-
-document.getElementById('teams').innerHTML =
-[...data.teams]
-.sort((a,b)=>(a.region+a.name).localeCompare(b.region+b.name))
-.map(t=>{
-
-const s=latestSeason(t);
-
-return `
-<a href="team.html?tid=${t.tid}">
-<div class="card">
-<div style="text-align:center">
-<img class="team-logo" src="${t.imgURL||''}">
-</div>
-
-<h2>${t.region} ${t.name}</h2>
-
-<div>${s.won||0}-${s.lost||0}-${s.otl||0}</div>
-<div style="color:var(--accent);margin-top:10px;font-weight:700">
-${s.pts||0} PTS
-</div>
-
-</div>
-</a>
-`;
-
-}).join('');
-
-});
-
-</script>
-
-</body>
-</html>
+</body></html>
