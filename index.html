@@ -1,56 +1,100 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>GHL Debug</title>
-<style>
-body { font-family: Arial; background:#0b1020; color:white; padding:20px; }
-pre { background:#111; padding:10px; overflow:auto; }
-</style>
+  <title>GHL Home Debug</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #0b1020;
+      color: white;
+      padding: 20px;
+    }
+    .error {
+      background: #5a1f1f;
+      padding: 10px;
+      margin-top: 10px;
+      white-space: pre-wrap;
+    }
+    .game {
+      padding: 8px;
+      border-bottom: 1px solid #27314f;
+    }
+  </style>
 </head>
 <body>
 
-<h1>GHL Debug Mode</h1>
-<div id="games">Loading...</div>
+<h1>GHL Home (Safe Mode)</h1>
+
+<div id="status">Loading league.json...</div>
+<div id="games"></div>
 
 <script>
-try {
+(async function () {
+  const status = document.getElementById("status");
+  const gamesDiv = document.getElementById("games");
 
-fetch("league.json")
-.then(r => r.json())
-.then(data => {
+  try {
+    const res = await fetch("league.json");
 
-  console.log("DATA LOADED", data);
+    if (!res.ok) {
+      throw new Error("league.json not found or failed to load (HTTP " + res.status + ")");
+    }
 
-  const games = data.games;
-  const teams = data.teams;
+    const data = await res.json();
 
-  if (!games || !teams) {
-    throw new Error("Missing games or teams in league.json");
-  }
+    console.log("DATA:", data);
 
-  const teamMap = {};
+    // HARD CHECKS
+    if (!data) throw new Error("No data loaded from JSON");
+    if (!data.games) throw new Error("No 'games' field found in JSON");
+    if (!data.teams) throw new Error("No 'teams' field found in JSON");
 
-  teams.forEach(t => {
-    teamMap[t.id] = `${t.region || ""} ${t.name || ""}`.trim();
-  });
+    status.innerText = "Loaded successfully ✔";
 
-  document.getElementById("games").innerHTML =
-    games.slice(0,10).map(g => {
+    // Build team map safely
+    const teamMap = {};
+    data.teams.forEach(t => {
+      const name = ((t.region || "") + " " + (t.name || "")).trim();
+      teamMap[t.id] = name || t.id;
+    });
 
+    // Render games
+    const games = data.games.slice(0, 20);
+
+    games.forEach(g => {
       const away = teamMap[g.awayTid] || g.awayTid;
       const home = teamMap[g.homeTid] || g.homeTid;
 
-      return `<div>${away} ${g.awayScore} - ${g.homeScore} ${home}</div>`;
-    }).join("");
+      const div = document.createElement("div");
+      div.className = "game";
+      div.innerText = `${away} ${g.awayScore ?? "?"} - ${g.homeScore ?? "?"} ${home}`;
 
-})
-.catch(err => {
-  document.body.innerHTML += "<pre>" + err.stack + "</pre>";
-});
+      gamesDiv.appendChild(div);
+    });
 
-} catch (e) {
-  document.body.innerHTML += "<pre>FATAL ERROR:\n" + e.stack + "</pre>";
-}
+  } catch (err) {
+    status.innerText = "ERROR LOADING LEAGUE";
+
+    gamesDiv.innerHTML = `
+      <div class="error">
+${err.message}
+
+---
+
+This means:
+- league.json is not loading OR
+- structure is different than expected
+
+Check:
+1. File is named exactly league.json
+2. File is in the SAME folder as index.html
+3. GitHub Pages has updated (wait ~60 sec)
+      </div>
+    `;
+
+    console.error(err);
+  }
+})();
 </script>
 
 </body>
