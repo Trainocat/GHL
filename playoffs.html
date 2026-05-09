@@ -1,59 +1,358 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
 <title>Playoffs</title>
+
 <link rel="stylesheet" href="style.css">
+
+<style>
+
+.playoff-wrapper{
+
+overflow-x:auto;
+
+padding-bottom:20px;
+
+}
+
+.bracket{
+
+display:flex;
+gap:40px;
+align-items:flex-start;
+
+min-width:max-content;
+
+}
+
+.conference{
+
+display:flex;
+gap:24px;
+
+}
+
+.round{
+
+display:flex;
+flex-direction:column;
+justify-content:space-around;
+
+gap:20px;
+
+}
+
+.round-title{
+
+font-size:24px;
+font-weight:800;
+
+margin-bottom:16px;
+
+}
+
+.series{
+
+width:240px;
+
+background:#1b2432;
+
+border:
+1px solid #334155;
+
+border-radius:8px;
+
+overflow:hidden;
+
+}
+
+.series-team{
+
+display:flex;
+align-items:center;
+justify-content:space-between;
+
+padding:10px 12px;
+
+border-bottom:
+1px solid #334155;
+
+}
+
+.series-team:last-child{
+
+border-bottom:none;
+
+}
+
+.series-team.winner{
+
+background:
+rgba(0,128,255,0.12);
+
+}
+
+.series-team img{
+
+width:28px;
+height:28px;
+
+object-fit:contain;
+
+margin-right:8px;
+
+}
+
+.series-left{
+
+display:flex;
+align-items:center;
+gap:8px;
+
+}
+
+.seed{
+
+font-weight:700;
+color:#94a3b8;
+
+width:22px;
+
+}
+
+.team-name{
+
+font-weight:700;
+
+}
+
+.team-record{
+
+font-size:13px;
+color:#94a3b8;
+
+margin-top:2px;
+
+}
+
+.series-score{
+
+font-size:20px;
+font-weight:900;
+
+color:#f59e0b;
+
+}
+
+.playoff-center{
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+padding-top:140px;
+
+}
+
+.cup-box{
+
+width:260px;
+
+background:#1b2432;
+
+border:
+2px solid #475569;
+
+border-radius:12px;
+
+padding:20px;
+
+text-align:center;
+
+}
+
+.cup-box h2{
+
+margin-top:0;
+
+font-size:30px;
+
+}
+
+.champion{
+
+font-size:28px;
+font-weight:900;
+
+margin-top:10px;
+
+color:#f8fafc;
+
+}
+
+.champion img{
+
+width:70px;
+height:70px;
+
+object-fit:contain;
+
+margin-bottom:12px;
+
+}
+
+</style>
+
 </head>
 <body>
 
 <header>
+
 <div class="nav">
+
 <a class="brand" href="index.html">
+
 <img src="GHL.png">
+
 <span>GHL</span>
+
 </a>
 
 <div class="links">
+
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
 <a href="players.html">Players</a>
 <a href="schedule.html">Schedule</a>
-<a href="draft.html">Draft</a>
 <a href="playoffs.html">Playoffs</a>
+<a href="draft.html">Draft</a>
+
 </div>
+
 </div>
+
 </header>
 
 <div class="container">
 
-<div class="page-title">Playoffs</div>
+<div class="page-title">
+
+Playoffs
+
+</div>
+
+<div class="playoff-wrapper">
 
 <div class="bracket">
 
-<div class="round">
-<h2>Round 1</h2>
+<!-- =========================
+     WEST
+========================= -->
 
-<div class="matchup">
-<div>Minnesota</div>
-<div>4</div>
-</div>
-
-<div class="matchup">
-<div>Bay Area</div>
-<div>2</div>
-</div>
-
-</div>
+<div class="conference">
 
 <div class="round">
-<h2>Final</h2>
 
-<div class="matchup">
-<div>Minnesota</div>
-<div>4</div>
+<div class="round-title">
+
+Western Conference
+
+</div>
+
+<div id="westRound1"></div>
+
+</div>
+
+<div class="round">
+
+<div class="round-title">
+
+Round 2
+
+</div>
+
+<div id="westRound2"></div>
+
+</div>
+
+<div class="round">
+
+<div class="round-title">
+
+Conference Final
+
+</div>
+
+<div id="westFinal"></div>
+
+</div>
+
+</div>
+
+<!-- =========================
+     CUP FINAL
+========================= -->
+
+<div class="playoff-center">
+
+<div class="cup-box">
+
+<h2>GHL Final</h2>
+
+<div id="finalSeries"></div>
+
+</div>
+
+</div>
+
+<!-- =========================
+     EAST
+========================= -->
+
+<div class="conference">
+
+<div class="round">
+
+<div class="round-title">
+
+Conference Final
+
+</div>
+
+<div id="eastFinal"></div>
+
+</div>
+
+<div class="round">
+
+<div class="round-title">
+
+Round 2
+
+</div>
+
+<div id="eastRound2"></div>
+
+</div>
+
+<div class="round">
+
+<div class="round-title">
+
+Eastern Conference
+
+</div>
+
+<div id="eastRound1"></div>
+
 </div>
 
 </div>
@@ -61,9 +360,306 @@
 </div>
 
 </div>
-<script src="app.js"></script>
+
+</div>
+
 <script>
 
+async function loadLeague() {
+
+    const response =
+        await fetch("league.json");
+
+    return await response.json();
+
+}
+
+function getTeamName(team) {
+
+    return `${team.region} ${team.name}`;
+
+}
+
+function getTeamLogo(team) {
+
+    return (
+        team.imgURL ||
+        team.imgURLSmall ||
+        "GHL.png"
+    );
+
+}
+
+function latestSeason(team) {
+
+    return team.seasons?.[
+        team.seasons.length - 1
+    ] || {};
+
+}
+
+function createSeries(
+    teamA,
+    teamB,
+    winsA,
+    winsB,
+    seedA,
+    seedB
+) {
+
+    const winnerA =
+        winsA > winsB
+        ? "winner"
+        : "";
+
+    const winnerB =
+        winsB > winsA
+        ? "winner"
+        : "";
+
+    return `
+
+    <div class="series">
+
+        <div class="series-team ${winnerA}">
+
+            <div class="series-left">
+
+                <div class="seed">
+
+                    ${seedA}.
+
+                </div>
+
+                <img
+                src="${getTeamLogo(teamA)}">
+
+                <div>
+
+                    <div class="team-name">
+
+                        ${teamA.region}
+
+                    </div>
+
+                    <div class="team-record">
+
+                        ${latestSeason(teamA).won || 0}-
+                        ${latestSeason(teamA).lost || 0}-
+                        ${latestSeason(teamA).otl || 0}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="series-score">
+
+                ${winsA}
+
+            </div>
+
+        </div>
+
+        <div class="series-team ${winnerB}">
+
+            <div class="series-left">
+
+                <div class="seed">
+
+                    ${seedB}.
+
+                </div>
+
+                <img
+                src="${getTeamLogo(teamB)}">
+
+                <div>
+
+                    <div class="team-name">
+
+                        ${teamB.region}
+
+                    </div>
+
+                    <div class="team-record">
+
+                        ${latestSeason(teamB).won || 0}-
+                        ${latestSeason(teamB).lost || 0}-
+                        ${latestSeason(teamB).otl || 0}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="series-score">
+
+                ${winsB}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    `;
+
+}
+
+loadLeague().then(data => {
+
+    const teams = {};
+
+    data.teams.forEach(team => {
+
+        teams[team.tid] = team;
+
+    });
+
+    // =========================
+    // SAMPLE BRACKET
+    // Replace with playoffSeries
+    // =========================
+
+    document
+    .getElementById("westRound1")
+    .innerHTML =
+
+        createSeries(
+            teams[1],
+            teams[8],
+            4,
+            1,
+            1,
+            8
+        ) +
+
+        createSeries(
+            teams[3],
+            teams[6],
+            4,
+            0,
+            3,
+            6
+        ) +
+
+        createSeries(
+            teams[2],
+            teams[7],
+            0,
+            4,
+            2,
+            7
+        );
+
+    document
+    .getElementById("westRound2")
+    .innerHTML =
+
+        createSeries(
+            teams[1],
+            teams[3],
+            4,
+            3,
+            1,
+            3
+        );
+
+    document
+    .getElementById("westFinal")
+    .innerHTML =
+
+        createSeries(
+            teams[1],
+            teams[7],
+            4,
+            3,
+            1,
+            7
+        );
+
+    document
+    .getElementById("eastRound1")
+    .innerHTML =
+
+        createSeries(
+            teams[0],
+            teams[9],
+            4,
+            3,
+            1,
+            8
+        ) +
+
+        createSeries(
+            teams[4],
+            teams[5],
+            4,
+            1,
+            4,
+            5
+        ) +
+
+        createSeries(
+            teams[2],
+            teams[6],
+            4,
+            0,
+            3,
+            6
+        );
+
+    document
+    .getElementById("eastRound2")
+    .innerHTML =
+
+        createSeries(
+            teams[0],
+            teams[4],
+            4,
+            3,
+            1,
+            4
+        );
+
+    document
+    .getElementById("eastFinal")
+    .innerHTML =
+
+        createSeries(
+            teams[0],
+            teams[2],
+            4,
+            2,
+            1,
+            2
+        );
+
+    document
+    .getElementById("finalSeries")
+    .innerHTML = `
+
+    <div class="champion">
+
+        <img
+        src="${getTeamLogo(teams[0])}">
+
+        <div>
+
+            ${getTeamName(teams[0])}
+
+        </div>
+
+    </div>
+
+    `;
+
+});
+
 </script>
+
 </body>
 </html>

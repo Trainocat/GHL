@@ -1,82 +1,684 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
 <title>Players</title>
+
 <link rel="stylesheet" href="style.css">
+
+<style>
+
+.players-header{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+margin-bottom:20px;
+
+gap:20px;
+
+}
+
+.search-box{
+
+padding:12px 14px;
+
+background:#111827;
+
+border:
+1px solid #334155;
+
+border-radius:8px;
+
+color:white;
+
+font-size:15px;
+
+width:320px;
+
+}
+
+.players-table-wrapper{
+
+overflow-x:auto;
+
+background:#111827;
+
+border:
+1px solid #334155;
+
+border-radius:12px;
+
+}
+
+.players-table{
+
+width:100%;
+
+border-collapse:collapse;
+
+min-width:1200px;
+
+}
+
+.players-table th,
+.players-table td{
+
+padding:10px;
+
+border-bottom:
+1px solid #334155;
+
+text-align:left;
+
+white-space:nowrap;
+
+}
+
+.players-table th{
+
+background:#172033;
+
+cursor:pointer;
+
+position:sticky;
+top:69px;
+
+z-index:2;
+
+}
+
+.players-table tr:nth-child(even){
+
+background:
+rgba(255,255,255,0.02);
+
+}
+
+.players-table tr:hover td{
+
+background:#1b2432;
+
+}
+
+.player-cell{
+
+display:flex;
+align-items:center;
+gap:10px;
+
+font-weight:700;
+
+}
+
+.player-face{
+
+width:36px;
+height:36px;
+
+border-radius:6px;
+
+background:#1b2432;
+
+padding:2px;
+
+}
+
+.team-logo{
+
+width:28px;
+height:28px;
+
+object-fit:contain;
+
+}
+
+.rating{
+
+display:inline-block;
+
+padding:4px 8px;
+
+border-radius:6px;
+
+background:#1e293b;
+
+font-weight:700;
+
+font-size:13px;
+
+}
+
+.positive{
+
+color:#22c55e;
+font-weight:700;
+
+}
+
+.negative{
+
+color:#ef4444;
+font-weight:700;
+
+}
+
+</style>
+
 </head>
 <body>
 
 <header>
+
 <div class="nav">
+
 <a class="brand" href="index.html">
+
 <img src="GHL.png">
+
 <span>GHL</span>
+
 </a>
 
 <div class="links">
+
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
 <a href="players.html">Players</a>
 <a href="schedule.html">Schedule</a>
-<a href="draft.html">Draft</a>
 <a href="playoffs.html">Playoffs</a>
+<a href="draft.html">Draft</a>
+
 </div>
+
 </div>
+
 </header>
 
 <div class="container">
 
-<div class="page-title">Players</div>
+<div class="players-header">
 
-<table id="playersTable">
+<div class="page-title">
+
+Players
+
+</div>
+
+<input
+type="text"
+class="search-box"
+id="playerSearch"
+placeholder="Search players...">
+
+</div>
+
+<div class="players-table-wrapper">
+
+<table
+class="players-table"
+id="playersTable">
+
 <thead>
+
 <tr>
-<th onclick="sortTable('playersTable',0)">Player</th>
-<th onclick="sortTable('playersTable',1)">Pos</th>
-<th onclick="sortTable('playersTable',2)">G</th>
-<th onclick="sortTable('playersTable',3)">A</th>
-<th onclick="sortTable('playersTable',4)">PTS</th>
+
+<th>Player</th>
+<th>Team</th>
+<th>Pos</th>
+<th>Age</th>
+<th>OVR</th>
+<th>POT</th>
+<th>GP</th>
+<th>G</th>
+<th>A</th>
+<th>PTS</th>
+<th>+/-</th>
+<th>PIM</th>
+<th>S</th>
+<th>S%</th>
+<th>TOI</th>
+
 </tr>
+
 </thead>
+
 <tbody id="playersBody"></tbody>
+
 </table>
 
 </div>
-<script src="app.js"></script>
+
+</div>
+
 <script>
 
-loadLeague().then(data=>{
+async function loadLeague() {
 
-document.getElementById('playersBody').innerHTML =
-data.players.map(p=>{
+    const response =
+        await fetch("league.json");
 
-const s = latestStats(p);
-const r = latestRating(p);
+    return await response.json();
 
-const g = (s.evG||0)+(s.ppG||0)+(s.shG||0);
-const a = (s.evA||0)+(s.ppA||0)+(s.shA||0);
+}
 
-return `
-<tr>
-<td>
-<a href="player.html?pid=${p.pid}">
-${p.firstName} ${p.lastName}
-</a>
-</td>
-<td>${r.pos||''}</td>
-<td>${g}</td>
-<td>${a}</td>
-<td>${g+a}</td>
-</tr>
-`;
+function latestStats(player) {
 
-}).join('');
+    return player.stats?.[
+        player.stats.length - 1
+    ] || {};
+
+}
+
+function latestRating(player) {
+
+    return player.ratings?.[
+        player.ratings.length - 1
+    ] || {};
+
+}
+
+function getGoals(stats) {
+
+    return (
+        (stats.evG || 0) +
+        (stats.ppG || 0) +
+        (stats.shG || 0)
+    );
+
+}
+
+function getAssists(stats) {
+
+    return (
+        (stats.evA || 0) +
+        (stats.ppA || 0) +
+        (stats.shA || 0)
+    );
+
+}
+
+function getPoints(stats) {
+
+    return (
+        getGoals(stats) +
+        getAssists(stats)
+    );
+
+}
+
+function sortableTable(table) {
+
+    const headers =
+        table.querySelectorAll("th");
+
+    headers.forEach((header, index) => {
+
+        header.onclick = () => {
+
+            const tbody =
+                table.querySelector("tbody");
+
+            const rows = [
+                ...tbody.querySelectorAll("tr")
+            ];
+
+            const asc =
+                !header.classList.contains(
+                    "asc"
+                );
+
+            headers.forEach(h => {
+
+                h.classList.remove(
+                    "asc"
+                );
+
+                h.classList.remove(
+                    "desc"
+                );
+
+            });
+
+            header.classList.add(
+                asc ? "asc" : "desc"
+            );
+
+            rows.sort((a, b) => {
+
+                const aText =
+                    a.children[index]
+                    .innerText
+                    .replace(/[^\d.-]/g,"");
+
+                const bText =
+                    b.children[index]
+                    .innerText
+                    .replace(/[^\d.-]/g,"");
+
+                const aNum =
+                    parseFloat(aText);
+
+                const bNum =
+                    parseFloat(bText);
+
+                if (
+                    !isNaN(aNum) &&
+                    !isNaN(bNum)
+                ) {
+
+                    return asc
+                        ? aNum - bNum
+                        : bNum - aNum;
+
+                }
+
+                const aStr =
+                    a.children[index]
+                    .innerText;
+
+                const bStr =
+                    b.children[index]
+                    .innerText;
+
+                return asc
+                    ? aStr.localeCompare(aStr)
+                    : bStr.localeCompare(aStr);
+
+            });
+
+            tbody.innerHTML = "";
+
+            rows.forEach(row => {
+
+                tbody.appendChild(row);
+
+            });
+
+        };
+
+    });
+
+}
+
+loadLeague().then(data => {
+
+    const body =
+        document.getElementById(
+            "playersBody"
+        );
+
+    const teams = {};
+
+    data.teams.forEach(team => {
+
+        teams[team.tid] = team;
+
+    });
+
+    const players =
+        [...data.players]
+        .filter(player => {
+
+            return player.tid >= 0;
+
+        })
+        .sort((a, b) => {
+
+            return (
+                getPoints(
+                    latestStats(b)
+                )
+            ) - (
+                getPoints(
+                    latestStats(a)
+                )
+            );
+
+        });
+
+    function renderPlayers(filter="") {
+
+        body.innerHTML =
+            players
+            .filter(player => {
+
+                const name =
+                    (
+                        player.firstName +
+                        " " +
+                        player.lastName
+                    ).toLowerCase();
+
+                return name.includes(
+                    filter.toLowerCase()
+                );
+
+            })
+            .map(player => {
+
+                const stats =
+                    latestStats(player);
+
+                const rating =
+                    latestRating(player);
+
+                const team =
+                    teams[player.tid];
+
+                const goals =
+                    getGoals(stats);
+
+                const assists =
+                    getAssists(stats);
+
+                const points =
+                    getPoints(stats);
+
+                return `
+
+                <tr>
+
+                    <td>
+
+                        <a
+                        href="player.html?pid=${player.pid}">
+
+                            <div class="player-cell">
+
+                                <img
+                                class="player-face"
+                                src="https://zengm.com/files/facegen/default.svg">
+
+                                <span>
+
+                                    ${player.firstName}
+                                    ${player.lastName}
+
+                                </span>
+
+                            </div>
+
+                        </a>
+
+                    </td>
+
+                    <td>
+
+                        <a
+                        href="team.html?tid=${team.tid}">
+
+                            <div class="player-cell">
+
+                                <img
+                                class="team-logo"
+                                src="${
+                                    team.imgURL ||
+                                    team.imgURLSmall ||
+                                    "GHL.png"
+                                }">
+
+                                <span>
+
+                                    ${team.abbrev}
+
+                                </span>
+
+                            </div>
+
+                        </a>
+
+                    </td>
+
+                    <td>
+
+                        ${rating.pos || ""}
+
+                    </td>
+
+                    <td>
+
+                        ${
+                            data.gameAttributes.season
+                            -
+                            player.born.year
+                        }
+
+                    </td>
+
+                    <td>
+
+                        <span class="rating">
+
+                            ${rating.ovr || 0}
+
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        ${rating.pot || 0}
+
+                    </td>
+
+                    <td>
+
+                        ${stats.gp || 0}
+
+                    </td>
+
+                    <td>
+
+                        ${goals}
+
+                    </td>
+
+                    <td>
+
+                        ${assists}
+
+                    </td>
+
+                    <td>
+
+                        ${points}
+
+                    </td>
+
+                    <td class="${
+                        (stats.pm || 0) >= 0
+                        ? "positive"
+                        : "negative"
+                    }">
+
+                        ${
+                            (stats.pm || 0) > 0
+                            ? "+"
+                            : ""
+                        }
+
+                        ${stats.pm || 0}
+
+                    </td>
+
+                    <td>
+
+                        ${stats.pim || 0}
+
+                    </td>
+
+                    <td>
+
+                        ${stats.s || 0}
+
+                    </td>
+
+                    <td>
+
+                        ${
+                            stats.s > 0
+                            ? (
+                                (
+                                    goals /
+                                    stats.s
+                                ) * 100
+                            ).toFixed(1)
+                            : "0.0"
+                        }
+
+                    </td>
+
+                    <td>
+
+                        ${stats.min || 0}
+
+                    </td>
+
+                </tr>
+
+                `;
+
+            }).join("");
+
+    }
+
+    renderPlayers();
+
+    sortableTable(
+        document.getElementById(
+            "playersTable"
+        )
+    );
+
+    // =========================
+    // SEARCH
+    // =========================
+
+    document
+    .getElementById("playerSearch")
+    .addEventListener(
+        "input",
+        e => {
+
+            renderPlayers(
+                e.target.value
+            );
+
+        }
+    );
 
 });
 
 </script>
+
 </body>
 </html>

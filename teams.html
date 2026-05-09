@@ -82,9 +82,141 @@ Teams
 
 </div>
 
-<script src="app.js"></script>
-
 <script>
+
+async function loadLeague() {
+
+    const response =
+        await fetch("league.json");
+
+    return await response.json();
+
+}
+
+function getTeamName(team) {
+
+    return `${team.region} ${team.name}`;
+
+}
+
+function getTeamLogo(team) {
+
+    if (team.imgURL) {
+        return team.imgURL;
+    }
+
+    if (team.imgURLSmall) {
+        return team.imgURLSmall;
+    }
+
+    return "GHL.png";
+
+}
+
+function latestSeason(team) {
+
+    if (
+        !team.seasons ||
+        team.seasons.length === 0
+    ) {
+
+        return {};
+
+    }
+
+    return team.seasons[
+        team.seasons.length - 1
+    ];
+
+}
+
+function makeSortable(tableId) {
+
+    const table =
+        document.getElementById(tableId);
+
+    const headers =
+        table.querySelectorAll("th");
+
+    headers.forEach((header, index) => {
+
+        header.addEventListener("click", () => {
+
+            const tbody =
+                table.querySelector("tbody");
+
+            const rows = [
+                ...tbody.querySelectorAll("tr")
+            ];
+
+            const asc =
+                !header.classList.contains(
+                    "asc"
+                );
+
+            headers.forEach(h => {
+
+                h.classList.remove("asc");
+                h.classList.remove("desc");
+
+            });
+
+            header.classList.add(
+                asc ? "asc" : "desc"
+            );
+
+            rows.sort((a, b) => {
+
+                const aText =
+                    a.children[index]
+                    .innerText
+                    .trim();
+
+                const bText =
+                    b.children[index]
+                    .innerText
+                    .trim();
+
+                const aNum =
+                    parseFloat(aText);
+
+                const bNum =
+                    parseFloat(bText);
+
+                if (
+                    !isNaN(aNum) &&
+                    !isNaN(bNum)
+                ) {
+
+                    return asc
+                        ? aNum - bNum
+                        : bNum - aNum;
+
+                }
+
+                return asc
+                    ? aText.localeCompare(
+                        bText
+                    )
+                    : bText.localeCompare(
+                        aText
+                    );
+
+            });
+
+            tbody.innerHTML = "";
+
+            rows.forEach(row => {
+
+                tbody.appendChild(row);
+
+            });
+
+        });
+
+    });
+
+}
 
 loadLeague().then(data => {
 

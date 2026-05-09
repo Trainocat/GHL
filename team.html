@@ -1,92 +1,943 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
 <title>Team</title>
+
 <link rel="stylesheet" href="style.css">
+
+<style>
+
+.team-header{
+
+display:flex;
+align-items:center;
+justify-content:space-between;
+
+background:#111827;
+
+border:
+1px solid #334155;
+
+border-radius:12px;
+
+padding:24px;
+
+margin-bottom:24px;
+
+}
+
+.team-info{
+
+display:flex;
+align-items:center;
+gap:20px;
+
+}
+
+.team-logo-large{
+
+width:120px;
+height:120px;
+
+object-fit:contain;
+
+}
+
+.team-name-large{
+
+font-size:42px;
+font-weight:900;
+
+margin-bottom:8px;
+
+}
+
+.team-meta{
+
+font-size:15px;
+color:#94a3b8;
+
+line-height:1.7;
+
+}
+
+.team-record{
+
+font-size:40px;
+font-weight:900;
+
+text-align:right;
+
+}
+
+.team-pts{
+
+font-size:18px;
+color:#94a3b8;
+
+margin-top:6px;
+
+}
+
+.team-grid{
+
+display:grid;
+
+grid-template-columns:
+2fr 1fr;
+
+gap:24px;
+
+}
+
+.section{
+
+background:#111827;
+
+border:
+1px solid #334155;
+
+border-radius:10px;
+
+overflow:hidden;
+
+margin-bottom:24px;
+
+}
+
+.section-title{
+
+background:#172033;
+
+padding:12px 16px;
+
+font-size:20px;
+font-weight:800;
+
+}
+
+.section-body{
+
+padding:16px;
+
+}
+
+.stats-table{
+
+width:100%;
+
+border-collapse:collapse;
+
+}
+
+.stats-table th,
+.stats-table td{
+
+padding:10px;
+
+border-bottom:
+1px solid #334155;
+
+text-align:left;
+
+}
+
+.stats-table th{
+
+background:#172033;
+
+cursor:pointer;
+
+white-space:nowrap;
+
+}
+
+.stats-table tr:hover td{
+
+background:#1b2432;
+
+}
+
+.player-cell{
+
+display:flex;
+align-items:center;
+gap:10px;
+
+font-weight:700;
+
+}
+
+.player-rating{
+
+display:inline-block;
+
+padding:4px 8px;
+
+border-radius:6px;
+
+background:#1e293b;
+
+font-size:13px;
+font-weight:700;
+
+}
+
+.stat-grid{
+
+display:grid;
+
+grid-template-columns:
+repeat(4,1fr);
+
+gap:16px;
+
+}
+
+.stat-box{
+
+background:#1b2432;
+
+border:
+1px solid #334155;
+
+border-radius:10px;
+
+padding:16px;
+
+}
+
+.stat-label{
+
+font-size:14px;
+color:#94a3b8;
+
+margin-bottom:6px;
+
+}
+
+.stat-value{
+
+font-size:32px;
+font-weight:900;
+
+}
+
+@media(max-width:1100px){
+
+.team-grid{
+
+grid-template-columns:1fr;
+
+}
+
+.team-header{
+
+flex-direction:column;
+align-items:flex-start;
+
+gap:20px;
+
+}
+
+.team-record{
+
+text-align:left;
+
+}
+
+.stat-grid{
+
+grid-template-columns:
+repeat(2,1fr);
+
+}
+
+}
+
+</style>
+
 </head>
 <body>
 
 <header>
+
 <div class="nav">
+
 <a class="brand" href="index.html">
+
 <img src="GHL.png">
+
 <span>GHL</span>
+
 </a>
 
 <div class="links">
+
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
 <a href="players.html">Players</a>
 <a href="schedule.html">Schedule</a>
-<a href="draft.html">Draft</a>
 <a href="playoffs.html">Playoffs</a>
+<a href="draft.html">Draft</a>
+
 </div>
+
 </div>
+
 </header>
 
 <div class="container">
 
-<div class="hero">
-<div>
-<h1 id="teamName"></h1>
-<p id="teamRecord"></p>
-</div>
-<img id="teamLogo">
-</div>
-
-<table id="rosterTable">
-<thead>
-<tr>
-<th onclick="sortTable('rosterTable',0)">Player</th>
-<th onclick="sortTable('rosterTable',1)">Pos</th>
-<th onclick="sortTable('rosterTable',2)">OVR</th>
-</tr>
-</thead>
-<tbody id="rosterBody"></tbody>
-</table>
+<div id="teamContent"></div>
 
 </div>
-<script src="app.js"></script>
+
 <script>
 
-const tid = Number(new URLSearchParams(location.search).get('tid'));
+async function loadLeague() {
 
-loadLeague().then(data=>{
+    const response =
+        await fetch("league.json");
 
-const team = data.teams.find(t=>t.tid===tid);
+    return await response.json();
 
-document.getElementById('teamName').innerText = getTeamName(team);
-document.getElementById('teamLogo').src = getTeamLogo(team);
+}
 
-const s = latestSeason(team);
+function latestSeason(team) {
 
-document.getElementById('teamRecord').innerText =
-`${s.won||0}-${s.lost||0}-${s.otl||0}`;
+    return team.seasons?.[
+        team.seasons.length - 1
+    ] || {};
 
-document.getElementById('rosterBody').innerHTML =
-data.players
-.filter(p=>p.tid===tid)
-.map(p=>{
-const r = latestRating(p);
+}
 
-return `
-<tr>
-<td>
-<a href="player.html?pid=${p.pid}">
-${p.firstName} ${p.lastName}
-</a>
-</td>
-<td>${r.pos||''}</td>
-<td>${r.ovr||0}</td>
-</tr>
-`;
-}).join('');
+function getTeamName(team) {
+
+    return `${team.region} ${team.name}`;
+
+}
+
+function getTeamLogo(team) {
+
+    return (
+        team.imgURL ||
+        team.imgURLSmall ||
+        "GHL.png"
+    );
+
+}
+
+function latestRating(player) {
+
+    return player.ratings?.[
+        player.ratings.length - 1
+    ] || {};
+
+}
+
+function latestStats(player) {
+
+    return player.stats?.[
+        player.stats.length - 1
+    ] || {};
+
+}
+
+function playerPoints(stats) {
+
+    return (
+        (stats.evG || 0) +
+        (stats.ppG || 0) +
+        (stats.shG || 0) +
+        (stats.evA || 0) +
+        (stats.ppA || 0) +
+        (stats.shA || 0)
+    );
+
+}
+
+function sortableTable(table) {
+
+    const headers =
+        table.querySelectorAll("th");
+
+    headers.forEach((header, index) => {
+
+        header.onclick = () => {
+
+            const tbody =
+                table.querySelector("tbody");
+
+            const rows = [
+                ...tbody.querySelectorAll("tr")
+            ];
+
+            const asc =
+                !header.classList.contains(
+                    "asc"
+                );
+
+            headers.forEach(h => {
+
+                h.classList.remove(
+                    "asc"
+                );
+
+                h.classList.remove(
+                    "desc"
+                );
+
+            });
+
+            header.classList.add(
+                asc ? "asc" : "desc"
+            );
+
+            rows.sort((a, b) => {
+
+                const aText =
+                    a.children[index]
+                    .innerText
+                    .replace(/[^\d.-]/g,"");
+
+                const bText =
+                    b.children[index]
+                    .innerText
+                    .replace(/[^\d.-]/g,"");
+
+                const aNum =
+                    parseFloat(aText);
+
+                const bNum =
+                    parseFloat(bText);
+
+                if (
+                    !isNaN(aNum) &&
+                    !isNaN(bNum)
+                ) {
+
+                    return asc
+                        ? aNum - bNum
+                        : bNum - aNum;
+
+                }
+
+                const aStr =
+                    a.children[index]
+                    .innerText;
+
+                const bStr =
+                    b.children[index]
+                    .innerText;
+
+                return asc
+                    ? aStr.localeCompare(bStr)
+                    : bStr.localeCompare(aStr);
+
+            });
+
+            tbody.innerHTML = "";
+
+            rows.forEach(row => {
+
+                tbody.appendChild(row);
+
+            });
+
+        };
+
+    });
+
+}
+
+loadLeague().then(data => {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const tid =
+        Number(params.get("tid"));
+
+    const team =
+        data.teams.find(t => {
+
+            return t.tid === tid;
+
+        }) || data.teams[0];
+
+    const season =
+        latestSeason(team);
+
+    const roster =
+        data.players
+        .filter(player => {
+
+            return player.tid === team.tid;
+
+        })
+        .sort((a, b) => {
+
+            return (
+                latestRating(b).ovr || 0
+            ) - (
+                latestRating(a).ovr || 0
+            );
+
+        });
+
+    // =========================
+    // CONTENT
+    // =========================
+
+    document
+    .getElementById("teamContent")
+    .innerHTML = `
+
+    <!-- =====================
+         HEADER
+    ====================== -->
+
+    <div class="team-header">
+
+        <div class="team-info">
+
+            <img
+            class="team-logo-large"
+            src="${getTeamLogo(team)}">
+
+            <div>
+
+                <div class="team-name-large">
+
+                    ${getTeamName(team)}
+
+                </div>
+
+                <div class="team-meta">
+
+                    ${team.abbrev || ""}
+
+                    •
+
+                    ${team.region || ""}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div>
+
+            <div class="team-record">
+
+                ${season.won || 0}-
+                ${season.lost || 0}-
+                ${season.otl || 0}
+
+            </div>
+
+            <div class="team-pts">
+
+                ${season.pts || 0}
+                Points
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- =====================
+         TEAM STATS
+    ====================== -->
+
+    <div class="section">
+
+        <div class="section-title">
+
+            Team Statistics
+
+        </div>
+
+        <div class="section-body">
+
+            <div class="stat-grid">
+
+                <div class="stat-box">
+
+                    <div class="stat-label">
+
+                        Goals For
+
+                    </div>
+
+                    <div class="stat-value">
+
+                        ${season.gf || 0}
+
+                    </div>
+
+                </div>
+
+                <div class="stat-box">
+
+                    <div class="stat-label">
+
+                        Goals Against
+
+                    </div>
+
+                    <div class="stat-value">
+
+                        ${season.ga || 0}
+
+                    </div>
+
+                </div>
+
+                <div class="stat-box">
+
+                    <div class="stat-label">
+
+                        Goal Differential
+
+                    </div>
+
+                    <div class="stat-value">
+
+                        ${
+                            (season.gf || 0)
+                            -
+                            (season.ga || 0)
+                        }
+
+                    </div>
+
+                </div>
+
+                <div class="stat-box">
+
+                    <div class="stat-label">
+
+                        Win %
+
+                    </div>
+
+                    <div class="stat-value">
+
+                        ${
+                            (
+                                (season.won || 0)
+                                /
+                                (
+                                    (season.won || 0)
+                                    +
+                                    (season.lost || 0)
+                                    +
+                                    (season.otl || 0)
+                                )
+                            ).toFixed(3)
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- =====================
+         GRID
+    ====================== -->
+
+    <div class="team-grid">
+
+        <!-- LEFT -->
+
+        <div>
+
+            <!-- ROSTER -->
+
+            <div class="section">
+
+                <div class="section-title">
+
+                    Roster
+
+                </div>
+
+                <div class="section-body">
+
+                    <table
+                    class="stats-table"
+                    id="rosterTable">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Player</th>
+                                <th>Pos</th>
+                                <th>Age</th>
+                                <th>OVR</th>
+                                <th>POT</th>
+                                <th>GP</th>
+                                <th>G</th>
+                                <th>A</th>
+                                <th>PTS</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            ${
+                                roster.map(player => {
+
+                                    const rating =
+                                        latestRating(player);
+
+                                    const stats =
+                                        latestStats(player);
+
+                                    const goals =
+                                        (stats.evG || 0)
+                                        +
+                                        (stats.ppG || 0)
+                                        +
+                                        (stats.shG || 0);
+
+                                    const assists =
+                                        (stats.evA || 0)
+                                        +
+                                        (stats.ppA || 0)
+                                        +
+                                        (stats.shA || 0);
+
+                                    return `
+
+                                    <tr>
+
+                                        <td>
+
+                                            <a
+                                            href="player.html?pid=${player.pid}">
+
+                                                <div class="player-cell">
+
+                                                    ${player.firstName}
+                                                    ${player.lastName}
+
+                                                </div>
+
+                                            </a>
+
+                                        </td>
+
+                                        <td>
+
+                                            ${rating.pos || ""}
+
+                                        </td>
+
+                                        <td>
+
+                                            ${
+                                                data.gameAttributes.season
+                                                -
+                                                player.born.year
+                                            }
+
+                                        </td>
+
+                                        <td>
+
+                                            <span class="player-rating">
+
+                                                ${rating.ovr || 0}
+
+                                            </span>
+
+                                        </td>
+
+                                        <td>
+
+                                            ${rating.pot || 0}
+
+                                        </td>
+
+                                        <td>
+
+                                            ${stats.gp || 0}
+
+                                        </td>
+
+                                        <td>
+
+                                            ${goals}
+
+                                        </td>
+
+                                        <td>
+
+                                            ${assists}
+
+                                        </td>
+
+                                        <td>
+
+                                            ${
+                                                playerPoints(stats)
+                                            }
+
+                                        </td>
+
+                                    </tr>
+
+                                    `;
+
+                                }).join("")
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- RIGHT -->
+
+        <div>
+
+            <!-- TOP SCORERS -->
+
+            <div class="section">
+
+                <div class="section-title">
+
+                    Top Scorers
+
+                </div>
+
+                <div class="section-body">
+
+                    <table
+                    class="stats-table"
+                    id="scorersTable">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Player</th>
+                                <th>PTS</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            ${
+                                [...roster]
+                                .sort((a, b) => {
+
+                                    return (
+                                        playerPoints(
+                                            latestStats(b)
+                                        )
+                                    ) - (
+                                        playerPoints(
+                                            latestStats(a)
+                                        )
+                                    );
+
+                                })
+                                .slice(0,10)
+                                .map(player => {
+
+                                    return `
+
+                                    <tr>
+
+                                        <td>
+
+                                            <a
+                                            href="player.html?pid=${player.pid}">
+
+                                                ${player.firstName}
+                                                ${player.lastName}
+
+                                            </a>
+
+                                        </td>
+
+                                        <td>
+
+                                            ${
+                                                playerPoints(
+                                                    latestStats(player)
+                                                )
+                                            }
+
+                                        </td>
+
+                                    </tr>
+
+                                    `;
+
+                                }).join("")
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    `;
+
+    sortableTable(
+        document.getElementById(
+            "rosterTable"
+        )
+    );
+
+    sortableTable(
+        document.getElementById(
+            "scorersTable"
+        )
+    );
 
 });
 
 </script>
+
 </body>
 </html>

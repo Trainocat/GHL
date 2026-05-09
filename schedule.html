@@ -1,59 +1,510 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
 <title>Schedule</title>
+
 <link rel="stylesheet" href="style.css">
+
+<style>
+
+.schedule-day{
+
+margin-bottom:28px;
+
+}
+
+.schedule-date{
+
+font-size:28px;
+font-weight:800;
+
+margin-bottom:14px;
+
+padding-bottom:8px;
+
+border-bottom:
+2px solid #334155;
+
+}
+
+.schedule-game{
+
+display:flex;
+align-items:center;
+justify-content:space-between;
+
+background:#1b2432;
+
+border:
+1px solid #334155;
+
+border-radius:10px;
+
+padding:14px 18px;
+
+margin-bottom:10px;
+
+transition:.15s;
+
+}
+
+.schedule-game:hover{
+
+background:#243246;
+
+transform:translateY(-1px);
+
+}
+
+.schedule-team{
+
+display:flex;
+align-items:center;
+gap:10px;
+
+width:260px;
+
+}
+
+.schedule-team img{
+
+width:34px;
+height:34px;
+
+object-fit:contain;
+
+}
+
+.schedule-team-name{
+
+font-weight:700;
+
+}
+
+.schedule-center{
+
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+
+min-width:160px;
+
+}
+
+.schedule-score{
+
+font-size:26px;
+font-weight:900;
+
+}
+
+.schedule-time{
+
+font-size:14px;
+color:#94a3b8;
+
+margin-top:4px;
+
+}
+
+.final-badge{
+
+display:inline-block;
+
+padding:4px 8px;
+
+border-radius:6px;
+
+background:#16a34a;
+
+font-size:12px;
+font-weight:700;
+
+margin-top:4px;
+
+}
+
+.upcoming-badge{
+
+display:inline-block;
+
+padding:4px 8px;
+
+border-radius:6px;
+
+background:#2563eb;
+
+font-size:12px;
+font-weight:700;
+
+margin-top:4px;
+
+}
+
+</style>
+
 </head>
 <body>
 
 <header>
+
 <div class="nav">
+
 <a class="brand" href="index.html">
+
 <img src="GHL.png">
+
 <span>GHL</span>
+
 </a>
 
 <div class="links">
+
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
 <a href="players.html">Players</a>
 <a href="schedule.html">Schedule</a>
-<a href="draft.html">Draft</a>
 <a href="playoffs.html">Playoffs</a>
+<a href="draft.html">Draft</a>
+
 </div>
+
 </div>
+
 </header>
 
 <div class="container">
 
-<div class="page-title">Schedule</div>
+<div class="page-title">
 
-<div id="schedule"></div>
+League Schedule
 
 </div>
-<script src="app.js"></script>
+
+<div id="scheduleContainer"></div>
+
+</div>
+
 <script>
 
-loadLeague().then(data=>{
+async function loadLeague() {
 
-const teams = buildTeamMap(data);
+    const response =
+        await fetch("league.json");
 
-document.getElementById('schedule').innerHTML =
-data.games.slice(-50).reverse().map(g=>`
-<a href="game.html?gid=${g.gid}">
-<div class="scorecard">
-<div>${teams[g.won.tid]?.abbrev||''}</div>
-<div class="score">${g.won.pts}-${g.lost.pts}</div>
-<div>${teams[g.lost.tid]?.abbrev||''}</div>
-</div>
-</a>
-`).join('');
+    return await response.json();
+
+}
+
+function getTeamName(team) {
+
+    return `${team.region} ${team.name}`;
+
+}
+
+function getTeamLogo(team) {
+
+    return (
+        team.imgURL ||
+        team.imgURLSmall ||
+        "GHL.png"
+    );
+
+}
+
+function formatDate(timestamp) {
+
+    if (!timestamp) {
+
+        return "Unknown Date";
+
+    }
+
+    return new Date(timestamp)
+    .toLocaleDateString(
+        "en-US",
+        {
+
+            weekday:"long",
+            month:"long",
+            day:"numeric",
+            year:"numeric"
+
+        }
+    );
+
+}
+
+function formatTime(timestamp) {
+
+    if (!timestamp) {
+
+        return "";
+
+    }
+
+    return new Date(timestamp)
+    .toLocaleTimeString(
+        "en-US",
+        {
+
+            hour:"numeric",
+            minute:"2-digit"
+
+        }
+    );
+
+}
+
+loadLeague().then(data => {
+
+    const container =
+        document.getElementById(
+            "scheduleContainer"
+        );
+
+    const teams = {};
+
+    data.teams.forEach(team => {
+
+        teams[team.tid] = team;
+
+    });
+
+    // =========================
+    // COMBINE PLAYED + FUTURE
+    // =========================
+
+    let allGames = [];
+
+    // COMPLETED GAMES
+
+    if (data.games) {
+
+        data.games.forEach(game => {
+
+            allGames.push({
+
+                gid:game.gid,
+
+                awayTid:game.awayTid,
+
+                homeTid:game.homeTid,
+
+                awayPts:game.awayPts,
+
+                homePts:game.homePts,
+
+                time:game.day,
+
+                played:true
+
+            });
+
+        });
+
+    }
+
+    // FUTURE SCHEDULE
+
+    if (data.schedule) {
+
+        data.schedule.forEach(game => {
+
+            allGames.push({
+
+                gid:game.gid,
+
+                awayTid:game.awayTid,
+
+                homeTid:game.homeTid,
+
+                time:game.day,
+
+                played:false
+
+            });
+
+        });
+
+    }
+
+    // =========================
+    // SORT BY DATE
+    // =========================
+
+    allGames.sort((a, b) => {
+
+        return a.time - b.time;
+
+    });
+
+    // =========================
+    // GROUP BY DATE
+    // =========================
+
+    const grouped = {};
+
+    allGames.forEach(game => {
+
+        const date =
+            formatDate(game.time);
+
+        if (!grouped[date]) {
+
+            grouped[date] = [];
+
+        }
+
+        grouped[date].push(game);
+
+    });
+
+    // =========================
+    // RENDER
+    // =========================
+
+    container.innerHTML =
+        Object.entries(grouped)
+        .map(([date, games]) => {
+
+            return `
+
+            <div class="schedule-day">
+
+                <div class="schedule-date">
+
+                    ${date}
+
+                </div>
+
+                ${games.map(game => {
+
+                    const away =
+                        teams[game.awayTid];
+
+                    const home =
+                        teams[game.homeTid];
+
+                    return `
+
+                    <a
+                    href="game.html?gid=${game.gid}">
+
+                        <div class="schedule-game">
+
+                            <!-- AWAY -->
+
+                            <div class="schedule-team">
+
+                                <img
+                                src="${getTeamLogo(away)}">
+
+                                <div>
+
+                                    <div class="schedule-team-name">
+
+                                        ${getTeamName(away)}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <!-- CENTER -->
+
+                            <div class="schedule-center">
+
+                                ${
+                                    game.played
+                                    ? `
+
+                                    <div class="schedule-score">
+
+                                        ${game.awayPts}
+                                        -
+                                        ${game.homePts}
+
+                                    </div>
+
+                                    <div class="final-badge">
+
+                                        FINAL
+
+                                    </div>
+
+                                    `
+                                    : `
+
+                                    <div class="schedule-score">
+
+                                        VS
+
+                                    </div>
+
+                                    <div class="upcoming-badge">
+
+                                        UPCOMING
+
+                                    </div>
+
+                                    `
+                                }
+
+                                <div class="schedule-time">
+
+                                    ${formatTime(game.time)}
+
+                                </div>
+
+                            </div>
+
+                            <!-- HOME -->
+
+                            <div class="schedule-team">
+
+                                <img
+                                src="${getTeamLogo(home)}">
+
+                                <div>
+
+                                    <div class="schedule-team-name">
+
+                                        ${getTeamName(home)}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </a>
+
+                    `;
+
+                }).join("")}
+
+            </div>
+
+            `;
+
+        }).join("");
 
 });
 
 </script>
+
 </body>
 </html>

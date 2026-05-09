@@ -1,88 +1,898 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
 <title>Player</title>
+
 <link rel="stylesheet" href="style.css">
+
+<style>
+
+.player-header{
+
+display:grid;
+
+grid-template-columns:
+320px 1fr;
+
+gap:24px;
+
+margin-bottom:24px;
+
+}
+
+.player-card{
+
+background:#111827;
+
+border:
+1px solid #334155;
+
+border-radius:12px;
+
+padding:20px;
+
+}
+
+.player-main{
+
+display:flex;
+gap:18px;
+
+}
+
+.player-face{
+
+width:120px;
+height:120px;
+
+object-fit:contain;
+
+border-radius:10px;
+
+background:#1b2432;
+
+padding:6px;
+
+}
+
+.player-name{
+
+font-size:38px;
+font-weight:900;
+
+margin-bottom:8px;
+
+}
+
+.player-meta{
+
+font-size:15px;
+line-height:1.7;
+
+color:#d1d5db;
+
+}
+
+.player-team{
+
+color:#f59e0b;
+font-weight:700;
+
+}
+
+.rating-grid{
+
+display:grid;
+
+grid-template-columns:
+repeat(4,1fr);
+
+gap:18px;
+
+margin-top:10px;
+
+}
+
+.rating-box{
+
+background:#1b2432;
+
+border:
+1px solid #334155;
+
+border-radius:10px;
+
+padding:14px;
+
+}
+
+.rating-title{
+
+font-size:14px;
+color:#94a3b8;
+
+margin-bottom:8px;
+
+}
+
+.rating-value{
+
+font-size:34px;
+font-weight:900;
+
+}
+
+.section{
+
+background:#111827;
+
+border:
+1px solid #334155;
+
+border-radius:10px;
+
+margin-bottom:24px;
+
+overflow:hidden;
+
+}
+
+.section-title{
+
+background:#172033;
+
+padding:12px 16px;
+
+font-size:20px;
+font-weight:800;
+
+}
+
+.section-body{
+
+padding:16px;
+
+}
+
+.stats-table{
+
+width:100%;
+
+border-collapse:collapse;
+
+}
+
+.stats-table th,
+.stats-table td{
+
+padding:10px;
+
+border-bottom:
+1px solid #334155;
+
+text-align:left;
+
+}
+
+.stats-table th{
+
+background:#172033;
+
+cursor:pointer;
+
+}
+
+.stats-table tr:hover td{
+
+background:#1b2432;
+
+}
+
+.two-column{
+
+display:grid;
+
+grid-template-columns:
+1fr 1fr;
+
+gap:24px;
+
+}
+
+.award-item,
+.injury-item,
+.transaction-item{
+
+padding:10px 0;
+
+border-bottom:
+1px solid #334155;
+
+}
+
+.award-item:last-child,
+.injury-item:last-child,
+.transaction-item:last-child{
+
+border-bottom:none;
+
+}
+
+.skill-grid{
+
+display:grid;
+
+grid-template-columns:
+repeat(3,1fr);
+
+gap:14px;
+
+}
+
+.skill{
+
+background:#1b2432;
+
+border:
+1px solid #334155;
+
+border-radius:8px;
+
+padding:10px;
+
+}
+
+.skill-name{
+
+font-size:14px;
+color:#94a3b8;
+
+margin-bottom:6px;
+
+}
+
+.skill-value{
+
+font-size:24px;
+font-weight:800;
+
+}
+
+@media(max-width:1100px){
+
+.player-header{
+
+grid-template-columns:1fr;
+
+}
+
+.two-column{
+
+grid-template-columns:1fr;
+
+}
+
+.rating-grid{
+
+grid-template-columns:
+repeat(2,1fr);
+
+}
+
+.skill-grid{
+
+grid-template-columns:
+repeat(2,1fr);
+
+}
+
+}
+
+</style>
+
 </head>
 <body>
 
 <header>
+
 <div class="nav">
+
 <a class="brand" href="index.html">
+
 <img src="GHL.png">
+
 <span>GHL</span>
+
 </a>
 
 <div class="links">
+
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
 <a href="players.html">Players</a>
 <a href="schedule.html">Schedule</a>
-<a href="draft.html">Draft</a>
 <a href="playoffs.html">Playoffs</a>
+<a href="draft.html">Draft</a>
+
 </div>
+
 </div>
+
 </header>
 
 <div class="container">
 
-<div class="hero">
-<div>
-<h1 id="playerName"></h1>
-<p id="playerMeta"></p>
-</div>
-</div>
-
-<table id="statsTable">
-<thead>
-<tr>
-<th>Season</th>
-<th>GP</th>
-<th>PTS</th>
-</tr>
-</thead>
-<tbody id="statsBody"></tbody>
-</table>
+<div id="playerContent"></div>
 
 </div>
-<script src="app.js"></script>
+
 <script>
 
-const pid = Number(new URLSearchParams(location.search).get('pid'));
+async function loadLeague() {
 
-loadLeague().then(data=>{
+    const response =
+        await fetch("league.json");
 
-const p = data.players.find(p=>p.pid===pid);
-const r = latestRating(p);
+    return await response.json();
 
-document.getElementById('playerName').innerText =
-`${p.firstName} ${p.lastName}`;
+}
 
-document.getElementById('playerMeta').innerText =
-`${r.pos||''} • OVR ${r.ovr||0}`;
+function latestRating(player) {
 
-document.getElementById('statsBody').innerHTML =
-p.stats.map(s=>{
+    return player.ratings?.[
+        player.ratings.length - 1
+    ] || {};
 
-const pts =
-(s.evG||0)+(s.ppG||0)+(s.shG||0)+
-(s.evA||0)+(s.ppA||0)+(s.shA||0);
+}
 
-return `
-<tr>
-<td>${s.season||''}</td>
-<td>${s.gp||0}</td>
-<td>${pts}</td>
-</tr>
-`;
+function getPlayerPoints(stats) {
 
-}).join('');
+    return (
+        (stats.evG || 0) +
+        (stats.ppG || 0) +
+        (stats.shG || 0) +
+        (stats.evA || 0) +
+        (stats.ppA || 0) +
+        (stats.shA || 0)
+    );
+
+}
+
+loadLeague().then(data => {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const pid =
+        Number(params.get("pid"));
+
+    const player =
+        data.players.find(p => {
+
+            return p.pid === pid;
+
+        }) || data.players[0];
+
+    const rating =
+        latestRating(player);
+
+    const team =
+        data.teams.find(t => {
+
+            return t.tid === player.tid;
+
+        });
+
+    // =========================
+    // PLAYER CONTENT
+    // =========================
+
+    document
+    .getElementById("playerContent")
+    .innerHTML = `
+
+    <!-- =====================
+         HEADER
+    ====================== -->
+
+    <div class="player-header">
+
+        <!-- LEFT -->
+
+        <div class="player-card">
+
+            <div class="player-main">
+
+                <img
+                class="player-face"
+                src="https://zengm.com/files/facegen/default.svg">
+
+                <div>
+
+                    <div class="player-name">
+
+                        ${player.firstName}
+                        ${player.lastName}
+
+                    </div>
+
+                    <div class="player-meta">
+
+                        <div>
+
+                            <span class="player-team">
+
+                                ${team?.region || ""}
+                                ${team?.name || ""}
+
+                            </span>
+
+                        </div>
+
+                        <div>
+
+                            ${rating.pos || ""}
+
+                        </div>
+
+                        <div>
+
+                            Age:
+                            ${player.born
+                            ? data.gameAttributes.season
+                            - player.born.year
+                            : "-"}
+
+                        </div>
+
+                        <div>
+
+                            Height:
+                            ${rating.hgt || "-"}
+
+                        </div>
+
+                        <div>
+
+                            Draft:
+                            ${
+                                player.draft
+                                ? `${player.draft.year}
+                                   Round ${player.draft.round}
+                                   Pick ${player.draft.pick}`
+                                : "Undrafted"
+                            }
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- RIGHT -->
+
+        <div class="player-card">
+
+            <div class="rating-grid">
+
+                <div class="rating-box">
+
+                    <div class="rating-title">
+
+                        Overall
+
+                    </div>
+
+                    <div class="rating-value">
+
+                        ${rating.ovr || 0}
+
+                    </div>
+
+                </div>
+
+                <div class="rating-box">
+
+                    <div class="rating-title">
+
+                        Potential
+
+                    </div>
+
+                    <div class="rating-value">
+
+                        ${rating.pot || 0}
+
+                    </div>
+
+                </div>
+
+                <div class="rating-box">
+
+                    <div class="rating-title">
+
+                        Contract
+
+                    </div>
+
+                    <div class="rating-value">
+
+                        ${
+                            player.contract
+                            ? `$${(
+                                player.contract.amount / 1000
+                            ).toFixed(1)}M`
+                            : "-"
+                        }
+
+                    </div>
+
+                </div>
+
+                <div class="rating-box">
+
+                    <div class="rating-title">
+
+                        Mood
+
+                    </div>
+
+                    <div class="rating-value">
+
+                        :)
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- =====================
+         STATS
+    ====================== -->
+
+    <div class="section">
+
+        <div class="section-title">
+
+            Career Statistics
+
+        </div>
+
+        <div class="section-body">
+
+            <table class="stats-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Season</th>
+                        <th>Team</th>
+                        <th>GP</th>
+                        <th>G</th>
+                        <th>A</th>
+                        <th>PTS</th>
+                        <th>+/-</th>
+                        <th>PIM</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    ${
+                        (player.stats || [])
+                        .map(stat => {
+
+                            const goals =
+                                (stat.evG || 0) +
+                                (stat.ppG || 0) +
+                                (stat.shG || 0);
+
+                            const assists =
+                                (stat.evA || 0) +
+                                (stat.ppA || 0) +
+                                (stat.shA || 0);
+
+                            return `
+
+                            <tr>
+
+                                <td>
+
+                                    ${stat.season || ""}
+
+                                </td>
+
+                                <td>
+
+                                    ${
+                                        data.teams.find(
+                                            t =>
+                                            t.tid === stat.tid
+                                        )?.abbrev || ""
+                                    }
+
+                                </td>
+
+                                <td>
+
+                                    ${stat.gp || 0}
+
+                                </td>
+
+                                <td>
+
+                                    ${goals}
+
+                                </td>
+
+                                <td>
+
+                                    ${assists}
+
+                                </td>
+
+                                <td>
+
+                                    ${
+                                        getPlayerPoints(stat)
+                                    }
+
+                                </td>
+
+                                <td>
+
+                                    ${stat.pm || 0}
+
+                                </td>
+
+                                <td>
+
+                                    ${stat.pim || 0}
+
+                                </td>
+
+                            </tr>
+
+                            `;
+
+                        }).join("")
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- =====================
+         SKILLS
+    ====================== -->
+
+    <div class="section">
+
+        <div class="section-title">
+
+            Ratings
+
+        </div>
+
+        <div class="section-body">
+
+            <div class="skill-grid">
+
+                <div class="skill">
+
+                    <div class="skill-name">
+
+                        Speed
+
+                    </div>
+
+                    <div class="skill-value">
+
+                        ${rating.spd || 0}
+
+                    </div>
+
+                </div>
+
+                <div class="skill">
+
+                    <div class="skill-name">
+
+                        Shooting
+
+                    </div>
+
+                    <div class="skill-value">
+
+                        ${rating.sst || 0}
+
+                    </div>
+
+                </div>
+
+                <div class="skill">
+
+                    <div class="skill-name">
+
+                        Passing
+
+                    </div>
+
+                    <div class="skill-value">
+
+                        ${rating.pss || 0}
+
+                    </div>
+
+                </div>
+
+                <div class="skill">
+
+                    <div class="skill-name">
+
+                        IQ
+
+                    </div>
+
+                    <div class="skill-value">
+
+                        ${rating.oiq || 0}
+
+                    </div>
+
+                </div>
+
+                <div class="skill">
+
+                    <div class="skill-name">
+
+                        Checking
+
+                    </div>
+
+                    <div class="skill-value">
+
+                        ${rating.chk || 0}
+
+                    </div>
+
+                </div>
+
+                <div class="skill">
+
+                    <div class="skill-name">
+
+                        Faceoffs
+
+                    </div>
+
+                    <div class="skill-value">
+
+                        ${rating.fc || 0}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- =====================
+         LOWER GRID
+    ====================== -->
+
+    <div class="two-column">
+
+        <!-- AWARDS -->
+
+        <div class="section">
+
+            <div class="section-title">
+
+                Awards
+
+            </div>
+
+            <div class="section-body">
+
+                ${
+                    (player.awards || [])
+                    .map(award => {
+
+                        return `
+
+                        <div class="award-item">
+
+                            <strong>
+
+                                ${award.type}
+
+                            </strong>
+
+                            (${award.season})
+
+                        </div>
+
+                        `;
+
+                    }).join("")
+                    || "No awards"
+                }
+
+            </div>
+
+        </div>
+
+        <!-- INJURIES -->
+
+        <div class="section">
+
+            <div class="section-title">
+
+                Injuries
+
+            </div>
+
+            <div class="section-body">
+
+                ${
+                    (player.injuries || [])
+                    .map(injury => {
+
+                        return `
+
+                        <div class="injury-item">
+
+                            ${injury.type}
+
+                        </div>
+
+                        `;
+
+                    }).join("")
+                    || "No injuries"
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+    `;
 
 });
 
 </script>
+
 </body>
 </html>
