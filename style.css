@@ -30,49 +30,80 @@ nav a {
   padding: 20px;
 }
 
-.card {
-  background: #151c33;
-  border: 1px solid #243152;
-  border-radius: 12px;
-  padding: 15px;
-  margin-bottom: 15px;
+h1 {
+  margin-bottom: 20px;
 }
 
-.games-grid, .team-grid {
+.teams-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 15px;
+  gap: 18px;
 }
 
-.game-card {
+.team-card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.team-card {
   background: #151c33;
-  border-radius: 12px;
-  padding: 15px;
   border: 1px solid #243152;
+  border-radius: 16px;
+  padding: 20px;
+  transition: 0.2s;
 }
 
-.team-row {
+.team-card:hover {
+  transform: translateY(-4px);
+  border-color: #3b82f6;
+}
+
+.team-top {
   display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
 }
 
-.score {
-  font-size: 28px;
+.team-logo {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  background: rgba(255,255,255,0.05);
+  border-radius: 50%;
+  padding: 5px;
+}
+
+.team-name {
+  font-size: 22px;
   font-weight: bold;
 }
 
-.table {
-  width: 100%;
-  border-collapse: collapse;
+.team-abbrev {
+  opacity: 0.7;
+  margin-top: 5px;
 }
 
-.table th, .table td {
+.team-record {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.record-box {
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
   padding: 10px;
-  border-bottom: 1px solid #243152;
-  text-align: left;
+  text-align: center;
 }
 
-.table th {
-  background: #151c33;
+.record-label {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.record-value {
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 4px;
 }
