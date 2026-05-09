@@ -2,60 +2,71 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Schedule</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header>
-<div class="navbar">
+<div class="nav">
 <div class="brand">
 <img src="GHL.png">
-<div class="brand-text">GHL</div>
+<span>GHL</span>
 </div>
-<nav>
+
+<div class="links">
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
 <a href="players.html">Players</a>
 <a href="draft.html">Draft</a>
 <a href="schedule.html">Schedule</a>
-</nav>
+</div>
 </div>
 </header>
 
 <div class="page">
 
-<div class="section-title">Schedule & Results</div>
-<div class="grid" id="schedule"></div>
+<div class="section">Games</div>
+<div class="grid" id="games"></div>
 
 </div>
 <script>
 
-fetch('league.json').then(r=>r.json()).then(data=>{
+fetch('league.json')
+.then(r=>r.json())
+.then(data=>{
+
 const teams={};
 data.teams.forEach(t=>teams[t.tid]=t);
 
-document.getElementById('schedule').innerHTML=data.games.slice(-20).reverse().map(g=>`
+document.getElementById('games').innerHTML=data.games.slice(-40).reverse().map(g=>`
+<a href="game.html?gid=${g.gid}">
 <div class="card">
-<div class="team-row">
-<div class="team-left">
-<img class="team-logo" src="${teams[g.won.tid]?.imgURL||''}">
+
+<div class="teamrow">
+<div class="left">
+<img class="logo" src="${teams[g.won.tid]?.imgURL||''}">
 <div>${teams[g.won.tid]?.region} ${teams[g.won.tid]?.name}</div>
 </div>
 <div class="score">${g.won.pts}</div>
 </div>
 
-<div class="team-row">
-<div class="team-left">
-<img class="team-logo" src="${teams[g.lost.tid]?.imgURL||''}">
+<div class="teamrow">
+<div class="left">
+<img class="logo" src="${teams[g.lost.tid]?.imgURL||''}">
 <div>${teams[g.lost.tid]?.region} ${teams[g.lost.tid]?.name}</div>
 </div>
 <div class="score">${g.lost.pts}</div>
 </div>
+
+<div class="meta">Open Game Centre</div>
+
 </div>
+</a>
 `).join('');
+
 });
 
 </script>

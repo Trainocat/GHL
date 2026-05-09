@@ -2,8 +2,8 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Game</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Game Centre</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -31,40 +31,37 @@
 <div id="game"></div>
 
 </div>
-
 <script>
 
-const gid = new URLSearchParams(location.search).get("gid");
+const gid=new URLSearchParams(location.search).get('gid');
 
-fetch("league.json")
-.then(r => r.json())
-.then(data => {
+fetch('league.json')
+.then(r=>r.json())
+.then(data=>{
 
-const game = data.games.find(g => g.gid == gid);
+const game=data.games.find(g=>g.gid==gid);
 
-const teams = {};
-data.teams.forEach(t => teams[t.tid] = t);
+const teams={};
+data.teams.forEach(t=>teams[t.tid]=t);
 
-const winner = teams[game.won.tid];
-const loser = teams[game.lost.tid];
+const winner=teams[game.won.tid];
+const loser=teams[game.lost.tid];
 
-function renderPlayers(players){
+function players(team){
 
-return players.map(p => `
-
+return (team.players||[]).map(p=>`
 <tr>
 <td>${p.name}</td>
-<td>${p.g || 0}</td>
-<td>${p.a || 0}</td>
-<td>${(p.g || 0)+(p.a || 0)}</td>
-<td>${p.s || 0}</td>
+<td>${p.g||0}</td>
+<td>${p.a||0}</td>
+<td>${(p.g||0)+(p.a||0)}</td>
+<td>${p.s||0}</td>
 </tr>
-
-`).join("");
+`).join('');
 
 }
 
-document.getElementById("game").innerHTML = `
+document.getElementById('game').innerHTML=`
 
 <div class="card">
 
@@ -72,31 +69,9 @@ document.getElementById("game").innerHTML = `
 ${winner.abbrev} ${game.won.pts} - ${game.lost.pts} ${loser.abbrev}
 </div>
 
-<div class="teamrow">
-<div class="left">
-<img class="logo" src="${winner.imgURL || ""}">
-<div>${winner.region} ${winner.name}</div>
-</div>
-<div class="score">${game.won.pts}</div>
-</div>
-
-<div class="teamrow">
-<div class="left">
-<img class="logo" src="${loser.imgURL || ""}">
-<div>${loser.region} ${loser.name}</div>
-</div>
-<div class="score">${game.lost.pts}</div>
-</div>
-
 <div class="summary">
-
-${winner.region} ${winner.name}
-defeated
-${loser.region} ${loser.name}
-${game.won.pts}-${game.lost.pts}.
-
-Attendance: ${game.att || 0}
-
+${winner.region} ${winner.name} defeated ${loser.region} ${loser.name} ${game.won.pts}-${game.lost.pts}.
+Attendance: ${game.att||0}
 </div>
 
 </div>
@@ -105,31 +80,16 @@ Attendance: ${game.att || 0}
 
 <div class="grid">
 
-${(game.scoringSummary || []).map(s => `
-
+${(game.scoringSummary||[]).map(s=>`
 <div class="card">
-
-<div class="title">
-${s.names?.[0] || "Goal"}
+<div class="title">${s.names?.[0]||'Goal'}</div>
+<div class="meta">${s.goalType||'EV'} Goal • Period ${s.quarter||1}</div>
 </div>
-
-<div class="meta">
-Period ${s.quarter || 1}
-</div>
-
-<div>
-${s.goalType || "EV"} Goal
-</div>
-
-</div>
-
-`).join("")}
+`).join('')}
 
 </div>
 
 <div class="section">Box Score</div>
-
-<div class="card">
 
 <table>
 
@@ -144,21 +104,15 @@ ${s.goalType || "EV"} Goal
 </thead>
 
 <tbody>
-
-${renderPlayers(game.teams?.[0]?.players || [])}
-${renderPlayers(game.teams?.[1]?.players || [])}
-
+${players(game.teams?.[0]||{})}
+${players(game.teams?.[1]||{})}
 </tbody>
 
 </table>
-
-</div>
-
 `;
 
 });
 
 </script>
-
 </body>
 </html>

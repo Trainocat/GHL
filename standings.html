@@ -2,77 +2,136 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Standings</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header>
-<div class="navbar">
+<div class="nav">
 <div class="brand">
 <img src="GHL.png">
-<div class="brand-text">GHL</div>
+<span>GHL</span>
 </div>
-<nav>
+
+<div class="links">
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
 <a href="players.html">Players</a>
 <a href="draft.html">Draft</a>
 <a href="schedule.html">Schedule</a>
-</nav>
+</div>
 </div>
 </header>
 
 <div class="page">
 
-<div class="section-title">Standings</div>
+<div class="section">Standings</div>
+
 <div class="controls">
-<select id="sort">
-<option value="pts">Points</option>
-<option value="won">Wins</option>
-</select>
+<button class="mode active" data-mode="league">League</button>
+<button class="mode" data-mode="conference">Conference</button>
+<button class="mode" data-mode="division">Division</button>
 </div>
+
 <table>
 <thead>
 <tr>
-<th>Team</th>
-<th>W</th>
-<th>L</th>
-<th>OTL</th>
-<th>PTS</th>
+<th data-sort="team">Team</th>
+<th data-sort="won">W</th>
+<th data-sort="lost">L</th>
+<th data-sort="otl">OTL</th>
+<th data-sort="pts">PTS</th>
 </tr>
 </thead>
-<tbody id="standings"></tbody>
+<tbody id="table"></tbody>
 </table>
 
 </div>
 <script>
 
+let mode='league';
+let sort='pts';
 let teams=[];
-fetch('league.json').then(r=>r.json()).then(data=>{
+
+fetch('league.json')
+.then(r=>r.json())
+.then(data=>{
 teams=data.teams;
+
+document.querySelectorAll('.mode').forEach(btn=>{
+btn.onclick=()=>{
+document.querySelectorAll('.mode').forEach(b=>b.classList.remove('active'));
+btn.classList.add('active');
+mode=btn.dataset.mode;
 render();
-document.getElementById('sort').addEventListener('change',render);
+};
 });
-function render(){
-const sort=document.getElementById('sort').value;
-teams.sort((a,b)=>{
+
+document.querySelectorAll('th[data-sort]').forEach(th=>{
+th.onclick=()=>{
+sort=th.dataset.sort;
+render();
+};
+});
+
+render();
+});
+
+function sortTeams(arr){
+return arr.sort((a,b)=>{
 const sa=a.seasons?.at(-1)||{};
 const sb=b.seasons?.at(-1)||{};
-return sort==='won' ? (sb.won||0)-(sa.won||0) : (sb.pts||0)-(sa.pts||0);
+
+if(sort==='team'){
+return (a.region+a.name).localeCompare(b.region+b.name);
+}
+
+return (sb[sort]||0)-(sa[sort]||0);
 });
-document.getElementById('standings').innerHTML=teams.map(t=>{
+}
+
+function row(t){
 const s=t.seasons?.at(-1)||{};
 return `<tr>
-<td><div class="team-cell"><img class="team-logo" src="${t.imgURL||''}"><a href="team.html?tid=${t.tid}">${t.region} ${t.name}</a></div></td>
+<td><div class="teamcell"><img class="logo" src="${t.imgURL||''}"><a href="team.html?tid=${t.tid}">${t.region} ${t.name}</a></div></td>
 <td>${s.won||0}</td>
 <td>${s.lost||0}</td>
 <td>${s.otl||0}</td>
 <td>${s.pts||0}</td>
 </tr>`;
-}).join('');
+}
+
+function render(){
+let html='';
+
+if(mode==='league'){
+html += sortTeams([...teams]).map(row).join('');
+}
+
+if(mode==='conference'){
+[0,1].forEach(cid=>{
+html += `<tr><td colspan="5"><div class="title">${cid===0?'Eastern':'Western'} Conference</div></td></tr>`;
+html += sortTeams(teams.filter(t=>t.cid===cid)).map(row).join('');
+});
+}
+
+if(mode==='division'){
+const divs={};
+teams.forEach(t=>{
+if(!divs[t.did]) divs[t.did]=[];
+divs[t.did].push(t);
+});
+
+Object.keys(divs).forEach(d=>{
+html += `<tr><td colspan="5"><div class="title">Division ${Number(d)+1}</div></td></tr>`;
+html += sortTeams(divs[d]).map(row).join('');
+});
+}
+
+document.getElementById('table').innerHTML=html;
 }
 
 </script>
