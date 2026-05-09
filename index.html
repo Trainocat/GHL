@@ -4,36 +4,42 @@ fetch("league.json")
 .then(data => {
 
   const games = data.games || [];
+  const teams = data.teams || [];
+
+  // 🧠 Build lookup: teamId → "City TeamName"
+  const teamMap = {};
+
+  teams.forEach(t => {
+    const name = `${t.region || ""} ${t.name || ""}`.trim();
+    teamMap[t.id] = name;
+  });
 
   if (!games.length) {
-    document.getElementById("games").innerHTML =
-      "<p>No games found.</p>";
+    document.getElementById("games").innerHTML = "<p>No games found.</p>";
     return;
   }
 
-  // Sort newest first (ZenGM usually uses day or gid)
-  games.sort((a, b) => {
-    return (b.day ?? b.gid ?? 0) - (a.day ?? a.gid ?? 0);
-  });
+  // Sort newest first
+  games.sort((a, b) => (b.day ?? b.gid ?? 0) - (a.day ?? a.gid ?? 0));
 
   const html = games.slice(0, 25).map(g => {
 
-    // ZenGM uses city/team IDs, not full names sometimes
-    const away = g.awayTeamName || g.away || "Away";
-    const home = g.homeTeamName || g.home || "Home";
+    // 🔁 Convert IDs → names
+    const awayName = teamMap[g.awayTid] || g.awayTeamName || g.away || "Away";
+    const homeName = teamMap[g.homeTid] || g.homeTeamName || g.home || "Home";
 
     const awayScore = g.awayScore ?? 0;
     const homeScore = g.homeScore ?? 0;
 
-    let label = `${away} ${awayScore} - ${homeScore} ${home}`;
+    let line = `<b>${awayName}</b> ${awayScore} - ${homeScore} <b>${homeName}</b>`;
 
-    if (g.overtimes > 0 || g.overtime) {
-      label += " (OT)";
+    if (g.overtime || g.overtimes > 0) {
+      line += " (OT)";
     }
 
     return `
       <div style="padding:10px;border-bottom:1px solid #27314f;">
-        ${label}
+        ${line}
       </div>
     `;
   }).join("");
