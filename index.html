@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>GHL Home Debug</title>
+  <title>GHL Home</title>
   <style>
     body {
       font-family: Arial;
@@ -9,90 +9,128 @@
       color: white;
       padding: 20px;
     }
+
+    nav {
+      margin-bottom: 20px;
+    }
+
+    nav a {
+      color: white;
+      margin-right: 10px;
+      text-decoration: none;
+    }
+
+    .game {
+      padding: 8px;
+      border-bottom: 1px solid #27314f;
+    }
+
     .error {
       background: #5a1f1f;
       padding: 10px;
       margin-top: 10px;
       white-space: pre-wrap;
     }
-    .game {
-      padding: 8px;
-      border-bottom: 1px solid #27314f;
-    }
   </style>
 </head>
+
 <body>
 
-<h1>GHL Home (Safe Mode)</h1>
+<nav>
+  <a href="index.html">Home</a>
+  <a href="standings.html">Standings</a>
+  <a href="teams.html">Teams</a>
+  <a href="players.html">Players</a>
+  <a href="schedule.html">Schedule</a>
+  <a href="playoffs.html">Playoffs</a>
+</nav>
 
-<div id="status">Loading league.json...</div>
-<div id="games"></div>
+<h1>Latest Games</h1>
+
+<div id="games">Loading...</div>
 
 <script>
 (async function () {
-  const status = document.getElementById("status");
-  const gamesDiv = document.getElementById("games");
+  const container = document.getElementById("games");
 
   try {
     const res = await fetch("league.json");
-
-    if (!res.ok) {
-      throw new Error("league.json not found or failed to load (HTTP " + res.status + ")");
-    }
-
     const data = await res.json();
 
-    console.log("DATA:", data);
+    const games = data.games || [];
+    const teams = data.teams || [];
 
-    // HARD CHECKS
-    if (!data) throw new Error("No data loaded from JSON");
-    if (!data.games) throw new Error("No 'games' field found in JSON");
-    if (!data.teams) throw new Error("No 'teams' field found in JSON");
+    if (!games.length) {
+      container.innerHTML = "No games found.";
+      return;
+    }
 
-    status.innerText = "Loaded successfully ✔";
-
-    // Build team map safely
+    // Build team lookup safely
     const teamMap = {};
-    data.teams.forEach(t => {
+    teams.forEach(t => {
       const name = ((t.region || "") + " " + (t.name || "")).trim();
-      teamMap[t.id] = name || t.id;
+      teamMap[t.id] = name || t.name || t.id;
     });
 
-    // Render games
-    const games = data.games.slice(0, 20);
+    function getAway(g) {
+      return teamMap[g.awayTid] ||
+             teamMap[g.awayTeamId] ||
+             g.awayTeamName ||
+             g.away ||
+             "Away";
+    }
 
-    games.forEach(g => {
-      const away = teamMap[g.awayTid] || g.awayTid;
-      const home = teamMap[g.homeTid] || g.homeTid;
+    function getHome(g) {
+      return teamMap[g.homeTid] ||
+             teamMap[g.homeTeamId] ||
+             g.homeTeamName ||
+             g.home ||
+             "Home";
+    }
+
+    function getAwayScore(g) {
+      return g.awayScore ??
+             (g.pts ? g.pts[0] : undefined) ??
+             (g.s ? g.s[0] : undefined) ??
+             "–";
+    }
+
+    function getHomeScore(g) {
+      return g.homeScore ??
+             (g.pts ? g.pts[1] : undefined) ??
+             (g.s ? g.s[1] : undefined) ??
+             "–";
+    }
+
+    container.innerHTML = "";
+
+    games.slice(0, 25).forEach(g => {
+      const away = getAway(g);
+      const home = getHome(g);
+      const awayScore = getAwayScore(g);
+      const homeScore = getHomeScore(g);
 
       const div = document.createElement("div");
       div.className = "game";
-      div.innerText = `${away} ${g.awayScore ?? "?"} - ${g.homeScore ?? "?"} ${home}`;
 
-      gamesDiv.appendChild(div);
+      div.innerText = `${away} ${awayScore} - ${homeScore} ${home}`;
+
+      container.appendChild(div);
     });
 
   } catch (err) {
-    status.innerText = "ERROR LOADING LEAGUE";
-
-    gamesDiv.innerHTML = `
+    container.innerHTML = `
       <div class="error">
+Error loading league.json:
+
 ${err.message}
 
----
-
-This means:
-- league.json is not loading OR
-- structure is different than expected
-
 Check:
-1. File is named exactly league.json
-2. File is in the SAME folder as index.html
-3. GitHub Pages has updated (wait ~60 sec)
+- file exists
+- correct name (league.json)
+- GitHub Pages updated
       </div>
     `;
-
-    console.error(err);
   }
 })();
 </script>
