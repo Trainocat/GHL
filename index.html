@@ -73,34 +73,20 @@
     });
 
     function getAway(g) {
-      return teamMap[g.awayTid] ||
-             teamMap[g.awayTeamId] ||
-             g.awayTeamName ||
-             g.away ||
-             "Away";
-    }
+  return teamMap[g.awayTid ?? g.t?.[0]] || "Away";
+}
 
-    function getHome(g) {
-      return teamMap[g.homeTid] ||
-             teamMap[g.homeTeamId] ||
-             g.homeTeamName ||
-             g.home ||
-             "Home";
-    }
+function getHome(g) {
+  return teamMap[g.homeTid ?? g.t?.[1]] || "Home";
+}
 
-    function getAwayScore(g) {
-      return g.awayScore ??
-             (g.pts ? g.pts[0] : undefined) ??
-             (g.s ? g.s[0] : undefined) ??
-             "–";
-    }
+function getAwayScore(g) {
+  return g.awayScore ?? g.s?.[0] ?? "–";
+}
 
-    function getHomeScore(g) {
-      return g.homeScore ??
-             (g.pts ? g.pts[1] : undefined) ??
-             (g.s ? g.s[1] : undefined) ??
-             "–";
-    }
+function getHomeScore(g) {
+  return g.homeScore ?? g.s?.[1] ?? "–";
+}
 
     container.innerHTML = "";
 
