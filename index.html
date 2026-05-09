@@ -1,107 +1,214 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Home</title>
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>GHL</title>
+
 <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
 
 <header>
+
 <div class="nav">
+
 <a class="brand" href="index.html">
+
 <img src="GHL.png">
+
 <span>GHL</span>
+
 </a>
 
 <div class="links">
+
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
 <a href="players.html">Players</a>
 <a href="schedule.html">Schedule</a>
-<a href="draft.html">Draft</a>
 <a href="playoffs.html">Playoffs</a>
+<a href="draft.html">Draft</a>
+
 </div>
+
 </div>
+
 </header>
 
 <div class="container">
 
-<div class="page-title">Global Hockey League</div>
-
-<div class="layout">
-
-<div>
-
-<div class="card">
-<h2>Latest Games</h2>
-<div id="games"></div>
+<div class="page-title">
+Global Hockey League
 </div>
 
-</div>
-
-<div>
+<div class="grid">
 
 <div class="card">
+
+<h2>Recent Games</h2>
+
+<div id="recentGames"></div>
+
+</div>
+
+<div class="card">
+
 <h2>League Leaders</h2>
-<table id="leaders">
+
+<table id="leadersTable">
+
 <thead>
+
 <tr>
+
 <th>Player</th>
+<th>G</th>
+<th>A</th>
 <th>PTS</th>
+
 </tr>
+
 </thead>
+
 <tbody id="leadersBody"></tbody>
+
 </table>
-</div>
 
 </div>
 
 </div>
 
 </div>
+
 <script src="app.js"></script>
+
 <script>
 
-loadLeague().then(data=>{
+loadLeague().then(data => {
 
-const teams = buildTeamMap(data);
+    const teams = {};
 
-document.getElementById('games').innerHTML =
-data.games.slice(-10).reverse().map(g=>`
-<a href="game.html?gid=${g.gid}">
-<div class="scorecard">
-<div>${teams[g.won.tid]?.abbrev || ''}</div>
-<div class="score">${g.won.pts}-${g.lost.pts}</div>
-<div>${teams[g.lost.tid]?.abbrev || ''}</div>
-</div>
-</a>
-`).join('');
+    data.teams.forEach(team => {
 
-const players = data.players.map(p=>{
-const s = latestStats(p);
-const pts =
-(s.evG||0)+(s.ppG||0)+(s.shG||0)+
-(s.evA||0)+(s.ppA||0)+(s.shA||0);
+        teams[team.tid] = team;
 
-return {
-name:`${p.firstName} ${p.lastName}`,
-pts
-};
-}).sort((a,b)=>b.pts-a.pts).slice(0,10);
+    });
 
-document.getElementById('leadersBody').innerHTML =
-players.map(p=>`
-<tr>
-<td>${p.name}</td>
-<td>${p.pts}</td>
-</tr>
-`).join('');
+    // =========================
+    // RECENT GAMES
+    // =========================
+
+    document
+    .getElementById("recentGames")
+    .innerHTML = data.games
+    .slice(-10)
+    .reverse()
+    .map(game => {
+
+        return `
+
+        <a href="game.html?gid=${game.gid}">
+
+            <div class="scorecard">
+
+                <div>
+                    ${teams[game.awayTid]?.abbrev || ""}
+                </div>
+
+                <div class="score">
+                    ${game.awayPts} - ${game.homePts}
+                </div>
+
+                <div>
+                    ${teams[game.homeTid]?.abbrev || ""}
+                </div>
+
+            </div>
+
+        </a>
+
+        `;
+
+    }).join("");
+
+    // =========================
+    // LEADERS
+    // =========================
+
+    const leaders = data.players
+    .map(player => {
+
+        const stats =
+            latestStats(player);
+
+        return {
+
+            name:
+                getPlayerName(player),
+
+            goals:
+                getPlayerGoals(stats),
+
+            assists:
+                getPlayerAssists(stats),
+
+            points:
+                getPlayerPoints(stats),
+
+            pid:
+                player.pid
+
+        };
+
+    })
+    .sort((a, b) => {
+
+        return b.points - a.points;
+
+    })
+    .slice(0, 10);
+
+    document
+    .getElementById("leadersBody")
+    .innerHTML = leaders
+    .map(player => {
+
+        return `
+
+        <tr>
+
+            <td>
+
+                <a href="player.html?pid=${player.pid}">
+
+                    ${player.name}
+
+                </a>
+
+            </td>
+
+            <td>${player.goals}</td>
+            <td>${player.assists}</td>
+            <td>${player.points}</td>
+
+        </tr>
+
+        `;
+
+    }).join("");
+
+    makeSortable("leadersTable");
 
 });
 
 </script>
+
 </body>
 </html>

@@ -1,79 +1,192 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
 <title>Teams</title>
+
 <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
 
 <header>
+
 <div class="nav">
+
 <a class="brand" href="index.html">
+
 <img src="GHL.png">
+
 <span>GHL</span>
+
 </a>
 
 <div class="links">
+
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
 <a href="players.html">Players</a>
 <a href="schedule.html">Schedule</a>
-<a href="draft.html">Draft</a>
 <a href="playoffs.html">Playoffs</a>
+<a href="draft.html">Draft</a>
+
 </div>
+
 </div>
+
 </header>
 
 <div class="container">
 
-<div class="page-title">Teams</div>
+<div class="page-title">
+
+Teams
+
+</div>
+
+<div class="card">
 
 <table id="teamsTable">
+
 <thead>
+
 <tr>
-<th onclick="sortTable('teamsTable',0)">Team</th>
-<th onclick="sortTable('teamsTable',1)">Conference</th>
-<th onclick="sortTable('teamsTable',2)">Division</th>
-<th onclick="sortTable('teamsTable',3)">PTS</th>
+
+<th>Team</th>
+<th>Conference</th>
+<th>Division</th>
+<th>W</th>
+<th>L</th>
+<th>OTL</th>
+<th>PTS</th>
+<th>GF</th>
+<th>GA</th>
+<th>DIFF</th>
+
 </tr>
+
 </thead>
+
 <tbody id="teamsBody"></tbody>
+
 </table>
 
 </div>
+
+</div>
+
 <script src="app.js"></script>
+
 <script>
 
-loadLeague().then(data=>{
+loadLeague().then(data => {
 
-document.getElementById('teamsBody').innerHTML =
-[...data.teams]
-.sort((a,b)=>getTeamName(a).localeCompare(getTeamName(b)))
-.map(t=>{
-const s = latestSeason(t);
+    const conferences =
+        data.gameAttributes
+        ?.confs || [];
 
-return `
-<tr>
-<td>
-<a href="team.html?tid=${t.tid}">
-<div class="teamcell">
-<img class="logo" src="${getTeamLogo(t)}">
-<span>${getTeamName(t)}</span>
-</div>
-</a>
-</td>
-<td>${t.cid}</td>
-<td>${t.did}</td>
-<td>${s.pts||0}</td>
-</tr>
-`;
-}).join('');
+    const divisions =
+        data.gameAttributes
+        ?.divs || [];
+
+    const teams =
+        [...data.teams]
+        .sort((a, b) => {
+
+            return getTeamName(a)
+            .localeCompare(
+                getTeamName(b)
+            );
+
+        });
+
+    document
+    .getElementById("teamsBody")
+    .innerHTML = teams
+    .map(team => {
+
+        const s =
+            latestSeason(team);
+
+        const conf =
+            conferences.find(c => {
+
+                return c.cid === team.cid;
+
+            });
+
+        const div =
+            divisions.find(d => {
+
+                return d.did === team.did;
+
+            });
+
+        return `
+
+        <tr>
+
+            <td>
+
+                <a href="team.html?tid=${team.tid}">
+
+                    <div class="teamcell">
+
+                        <img
+                        class="logo"
+                        src="${getTeamLogo(team)}">
+
+                        <span>
+
+                            ${getTeamName(team)}
+
+                        </span>
+
+                    </div>
+
+                </a>
+
+            </td>
+
+            <td>
+                ${conf?.name || ""}
+            </td>
+
+            <td>
+                ${div?.name || ""}
+            </td>
+
+            <td>${s.won || 0}</td>
+            <td>${s.lost || 0}</td>
+            <td>${s.otl || 0}</td>
+            <td>${s.pts || 0}</td>
+            <td>${s.gf || 0}</td>
+            <td>${s.ga || 0}</td>
+
+            <td>
+
+                ${(s.gf || 0) - (s.ga || 0)}
+
+            </td>
+
+        </tr>
+
+        `;
+
+    }).join("");
+
+    makeSortable("teamsTable");
 
 });
 
 </script>
+
 </body>
 </html>

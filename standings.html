@@ -1,114 +1,219 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
 <title>Standings</title>
+
 <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
 
 <header>
+
 <div class="nav">
+
 <a class="brand" href="index.html">
+
 <img src="GHL.png">
+
 <span>GHL</span>
+
 </a>
 
 <div class="links">
+
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
 <a href="players.html">Players</a>
 <a href="schedule.html">Schedule</a>
-<a href="draft.html">Draft</a>
 <a href="playoffs.html">Playoffs</a>
+<a href="draft.html">Draft</a>
+
 </div>
+
 </div>
+
 </header>
 
 <div class="container">
 
-<div class="page-title">Standings</div>
+<div class="page-title">
+
+Standings
+
+</div>
 
 <div class="filters">
-<button class="mode active" data-mode="league">League</button>
-<button class="mode" data-mode="conference">Conference</button>
-<button class="mode" data-mode="division">Division</button>
+
+<button
+class="mode active"
+data-mode="league">
+
+League
+
+</button>
+
+<button
+class="mode"
+data-mode="conference">
+
+Conference
+
+</button>
+
+<button
+class="mode"
+data-mode="division">
+
+Division
+
+</button>
+
 </div>
 
 <table id="standingsTable">
+
 <thead>
+
 <tr>
-<th onclick="sortTable('standingsTable',0)">Team</th>
-<th onclick="sortTable('standingsTable',1)">W</th>
-<th onclick="sortTable('standingsTable',2)">L</th>
-<th onclick="sortTable('standingsTable',3)">OTL</th>
-<th onclick="sortTable('standingsTable',4)">PTS</th>
-<th onclick="sortTable('standingsTable',5)">GF</th>
-<th onclick="sortTable('standingsTable',6)">GA</th>
-<th onclick="sortTable('standingsTable',7)">DIFF</th>
+
+<th>Team</th>
+<th>W</th>
+<th>L</th>
+<th>OTL</th>
+<th>PTS</th>
+<th>GF</th>
+<th>GA</th>
+<th>DIFF</th>
+
 </tr>
+
 </thead>
+
 <tbody id="standingsBody"></tbody>
+
 </table>
 
 </div>
+
 <script src="app.js"></script>
+
 <script>
 
-let mode='league';
+let standingsMode = "league";
 
-loadLeague().then(data=>{
+loadLeague().then(data => {
 
-render();
+    renderStandings(data);
 
-document.querySelectorAll('.mode').forEach(btn=>{
-btn.onclick=()=>{
-document.querySelectorAll('.mode').forEach(b=>b.classList.remove('active'));
-btn.classList.add('active');
-mode = btn.dataset.mode;
-render();
-};
+    document
+    .querySelectorAll(".mode")
+    .forEach(button => {
+
+        button.onclick = () => {
+
+            document
+            .querySelectorAll(".mode")
+            .forEach(btn => {
+
+                btn.classList.remove(
+                    "active"
+                );
+
+            });
+
+            button.classList.add(
+                "active"
+            );
+
+            standingsMode =
+                button.dataset.mode;
+
+            renderStandings(data);
+
+        };
+
+    });
+
+    makeSortable("standingsTable");
+
 });
 
-function render(){
+function renderStandings(data) {
 
-const body = document.getElementById('standingsBody');
+    const body =
+        document.getElementById(
+            "standingsBody"
+        );
 
-const teams = [...data.teams].sort((a,b)=>
-(latestSeason(b).pts||0)-(latestSeason(a).pts||0)
-);
+    const teams =
+        [...data.teams]
+        .sort((a, b) => {
 
-body.innerHTML = teams.map(t=>{
-const s = latestSeason(t);
-const diff = (s.gf||0)-(s.ga||0);
+            return (
+                latestSeason(b).pts || 0
+            ) - (
+                latestSeason(a).pts || 0
+            );
 
-return `
-<tr>
-<td>
-<a href="team.html?tid=${t.tid}">
-<div class="teamcell">
-<img class="logo" src="${getTeamLogo(t)}">
-<span>${getTeamName(t)}</span>
-</div>
-</a>
-</td>
-<td>${s.won||0}</td>
-<td>${s.lost||0}</td>
-<td>${s.otl||0}</td>
-<td>${s.pts||0}</td>
-<td>${s.gf||0}</td>
-<td>${s.ga||0}</td>
-<td>${diff}</td>
-</tr>
-`;
-}).join('');
+        });
+
+    body.innerHTML = teams
+    .map(team => {
+
+        const s = latestSeason(team);
+
+        return `
+
+        <tr>
+
+            <td>
+
+                <a href="team.html?tid=${team.tid}">
+
+                    <div class="teamcell">
+
+                        <img
+                        class="logo"
+                        src="${getTeamLogo(team)}">
+
+                        <span>
+
+                            ${getTeamName(team)}
+
+                        </span>
+
+                    </div>
+
+                </a>
+
+            </td>
+
+            <td>${s.won || 0}</td>
+            <td>${s.lost || 0}</td>
+            <td>${s.otl || 0}</td>
+            <td>${s.pts || 0}</td>
+            <td>${s.gf || 0}</td>
+            <td>${s.ga || 0}</td>
+            <td>${getGoalDiff(team)}</td>
+
+        </tr>
+
+        `;
+
+    }).join("");
 
 }
 
-});
-
 </script>
+
 </body>
 </html>
