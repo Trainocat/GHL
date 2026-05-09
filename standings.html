@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>GHL Standings</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Standings</a>
+  <a href="teams.html">Teams</a>
+  <a href="players.html">Players</a>
+  <a href="schedule.html">Schedule</a>
+  <a href="playoffs.html">Playoffs</a>
+</nav>
+
+<h1>Standings</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>#</th><th>Team</th><th>W</th><th>L</th><th>OTL</th><th>PTS</th>
+    </tr>
+  </thead>
+  <tbody id="rows"></tbody>
+</table>
+
+<script>
+fetch("league.json")
+.then(r => r.json())
+.then(data => {
+  const teams = data.teams || [];
+
+  const standings = teams.map(t => {
+    const s = (t.seasons && t.seasons.at(-1)) || {};
+    return {
+      name: (t.region || "") + " " + (t.name || ""),
+      w: s.won || 0,
+      l: s.lost || 0,
+      otl: s.otl || 0,
+      pts: (s.won || 0)*2 + (s.otl || 0)
+    };
+  });
+
+  standings.sort((a,b)=>b.pts-a.pts);
+
+  document.getElementById("rows").innerHTML =
+    standings.map((t,i)=>`
+      <tr>
+        <td>${i+1}</td>
+        <td>${t.name}</td>
+        <td>${t.w}</td>
+        <td>${t.l}</td>
+        <td>${t.otl}</td>
+        <td>${t.pts}</td>
+      </tr>
+    `).join("");
+});
+</script>
+
+</body>
+</html>

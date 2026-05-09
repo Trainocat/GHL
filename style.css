@@ -1,0 +1,41 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background: #0b1020;
+  color: white;
+}
+
+nav {
+  background: #151c33;
+  padding: 12px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+nav a {
+  color: white;
+  margin-right: 12px;
+  text-decoration: none;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #151c33;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #27314f;
+}
+
+th {
+  background: #1d2747;
+}

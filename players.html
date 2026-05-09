@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Players - GHL</title>
+<title>GHL Players</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <nav>
-  <a href="index.html">Standings</a> |
-  <a href="teams.html">Teams</a> |
-  <a href="players.html">Players</a> |
-  <a href="schedule.html">Schedule</a> |
+  <a href="index.html">Standings</a>
+  <a href="teams.html">Teams</a>
+  <a href="players.html">Players</a>
+  <a href="schedule.html">Schedule</a>
   <a href="playoffs.html">Playoffs</a>
 </nav>
 
@@ -19,14 +20,17 @@
 
 <script>
 fetch("league.json")
-  .then(r => r.json())
-  .then(data => {
-    const players = data.players || [];
-    document.getElementById("players").innerHTML =
-      players.slice(0, 100).map(p =>
-        `<p>${p.firstName} ${p.lastName} - Age ${p.age || "?"}</p>`
-      ).join("");
-  });
+.then(r => r.json())
+.then(data => {
+  const players = data.players || [];
+
+  document.getElementById("players").innerHTML =
+    players.slice(0,200).map(p => `
+      <div style="padding:6px;border-bottom:1px solid #27314f;">
+        ${p.firstName} ${p.lastName}
+      </div>
+    `).join("");
+});
 </script>
 
 </body>
