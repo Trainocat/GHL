@@ -9,182 +9,27 @@
 --border:#24395f;
 }
 *{box-sizing:border-box}
-body{
-margin:0;
-font-family:Arial,sans-serif;
-background:var(--bg);
-color:var(--text);
-}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
 a{text-decoration:none;color:inherit}
-header{
-background:#08101f;
-border-bottom:2px solid var(--accent);
-position:sticky;
-top:0;
-z-index:100;
-}
-.nav{
-max-width:1500px;
-margin:auto;
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:14px 24px;
-}
-.brand{
-display:flex;
-align-items:center;
-gap:12px;
-font-size:28px;
-font-weight:800;
-}
-.brand img{height:52px}
-.links{
-display:flex;
-gap:24px;
-flex-wrap:wrap;
-}
-.links a{
-font-weight:700;
-color:#dce6ff;
-}
-.links a:hover{
-color:var(--accent);
-}
-.container{
-max-width:1500px;
-margin:auto;
-padding:28px;
-}
-.hero{
-background:linear-gradient(135deg,#132544,#08101f);
-padding:40px;
-border-radius:18px;
-border:1px solid var(--border);
-margin-bottom:30px;
-}
-.section-title{
-font-size:42px;
-font-weight:900;
-margin-bottom:22px;
-}
-.card{
-background:var(--panel);
-border:1px solid var(--border);
-border-radius:16px;
-padding:18px;
-}
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-gap:20px;
-}
-table{
-width:100%;
-border-collapse:collapse;
-background:var(--panel);
-border-radius:12px;
-overflow:hidden;
-}
-th{
-background:#152b4e;
-cursor:pointer;
-position:sticky;
-top:80px;
-}
-th,td{
-padding:14px;
-border-bottom:1px solid var(--border);
-text-align:left;
-}
-tr:hover{
-background:#132544;
-}
-.teamcell{
-display:flex;
-align-items:center;
-gap:12px;
-}
-.logo{
-width:42px;
-height:42px;
-object-fit:contain;
-}
-.gamehero{
-display:grid;
-grid-template-columns:1fr auto 1fr;
-gap:30px;
-align-items:center;
-background:linear-gradient(135deg,#132544,#08101f);
-padding:30px;
-border-radius:18px;
-border:1px solid var(--border);
-margin-bottom:30px;
-}
-.score{
-font-size:72px;
-font-weight:900;
-text-align:center;
-}
-.bracket{
-display:flex;
-gap:24px;
-overflow-x:auto;
-}
-.round{
-min-width:260px;
-}
-.matchup{
-background:var(--panel);
-padding:16px;
-border-radius:14px;
-border:1px solid var(--border);
-margin-bottom:14px;
-}
-button,select{
-background:var(--panel2);
-border:1px solid var(--border);
-padding:10px 14px;
-border-radius:10px;
-color:white;
-font-weight:700;
-}
-.controls{
-display:flex;
-gap:12px;
-margin-bottom:20px;
-}
-@media(max-width:900px){
-.nav{flex-direction:column;align-items:flex-start}
-.gamehero{grid-template-columns:1fr}
-.score{font-size:52px}
-}
-.group-row td{
-
-background:#152b4e;
-
-font-size:22px;
-font-weight:800;
-
-color:white;
-
-}
-
-.filter.active{
-
-border-color:var(--accent);
-background:var(--accent);
-
-}
-
-th.asc::after{
-
-content:" ▲";
-
-}
-
-th.desc::after{
-
-content:" ▼";
-
-}
+header{background:#08101f;border-bottom:2px solid var(--accent);position:sticky;top:0;z-index:999}
+.nav{max-width:1500px;margin:auto;padding:14px 24px;display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;gap:12px;align-items:center;font-size:28px;font-weight:800}
+.brand img{height:48px}
+.links{display:flex;gap:22px;flex-wrap:wrap}
+.links a{font-weight:700;color:#dce6ff}
+.links a:hover{color:var(--accent)}
+.container{max-width:1500px;margin:auto;padding:28px}
+.hero,.card,table{background:var(--panel);border:1px solid var(--border);border-radius:16px}
+.hero{padding:40px;margin-bottom:24px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px}
+.card{padding:18px}
+.section-title{font-size:42px;font-weight:900;margin-bottom:18px}
+table{width:100%;border-collapse:collapse;overflow:hidden}
+th,td{padding:12px;border-bottom:1px solid var(--border)}
+th{background:#152b4e;cursor:pointer}
+tr:hover td{background:#132544}
+.logo{width:40px;height:40px;object-fit:contain}
+.teamcell{display:flex;gap:10px;align-items:center}
+.controls{display:flex;gap:10px;margin-bottom:20px}
+button{background:var(--panel2);border:1px solid var(--border);padding:10px 14px;color:white;border-radius:10px;font-weight:700}
+button.active{background:var(--accent)}

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html>
-<head>
+<html><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Schedule</title>
@@ -10,10 +9,7 @@
 
 <header>
 <div class="nav">
-<a class="brand" href="index.html">
-<img src="GHL.png">
-<span>GHL</span>
-</a>
+<a class="brand" href="index.html"><img src="GHL.png"><span>GHL</span></a>
 <div class="links">
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
@@ -28,18 +24,22 @@
 
 <div class="container">
 
-<div class="section-title">Schedule & Results</div>
-
-<div class="grid">
-<a href="game.html">
-<div class="card">
-<h2>Minnesota 4 - 2 Bay Area</h2>
-<p>Open Game Centre</p>
-</div>
-</a>
-</div>
+<div class="section-title">Schedule</div>
+<div class="grid" id="sched"></div>
 
 </div>
 <script src="app.js"></script>
-</body>
-</html>
+<script>
+
+loadLeague().then(data=>{
+ const teams={}; data.teams.forEach(t=>teams[t.tid]=t);
+ document.getElementById('sched').innerHTML=
+ data.games.slice(-20).reverse().map(g=>`
+ <a href="game.html?gid=${g.gid}">
+ <div class="card">
+ <h3>${teams[g.won.tid]?.abbrev} ${g.won.pts} - ${g.lost.pts} ${teams[g.lost.tid]?.abbrev}</h3>
+ </div></a>`).join('');
+});
+
+</script>
+</body></html>

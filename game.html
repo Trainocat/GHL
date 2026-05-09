@@ -1,19 +1,15 @@
 <!DOCTYPE html>
-<html>
-<head>
+<html><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Game Centre</title>
+<title>Game</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header>
 <div class="nav">
-<a class="brand" href="index.html">
-<img src="GHL.png">
-<span>GHL</span>
-</a>
+<a class="brand" href="index.html"><img src="GHL.png"><span>GHL</span></a>
 <div class="links">
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
@@ -28,51 +24,24 @@
 
 <div class="container">
 
-<div class="gamehero">
-<div>
-<h2>Minnesota Snowbirds</h2>
-</div>
-
-<div class="score">
-4 - 2
-</div>
-
-<div>
-<h2>Bay Area Robots</h2>
-</div>
-</div>
-
-<div class="section-title">Scoring Summary</div>
-
-<table id="scoring">
-<tbody>
-<tr>
-<th onclick="sortTable('scoring',0)">Period</th>
-<th onclick="sortTable('scoring',1)">Scorer</th>
-<th onclick="sortTable('scoring',2)">Type</th>
-</tr>
-<tr><td>1</td><td>Karlsson</td><td>EV</td></tr>
-<tr><td>2</td><td>Brown</td><td>PP</td></tr>
-</tbody>
-</table>
-
-<br>
-
-<div class="section-title">Box Score</div>
-
-<table id="box">
-<tbody>
-<tr>
-<th onclick="sortTable('box',0)">Player</th>
-<th onclick="sortTable('box',1)">G</th>
-<th onclick="sortTable('box',2)">A</th>
-<th onclick="sortTable('box',3)">PTS</th>
-</tr>
-<tr><td>Karlsson</td><td>2</td><td>1</td><td>3</td></tr>
-</tbody>
+<div class="hero"><h1 id="title"></h1></div>
+<table id="summary">
+<thead><tr><th>Period</th><th>Scorer</th></tr></thead>
+<tbody id="summaryBody"></tbody>
 </table>
 
 </div>
 <script src="app.js"></script>
-</body>
-</html>
+<script>
+
+const gid=Number(new URLSearchParams(location.search).get('gid'));
+loadLeague().then(data=>{
+ const teams={}; data.teams.forEach(t=>teams[t.tid]=t);
+ const g=data.games.find(g=>g.gid===gid)||data.games[0];
+ document.getElementById('title').innerHTML=`${teams[g.won.tid]?.abbrev} ${g.won.pts} - ${g.lost.pts} ${teams[g.lost.tid]?.abbrev}`;
+ document.getElementById('summaryBody').innerHTML=
+ (g.scoringSummary||[]).map(s=>`<tr><td>${s.quarter||''}</td><td>${s.names?.[0]||''}</td></tr>`).join('');
+});
+
+</script>
+</body></html>

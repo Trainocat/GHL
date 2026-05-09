@@ -1,75 +1,62 @@
 <!DOCTYPE html>
-}
+<html><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Standings</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-function renderGroup(title, teams) {
+<header>
+<div class="nav">
+<a class="brand" href="index.html"><img src="GHL.png"><span>GHL</span></a>
+<div class="links">
+<a href="index.html">Home</a>
+<a href="standings.html">Standings</a>
+<a href="teams.html">Teams</a>
+<a href="players.html">Players</a>
+<a href="schedule.html">Schedule</a>
+<a href="draft.html">Draft</a>
+<a href="playoffs.html">Playoffs</a>
+</div>
+</div>
+</header>
 
-    let html = `
+<div class="container">
 
-    <tr class="group-row">
+<div class="section-title">Standings</div>
+<table id="standings">
+<thead><tr>
+<th onclick="sortTable('standings',0)">Team</th>
+<th onclick="sortTable('standings',1)">W</th>
+<th onclick="sortTable('standings',2)">L</th>
+<th onclick="sortTable('standings',3)">PTS</th>
+<th onclick="sortTable('standings',4)">GF</th>
+<th onclick="sortTable('standings',5)">GA</th>
+</tr></thead>
+<tbody id="body"></tbody>
+</table>
 
-        <td colspan="9">
-            ${title}
-        </td>
+</div>
+<script src="app.js"></script>
+<script>
 
-    </tr>
-
-    `;
-
-    teams.forEach(team => {
-
-        const season = latestSeason(team);
-
-        const gp =
-            (season.won || 0) +
-            (season.lost || 0) +
-            (season.otl || 0);
-
-        const diff = getGoalDiff(team);
-
-        html += `
-
-        <tr>
-
-            <td>
-
-                <a href="team.html?tid=${team.tid}">
-
-                    <div class="teamcell">
-
-                        <img
-                            class="logo"
-                            src="${getTeamLogo(team)}">
-
-                        <span>
-                            ${getTeamName(team)}
-                        </span>
-
-                    </div>
-
-                </a>
-
-            </td>
-
-            <td>${gp}</td>
-            <td>${season.won || 0}</td>
-            <td>${season.lost || 0}</td>
-            <td>${season.otl || 0}</td>
-            <td>${season.pts || 0}</td>
-            <td>${season.gf || 0}</td>
-            <td>${season.ga || 0}</td>
-            <td>${diff}</td>
-
-        </tr>
-
-        `;
-
-    });
-
-    return html;
-
-}
+loadLeague().then(data=>{
+ const body=document.getElementById('body');
+ body.innerHTML=[...data.teams]
+ .sort((a,b)=>(latestSeason(b).pts||0)-(latestSeason(a).pts||0))
+ .map(t=>{
+ const s=latestSeason(t);
+ return `<tr>
+ <td><a href="team.html?tid=${t.tid}"><div class="teamcell"><img class="logo" src="${getTeamLogo(t)}">${getTeamName(t)}</div></a></td>
+ <td>${s.won||0}</td>
+ <td>${s.lost||0}</td>
+ <td>${s.pts||0}</td>
+ <td>${s.gf||0}</td>
+ <td>${s.ga||0}</td>
+ </tr>`
+ }).join('');
+});
 
 </script>
-
-</body>
-</html>
+</body></html>

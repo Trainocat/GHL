@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html>
-<head>
+<html><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Teams</title>
@@ -10,10 +9,7 @@
 
 <header>
 <div class="nav">
-<a class="brand" href="index.html">
-<img src="GHL.png">
-<span>GHL</span>
-</a>
+<a class="brand" href="index.html"><img src="GHL.png"><span>GHL</span></a>
 <div class="links">
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
@@ -29,21 +25,33 @@
 <div class="container">
 
 <div class="section-title">Teams</div>
-
 <table id="teams">
-<tbody>
-<tr>
+<thead><tr>
 <th onclick="sortTable('teams',0)">Team</th>
 <th onclick="sortTable('teams',1)">Conference</th>
 <th onclick="sortTable('teams',2)">Division</th>
 <th onclick="sortTable('teams',3)">PTS</th>
-</tr>
-<tr><td><a href="team.html">Minnesota Snowbirds</a></td><td>East</td><td>North</td><td>110</td></tr>
-<tr><td><a href="team.html">Bay Area Robots</a></td><td>West</td><td>Pacific</td><td>87</td></tr>
-</tbody>
+</tr></thead>
+<tbody id="teamsBody"></tbody>
 </table>
 
 </div>
 <script src="app.js"></script>
-</body>
-</html>
+<script>
+
+loadLeague().then(data=>{
+ document.getElementById('teamsBody').innerHTML=
+ [...data.teams].sort((a,b)=>getTeamName(a).localeCompare(getTeamName(b)))
+ .map(t=>{
+ const s=latestSeason(t);
+ return `<tr>
+ <td><a href="team.html?tid=${t.tid}"><div class="teamcell"><img class="logo" src="${getTeamLogo(t)}">${getTeamName(t)}</div></a></td>
+ <td>${t.cid}</td>
+ <td>${t.did}</td>
+ <td>${s.pts||0}</td>
+ </tr>`
+ }).join('');
+});
+
+</script>
+</body></html>

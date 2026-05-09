@@ -1,83 +1,44 @@
-// =========================
 
-    return team.imgURL || "GHL.png";
+let cache=null;
 
+async function loadLeague(){
+ if(cache) return cache;
+ const r=await fetch('league.json');
+ cache=await r.json();
+ return cache;
 }
 
-// =========================
-// SORTABLE TABLES
-// =========================
+function latestSeason(team){
+ return team.seasons?.[team.seasons.length-1]||{};
+}
 
-function makeSortable(tableId) {
+function latestStats(player){
+ return player.stats?.[player.stats.length-1]||{};
+}
 
-    const table = document.getElementById(tableId);
+function latestRating(player){
+ return player.ratings?.[player.ratings.length-1]||{};
+}
 
-    const headers = table.querySelectorAll("th");
+function getTeamLogo(team){
+ return team.imgURL || team.imgURLSmall || 'GHL.png';
+}
 
-    headers.forEach((header, index) => {
+function getTeamName(team){
+ return `${team.region} ${team.name}`;
+}
 
-        header.addEventListener("click", () => {
-
-            const tbody = table.querySelector("tbody");
-
-            const rows = [
-                ...tbody.querySelectorAll("tr")
-            ];
-
-            const ascending = !header.classList.contains("asc");
-
-            headers.forEach(h => {
-
-                h.classList.remove("asc");
-                h.classList.remove("desc");
-
-            });
-
-            header.classList.add(
-                ascending ? "asc" : "desc"
-            );
-
-            rows.sort((a, b) => {
-
-                const aText = a.children[index]
-                    .innerText
-                    .trim();
-
-                const bText = b.children[index]
-                    .innerText
-                    .trim();
-
-                const aNum = parseFloat(aText);
-                const bNum = parseFloat(bText);
-
-                const numeric =
-                    !isNaN(aNum) &&
-                    !isNaN(bNum);
-
-                if (numeric) {
-
-                    return ascending
-                        ? aNum - bNum
-                        : bNum - aNum;
-
-                }
-
-                return ascending
-                    ? aText.localeCompare(bText)
-                    : bText.localeCompare(aText);
-
-            });
-
-            tbody.innerHTML = "";
-
-            rows.forEach(row => {
-
-                tbody.appendChild(row);
-
-            });
-
-        });
-
-    });
-
+function sortTable(id,col){
+ const table=document.getElementById(id);
+ const rows=[...table.querySelectorAll('tbody tr')];
+ const asc=!table.dataset.asc || table.dataset.asc==='false';
+ rows.sort((a,b)=>{
+   const av=a.children[col].innerText.trim();
+   const bv=b.children[col].innerText.trim();
+   const an=parseFloat(av), bn=parseFloat(bv);
+   if(!isNaN(an)&&!isNaN(bn)) return asc?an-bn:bn-an;
+   return asc?av.localeCompare(bv):bv.localeCompare(av);
+ });
+ table.dataset.asc=asc;
+ rows.forEach(r=>table.querySelector('tbody').appendChild(r));
 }
