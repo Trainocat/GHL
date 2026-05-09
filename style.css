@@ -1,109 +1,43 @@
+<div class="team-card">
 
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0b1020;
-  color: white;
-}
+  <div class="team-card-top">
 
-header {
-  background: #11182d;
-  padding: 15px 25px;
-  border-bottom: 2px solid #1f2b4d;
-}
+    <img class="team-card-logo" src="TEAMLOGO.png">
 
-nav {
-  display: flex;
-  gap: 18px;
-  flex-wrap: wrap;
-}
+    <div>
+      <div class="team-card-name">
+        Orlando Fantasy
+      </div>
 
-nav a {
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
-}
+      <div>
+        ORL
+      </div>
+    </div>
 
-.container {
-  max-width: 1200px;
-  margin: auto;
-  padding: 20px;
-}
+  </div>
 
-h1 {
-  margin-bottom: 20px;
-}
+  <div class="record-grid">
 
-.teams-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 18px;
-}
+    <div class="record-box">
+      <div class="record-label">W</div>
+      <div class="record-value">42</div>
+    </div>
 
-.team-card-link {
-  text-decoration: none;
-  color: inherit;
-}
+    <div class="record-box">
+      <div class="record-label">L</div>
+      <div class="record-value">18</div>
+    </div>
 
-.team-card {
-  background: #151c33;
-  border: 1px solid #243152;
-  border-radius: 16px;
-  padding: 20px;
-  transition: 0.2s;
-}
+    <div class="record-box">
+      <div class="record-label">OTL</div>
+      <div class="record-value">5</div>
+    </div>
 
-.team-card:hover {
-  transform: translateY(-4px);
-  border-color: #3b82f6;
-}
+    <div class="record-box">
+      <div class="record-label">PTS</div>
+      <div class="record-value">89</div>
+    </div>
 
-.team-top {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 20px;
-}
+  </div>
 
-.team-logo {
-  width: 72px;
-  height: 72px;
-  object-fit: contain;
-  background: rgba(255,255,255,0.05);
-  border-radius: 50%;
-  padding: 5px;
-}
-
-.team-name {
-  font-size: 22px;
-  font-weight: bold;
-}
-
-.team-abbrev {
-  opacity: 0.7;
-  margin-top: 5px;
-}
-
-.team-record {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-}
-
-.record-box {
-  background: rgba(255,255,255,0.05);
-  border-radius: 12px;
-  padding: 10px;
-  text-align: center;
-}
-
-.record-label {
-  font-size: 12px;
-  opacity: 0.7;
-}
-
-.record-value {
-  font-size: 24px;
-  font-weight: bold;
-  margin-top: 4px;
-}
+</div>
