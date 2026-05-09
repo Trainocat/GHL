@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Draft</title>
+<title>Team</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -27,6 +27,10 @@
 <main>
 
 <h1 id="teamName">Team</h1>
+
+<p>
+<img id="teamLogo" alt="Team logo">
+</p>
 
 <section>
 <h2>Team Info</h2>
@@ -136,7 +140,6 @@
 <table id="recentGamesTable">
 <thead>
 <tr>
-<th>Date</th>
 <th>Away</th>
 <th>Score</th>
 <th>Home</th>
@@ -154,7 +157,6 @@
 <table id="upcomingGamesTable">
 <thead>
 <tr>
-<th>Date</th>
 <th>Away</th>
 <th>Home</th>
 <th>Status</th>
@@ -199,6 +201,14 @@ function teamName(team) {
     }
 
     return `${team.region} ${team.name}`;
+}
+
+function teamLogo(team) {
+    return (
+        team.imgURL ||
+        team.imgURLSmall ||
+        "GHL.png"
+    );
 }
 
 function playerName(player) {
@@ -396,19 +406,6 @@ function money(value) {
     }
 
     return `$${amount.toLocaleString()}k`;
-}
-
-function formatDate(day) {
-    if (day === undefined || day === null) {
-        return "";
-    }
-
-    return new Date(day).toLocaleDateString("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-    });
 }
 
 function getAwayTid(game) {
@@ -731,7 +728,7 @@ function renderRecentGames(team, data, teams) {
     if (games.length === 0) {
         return `
             <tr>
-                <td colspan="5">No recent games available.</td>
+                <td colspan="4">No recent games available.</td>
             </tr>
         `;
     }
@@ -742,7 +739,6 @@ function renderRecentGames(team, data, teams) {
 
         return `
             <tr>
-                <td>${formatDate(game.day)}</td>
                 <td>
                     <a href="team.html?tid=${getAwayTid(game)}">
                         ${teamName(awayTeam)}
@@ -775,7 +771,7 @@ function renderUpcomingGames(team, data, teams) {
     if (games.length === 0) {
         return `
             <tr>
-                <td colspan="4">No upcoming games scheduled.</td>
+                <td colspan="3">No upcoming games scheduled.</td>
             </tr>
         `;
     }
@@ -786,7 +782,6 @@ function renderUpcomingGames(team, data, teams) {
 
         return `
             <tr>
-                <td>${formatDate(game.day)}</td>
                 <td>
                     <a href="team.html?tid=${getAwayTid(game)}">
                         ${teamName(awayTeam)}
@@ -862,6 +857,12 @@ loadLeague().then(data => {
 
     document.getElementById("teamName").innerText =
         teamName(team);
+
+    document.getElementById("teamLogo").src =
+        teamLogo(team);
+
+    document.getElementById("teamLogo").alt =
+        `${teamName(team)} logo`;
 
     document.getElementById("teamInfoBody").innerHTML =
         renderTeamInfo(team, data);

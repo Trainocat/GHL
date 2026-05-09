@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Draft</title>
+<title>Finance</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -62,7 +62,7 @@
 <th>Roster Spots</th>
 <th>Revenue</th>
 <th>Profit</th>
-<th>Attendance</th>
+<th>Average Attendance</th>
 <th>Ticket Price</th>
 <th>Scouting</th>
 <th>Coaching</th>
@@ -127,14 +127,6 @@ function number(value) {
     return Number(value).toLocaleString();
 }
 
-function percent(value) {
-    if (value === undefined || value === null || isNaN(value)) {
-        return "0%";
-    }
-
-    return `${Number(value).toFixed(1)}%`;
-}
-
 function getPayroll(team) {
     return (
         team.payrollEndOfSeason ||
@@ -179,6 +171,35 @@ function getProfit(teamSeason) {
     }
 
     return getRevenue(teamSeason) - getExpenses(teamSeason);
+}
+
+function getAverageAttendance(teamSeason) {
+    if (!teamSeason) {
+        return 0;
+    }
+
+    if (teamSeason.avgAttendance !== undefined) {
+        return teamSeason.avgAttendance;
+    }
+
+    if (teamSeason.attAverage !== undefined) {
+        return teamSeason.attAverage;
+    }
+
+    if (teamSeason.attAvg !== undefined) {
+        return teamSeason.attAvg;
+    }
+
+    const homeGames =
+        (teamSeason.homeWon || 0) +
+        (teamSeason.homeLost || 0) +
+        (teamSeason.homeOtl || 0);
+
+    if (homeGames > 0 && teamSeason.att !== undefined) {
+        return Math.round(teamSeason.att / homeGames);
+    }
+
+    return teamSeason.att || 0;
 }
 
 function getSalaryCap(data) {
@@ -296,6 +317,7 @@ function renderTeamFinance(data) {
 
             const revenue = getRevenue(season);
             const profit = getProfit(season);
+            const averageAttendance = getAverageAttendance(season);
 
             return `
                 <tr>
@@ -312,7 +334,7 @@ function renderTeamFinance(data) {
                     <td>${rosterCount}</td>
                     <td>${money(revenue)}</td>
                     <td>${money(profit)}</td>
-                    <td>${number(season.att)}</td>
+                    <td>${number(averageAttendance)}</td>
                     <td>${money(season.ticketPrice)}</td>
                     <td>${team.budget?.scouting || 0}</td>
                     <td>${team.budget?.coaching || 0}</td>
