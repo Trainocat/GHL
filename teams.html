@@ -1,50 +1,126 @@
-
 <!DOCTYPE html>
 <html>
 <head>
-<title>Teams</title>
-<link rel="stylesheet" href="style.css">
+  <title>GHL Teams</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-
 <header>
-<div class="navbar">
-<div class="logo">GHL</div>
+  <div class="navbar">
 
-<nav>
-<a href="index.html">Home</a>
-<a href="standings.html">Standings</a>
-<a href="teams.html">Teams</a>
-<a href="players.html">Players</a>
-<a href="schedule.html">Schedule</a>
-<a href="playoffs.html">Playoffs</a>
-</nav>
+    <div class="logo">
+      GHL
+    </div>
 
-</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="standings.html">Standings</a>
+      <a href="teams.html">Teams</a>
+      <a href="players.html">Players</a>
+      <a href="schedule.html">Schedule</a>
+      <a href="playoffs.html">Playoffs</a>
+    </nav>
+
+  </div>
 </header>
-
 
 <div class="page">
 
-<div class="page-title">Teams</div>
+  <div class="page-title">
+    Teams
+  </div>
 
-<div class="teams-grid" id="teams"></div>
+  <div class="teams-grid" id="teams"></div>
 
 </div>
 
 <script>
 fetch("league.json")
-.then(r=>r.json())
-.then(data=>{
+.then(r => r.json())
+.then(data => {
 
-document.getElementById("teams").innerHTML =
-data.teams.map(t=>{
+  const html = data.teams.map(t => {
 
-const s = t.seasons?.[0];
+    const s = t.seasons?.[0];
 
-return `
-<a href="team.html?tid=${t.tid}">
+    return `
+
+    <a class="team-link" href="team.html?tid=${t.tid}">
+
+      <div class="team-card">
+
+        <div class="team-banner"></div>
+
+        <div class="team-content">
+
+          <div class="team-top">
+
+            <div class="team-logo-wrap">
+
+              <img
+              class="team-logo"
+              src="${t.imgURL || ''}"
+              alt="${t.region} ${t.name}">
+
+            </div>
+
+            <div>
+
+              <div class="team-name">
+                ${t.region} ${t.name}
+              </div>
+
+              <div class="team-abbrev">
+                ${t.abbrev}
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="record-grid">
+
+            <div class="record-box">
+              <div class="record-label">W</div>
+              <div class="record-value">${s?.won || 0}</div>
+            </div>
+
+            <div class="record-box">
+              <div class="record-label">L</div>
+              <div class="record-value">${s?.lost || 0}</div>
+            </div>
+
+            <div class="record-box">
+              <div class="record-label">OTL</div>
+              <div class="record-value">${s?.otl || 0}</div>
+            </div>
+
+            <div class="record-box">
+              <div class="record-label">PTS</div>
+              <div class="record-value">${s?.pts || 0}</div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </a>
+
+    `;
+
+  }).join("");
+
+  document.getElementById("teams").innerHTML = html;
+
+});
+</script>
+
+</body>
+</html>
 
 <div class="team-card">
 
