@@ -1,6 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
   <title>GHL Standings</title>
 
   <link rel="stylesheet" href="style.css">
@@ -8,7 +16,15 @@
   <style>
 
     .controls {
-      margin-bottom: 25px;
+
+      margin-bottom: 28px;
+
+      display: flex;
+
+      gap: 12px;
+
+      align-items: center;
+
     }
 
     select {
@@ -19,7 +35,7 @@
 
       border: 1px solid #24385f;
 
-      padding: 10px 14px;
+      padding: 12px 16px;
 
       border-radius: 10px;
 
@@ -44,7 +60,11 @@
 
       border-collapse: collapse;
 
-      margin-bottom: 35px;
+      margin-bottom: 40px;
+
+      overflow: hidden;
+
+      border-radius: 14px;
 
     }
 
@@ -52,22 +72,28 @@
 
       background: #18243f;
 
-      padding: 12px;
+      padding: 14px 12px;
 
       text-align: left;
+
+      font-size: 14px;
 
       cursor: pointer;
 
       user-select: none;
 
+      white-space: nowrap;
+
     }
 
     .standings-table td {
 
-      padding: 12px;
+      padding: 13px 12px;
 
       border-bottom:
         1px solid #24385f;
+
+      white-space: nowrap;
 
     }
 
@@ -90,10 +116,12 @@
 
     .team-logo {
 
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
 
       object-fit: contain;
+
+      flex-shrink: 0;
 
     }
 
@@ -110,8 +138,11 @@
     }
 
     .pts {
+
       color: #60a5fa;
+
       font-weight: bold;
+
     }
 
     .green {
@@ -120,6 +151,22 @@
 
     .red {
       color: #f87171;
+    }
+
+    .rank {
+
+      color: #94a3b8;
+
+      width: 28px;
+
+      display: inline-block;
+
+    }
+
+    .standings-wrapper {
+
+      overflow-x: auto;
+
     }
 
   </style>
@@ -188,12 +235,12 @@ let leagueData;
 let sortField = "pts";
 
 fetch("league.json")
-.then(r => r.json())
+.then(response => response.json())
 .then(data => {
 
   leagueData = data;
 
-  buildStats();
+  prepareTeams();
 
   renderStandings();
 
@@ -204,95 +251,44 @@ fetch("league.json")
       renderStandings
     );
 
+})
+.catch(error => {
+
+  console.error(error);
+
+  document
+    .getElementById("standings")
+    .innerHTML =
+      "<p>Failed to load standings.</p>";
+
 });
 
-function buildStats() {
+function prepareTeams() {
 
-  const statMap = {};
+  leagueData.teams.forEach(team => {
 
-  leagueData.teams.forEach(t => {
+    const season =
+      team.seasons &&
+      team.seasons.length
+      ? team.seasons.at(-1)
+      : {};
 
-    statMap[t.tid] = {
-      gf: 0,
-      ga: 0
-    };
+    team.season = season;
 
-  });
+    team.gf =
+      season.gp != null &&
+      season.pts != null
+      ? (season.ptsFor || 0)
+      : 0;
 
-  leagueData.games.forEach(g => {
+    team.ga =
+      season.gp != null &&
+      season.pts != null
+      ? (season.ptsAgainst || 0)
+      : 0;
 
-    statMap[g.won.tid].gf += g.won.pts;
-    statMap[g.won.tid].ga += g.lost.pts;
-
-    statMap[g.lost.tid].gf += g.lost.pts;
-    statMap[g.lost.tid].ga += g.won.pts;
-
-  });
-
-  leagueData.teams.forEach(t => {
-
-    t.season =
-      t.seasons?.[0] || {};
-
-    t.gf =
-      statMap[t.tid].gf;
-
-    t.ga =
-      statMap[t.tid].ga;
-
-    t.diff =
-      t.gf - t.ga;
-
-  });
-
-}
-
-function sortTeams(teams) {
-
-  teams.sort((a,b) => {
-
-    let aVal;
-    let bVal;
-
-    switch(sortField) {
-
-      case "won":
-        aVal = a.season.won || 0;
-        bVal = b.season.won || 0;
-        break;
-
-      case "lost":
-        aVal = a.season.lost || 0;
-        bVal = b.season.lost || 0;
-        break;
-
-      case "otl":
-        aVal = a.season.otl || 0;
-        bVal = b.season.otl || 0;
-        break;
-
-      case "gf":
-        aVal = a.gf;
-        bVal = b.gf;
-        break;
-
-      case "ga":
-        aVal = a.ga;
-        bVal = b.ga;
-        break;
-
-      case "diff":
-        aVal = a.diff;
-        bVal = b.diff;
-        break;
-
-      default:
-        aVal = a.season.pts || 0;
-        bVal = b.season.pts || 0;
-
-    }
-
-    return bVal - aVal;
+    team.diff =
+      team.gf - team.ga;
 
   });
 
@@ -301,12 +297,15 @@ function sortTeams(teams) {
 function renderStandings() {
 
   const mode =
-    document.getElementById("viewMode").value;
+    document
+      .getElementById("viewMode")
+      .value;
 
-  const standings =
-    document.getElementById("standings");
+  const container =
+    document
+      .getElementById("standings");
 
-  standings.innerHTML = "";
+  container.innerHTML = "";
 
   const teams =
     [...leagueData.teams];
@@ -315,7 +314,7 @@ function renderStandings() {
 
   if (mode === "league") {
 
-    standings.innerHTML +=
+    container.innerHTML +=
       buildTable(
         "League Standings",
         teams
@@ -326,18 +325,22 @@ function renderStandings() {
   else if (mode === "conference") {
 
     const east =
-      teams.filter(t => t.cid === 0);
+      teams.filter(
+        t => t.cid === 0
+      );
 
     const west =
-      teams.filter(t => t.cid === 1);
+      teams.filter(
+        t => t.cid === 1
+      );
 
-    standings.innerHTML +=
+    container.innerHTML +=
       buildTable(
         "Eastern Conference",
         east
       );
 
-    standings.innerHTML +=
+    container.innerHTML +=
       buildTable(
         "Western Conference",
         west
@@ -349,10 +352,10 @@ function renderStandings() {
 
     const divisions = {};
 
-    teams.forEach(t => {
+    teams.forEach(team => {
 
       const key =
-        `${t.cid}-${t.did}`;
+        `${team.cid}-${team.did}`;
 
       if (!divisions[key]) {
 
@@ -360,17 +363,17 @@ function renderStandings() {
 
       }
 
-      divisions[key].push(t);
+      divisions[key].push(team);
 
     });
 
-    Object.entries(divisions)
-    .forEach(([key, divTeams]) => {
+    Object.keys(divisions)
+    .forEach(key => {
 
-      standings.innerHTML +=
+      container.innerHTML +=
         buildTable(
           getDivisionName(key),
-          divTeams
+          divisions[key]
         );
 
     });
@@ -379,119 +382,212 @@ function renderStandings() {
 
 }
 
+function sortTeams(teams) {
+
+  teams.sort((a,b) => {
+
+    let aValue;
+    let bValue;
+
+    switch(sortField) {
+
+      case "won":
+
+        aValue =
+          a.season.won || 0;
+
+        bValue =
+          b.season.won || 0;
+
+        break;
+
+      case "lost":
+
+        aValue =
+          a.season.lost || 0;
+
+        bValue =
+          b.season.lost || 0;
+
+        break;
+
+      case "otl":
+
+        aValue =
+          a.season.otl || 0;
+
+        bValue =
+          b.season.otl || 0;
+
+        break;
+
+      case "gf":
+
+        aValue = a.gf;
+        bValue = b.gf;
+
+        break;
+
+      case "ga":
+
+        aValue = a.ga;
+        bValue = b.ga;
+
+        break;
+
+      case "diff":
+
+        aValue = a.diff;
+        bValue = b.diff;
+
+        break;
+
+      default:
+
+        aValue =
+          a.season.pts || 0;
+
+        bValue =
+          b.season.pts || 0;
+
+    }
+
+    return bValue - aValue;
+
+  });
+
+}
+
 function buildTable(title, teams) {
 
   return `
 
   <div class="conference-title">
-
     ${title}
-
   </div>
 
-  <table class="standings-table">
+  <div class="standings-wrapper">
 
-    <thead>
+    <table class="standings-table">
 
-      <tr>
+      <thead>
 
-        <th>Team</th>
+        <tr>
 
-        <th onclick="setSort('won')">
-          W
-        </th>
+          <th>Team</th>
 
-        <th onclick="setSort('lost')">
-          L
-        </th>
+          <th onclick="setSort('won')">
+            W
+          </th>
 
-        <th onclick="setSort('otl')">
-          OTL
-        </th>
+          <th onclick="setSort('lost')">
+            L
+          </th>
 
-        <th onclick="setSort('pts')">
-          PTS
-        </th>
+          <th onclick="setSort('otl')">
+            OTL
+          </th>
 
-        <th onclick="setSort('gf')">
-          GF
-        </th>
+          <th onclick="setSort('pts')">
+            PTS
+          </th>
 
-        <th onclick="setSort('ga')">
-          GA
-        </th>
+          <th onclick="setSort('gf')">
+            GF
+          </th>
 
-        <th onclick="setSort('diff')">
-          Diff
-        </th>
+          <th onclick="setSort('ga')">
+            GA
+          </th>
 
-      </tr>
+          <th onclick="setSort('diff')">
+            Diff
+          </th>
 
-    </thead>
+        </tr>
 
-    <tbody>
+      </thead>
 
-      ${teams.map(t => `
+      <tbody>
 
-      <tr class="standings-row">
+        ${teams.map((team, index) => `
 
-        <td>
+        <tr class="standings-row">
 
-          <a
-          class="team-link"
-          href="team.html?tid=${t.tid}">
+          <td>
 
-            <div class="team-cell">
+            <a
+            class="team-link"
+            href="team.html?tid=${team.tid}">
 
-              <img
-              class="team-logo"
-              src="${t.imgURL || ''}">
+              <div class="team-cell">
 
-              <div>
+                <span class="rank">
+                  ${index + 1}
+                </span>
 
-                ${t.region}
-                ${t.name}
+                <img
+                class="team-logo"
+                src="${team.imgURL || ''}"
+                alt="logo">
+
+                <div>
+
+                  ${team.region}
+                  ${team.name}
+
+                </div>
 
               </div>
 
-            </div>
+            </a>
 
-          </a>
+          </td>
 
-        </td>
+          <td>
+            ${team.season.won || 0}
+          </td>
 
-        <td>${t.season.won || 0}</td>
+          <td>
+            ${team.season.lost || 0}
+          </td>
 
-        <td>${t.season.lost || 0}</td>
+          <td>
+            ${team.season.otl || 0}
+          </td>
 
-        <td>${t.season.otl || 0}</td>
+          <td class="pts">
+            ${team.season.pts || 0}
+          </td>
 
-        <td class="pts">
-          ${t.season.pts || 0}
-        </td>
+          <td>
+            ${team.gf}
+          </td>
 
-        <td>${t.gf}</td>
+          <td>
+            ${team.ga}
+          </td>
 
-        <td>${t.ga}</td>
+          <td class="
+            ${team.diff >= 0
+              ? 'green'
+              : 'red'}
+          ">
 
-        <td class="${
-          t.diff >= 0
-          ? 'green'
-          : 'red'
-        }">
+            ${team.diff > 0 ? '+' : ''}
+            ${team.diff}
 
-          ${t.diff > 0 ? '+' : ''}
-          ${t.diff}
+          </td>
 
-        </td>
+        </tr>
 
-      </tr>
+        `).join("")}
 
-      `).join("")}
+      </tbody>
 
-    </tbody>
+    </table>
 
-  </table>
+  </div>
 
   `;
 
