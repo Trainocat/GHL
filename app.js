@@ -1,88 +1,59 @@
-// =====================================
-    ] || {};
 
+let leagueCache = null;
+
+async function loadLeague(){
+    if(leagueCache) return leagueCache;
+    const res = await fetch('league.json');
+    leagueCache = await res.json();
+    return leagueCache;
 }
 
-function latestRating(player) {
-
-    return player.ratings?.[
-        player.ratings.length - 1
-    ] || {};
-
+function latestSeason(team){
+    return team.seasons?.[team.seasons.length-1] || {};
 }
 
-function getTeamName(team) {
+function latestStats(player){
+    return player.stats?.[player.stats.length-1] || {};
+}
 
+function latestRating(player){
+    return player.ratings?.[player.ratings.length-1] || {};
+}
+
+function getTeamName(team){
     return `${team.region} ${team.name}`;
-
 }
 
-function getTeamLogo(team) {
-
-    if (team.imgURL && team.imgURL !== "") {
-        return team.imgURL;
-    }
-
-    if (team.imgURLSmall && team.imgURLSmall !== "") {
-        return team.imgURLSmall;
-    }
-
-    return "GHL.png";
-
+function getTeamLogo(team){
+    return team.imgURL || team.imgURLSmall || 'GHL.png';
 }
 
-function goalDiff(team) {
-
-    const s = latestSeason(team);
-
-    return (s.gf || 0) - (s.ga || 0);
-
-}
-
-function buildTeamMap(data) {
-
+function buildTeamMap(data){
     const map = {};
+    data.teams.forEach(t=>map[t.tid]=t);
+    return map;
+}
 
-    data.teams.forEach(team => {
+function sortTable(tableId, col){
+    const table = document.getElementById(tableId);
+    const tbody = table.querySelector('tbody');
+    const rows = [...tbody.querySelectorAll('tr')];
+    const asc = table.dataset.sort !== 'asc';
 
-        map[team.tid] = team;
+    rows.sort((a,b)=>{
+        const av = a.children[col].innerText.trim();
+        const bv = b.children[col].innerText.trim();
+        const an = parseFloat(av);
+        const bn = parseFloat(bv);
 
+        if(!isNaN(an) && !isNaN(bn)){
+            return asc ? an - bn : bn - an;
+        }
+
+        return asc ? av.localeCompare(bv) : bv.localeCompare(av);
     });
 
-    return map;
-
-}
-
-// =====================================
-// SORTABLE TABLES
-// =====================================
-
-function makeSortable(tableId) {
-
-    const table = document.getElementById(tableId);
-
-    const headers = table.querySelectorAll("th");
-
-    headers.forEach((header, index) => {
-
-        header.addEventListener("click", () => {
-
-            const tbody = table.querySelector("tbody");
-
-            const rows = [
-                ...tbody.querySelectorAll("tr")
-            ];
-
-            const ascending =
-                !header.classList.contains("asc");
-
-            headers.forEach(h => {
-
-                h.classList.remove("asc");
-                h.classList.remove("desc");
-
-            });
-
-            header.classList.add(
-                ascending ? "asc" : "desc"
+    tbody.innerHTML = '';
+    rows.forEach(r=>tbody.appendChild(r));
+    table.dataset.sort = asc ? 'asc' : 'desc';
 }

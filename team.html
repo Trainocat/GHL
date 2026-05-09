@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html><head>
+<html>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Team</title>
@@ -9,7 +10,11 @@
 
 <header>
 <div class="nav">
-<a class="brand" href="index.html"><img src="GHL.png"><span>GHL</span></a>
+<a class="brand" href="index.html">
+<img src="GHL.png">
+<span>GHL</span>
+</a>
+
 <div class="links">
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
@@ -24,13 +29,22 @@
 
 <div class="container">
 
-<div class="hero"><h1 id="name">Team</h1><p id="record"></p></div>
-<table id="roster">
-<thead><tr>
-<th onclick="sortTable('roster',0)">Player</th>
-<th onclick="sortTable('roster',1)">Pos</th>
-<th onclick="sortTable('roster',2)">OVR</th>
-</tr></thead>
+<div class="hero">
+<div>
+<h1 id="teamName"></h1>
+<p id="teamRecord"></p>
+</div>
+<img id="teamLogo">
+</div>
+
+<table id="rosterTable">
+<thead>
+<tr>
+<th onclick="sortTable('rosterTable',0)">Player</th>
+<th onclick="sortTable('rosterTable',1)">Pos</th>
+<th onclick="sortTable('rosterTable',2)">OVR</th>
+</tr>
+</thead>
 <tbody id="rosterBody"></tbody>
 </table>
 
@@ -38,22 +52,41 @@
 <script src="app.js"></script>
 <script>
 
-const tid=Number(new URLSearchParams(location.search).get('tid'));
+const tid = Number(new URLSearchParams(location.search).get('tid'));
+
 loadLeague().then(data=>{
- const team=data.teams.find(t=>t.tid===tid);
- const s=latestSeason(team);
- document.getElementById('name').innerHTML=getTeamName(team);
- document.getElementById('record').innerHTML=`${s.won||0}-${s.lost||0}-${s.otl||0}`;
- document.getElementById('rosterBody').innerHTML=
- data.players.filter(p=>p.tid===tid).map(p=>{
- const r=latestRating(p);
- return `<tr>
- <td><a href="player.html?pid=${p.pid}">${p.firstName} ${p.lastName}</a></td>
- <td>${r.pos||''}</td>
- <td>${r.ovr||0}</td>
- </tr>`
- }).join('');
+
+const team = data.teams.find(t=>t.tid===tid);
+
+document.getElementById('teamName').innerText = getTeamName(team);
+document.getElementById('teamLogo').src = getTeamLogo(team);
+
+const s = latestSeason(team);
+
+document.getElementById('teamRecord').innerText =
+`${s.won||0}-${s.lost||0}-${s.otl||0}`;
+
+document.getElementById('rosterBody').innerHTML =
+data.players
+.filter(p=>p.tid===tid)
+.map(p=>{
+const r = latestRating(p);
+
+return `
+<tr>
+<td>
+<a href="player.html?pid=${p.pid}">
+${p.firstName} ${p.lastName}
+</a>
+</td>
+<td>${r.pos||''}</td>
+<td>${r.ovr||0}</td>
+</tr>
+`;
+}).join('');
+
 });
 
 </script>
-</body></html>
+</body>
+</html>

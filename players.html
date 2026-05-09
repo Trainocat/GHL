@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html><head>
+<html>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Players</title>
@@ -9,7 +10,11 @@
 
 <header>
 <div class="nav">
-<a class="brand" href="index.html"><img src="GHL.png"><span>GHL</span></a>
+<a class="brand" href="index.html">
+<img src="GHL.png">
+<span>GHL</span>
+</a>
+
 <div class="links">
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
@@ -24,15 +29,18 @@
 
 <div class="container">
 
-<div class="section-title">Players</div>
-<table id="players">
-<thead><tr>
-<th onclick="sortTable('players',0)">Player</th>
-<th onclick="sortTable('players',1)">Pos</th>
-<th onclick="sortTable('players',2)">G</th>
-<th onclick="sortTable('players',3)">A</th>
-<th onclick="sortTable('players',4)">PTS</th>
-</tr></thead>
+<div class="page-title">Players</div>
+
+<table id="playersTable">
+<thead>
+<tr>
+<th onclick="sortTable('playersTable',0)">Player</th>
+<th onclick="sortTable('playersTable',1)">Pos</th>
+<th onclick="sortTable('playersTable',2)">G</th>
+<th onclick="sortTable('playersTable',3)">A</th>
+<th onclick="sortTable('playersTable',4)">PTS</th>
+</tr>
+</thead>
 <tbody id="playersBody"></tbody>
 </table>
 
@@ -41,21 +49,34 @@
 <script>
 
 loadLeague().then(data=>{
- document.getElementById('playersBody').innerHTML=
- data.players.map(p=>{
- const s=latestStats(p);
- const r=latestRating(p);
- const g=(s.evG||0)+(s.ppG||0)+(s.shG||0);
- const a=(s.evA||0)+(s.ppA||0)+(s.shA||0);
- return `<tr>
- <td><a href="player.html?pid=${p.pid}">${p.firstName} ${p.lastName}</a></td>
- <td>${r.pos||''}</td>
- <td>${g}</td>
- <td>${a}</td>
- <td>${g+a}</td>
- </tr>`
- }).join('');
+
+document.getElementById('playersBody').innerHTML =
+data.players.map(p=>{
+
+const s = latestStats(p);
+const r = latestRating(p);
+
+const g = (s.evG||0)+(s.ppG||0)+(s.shG||0);
+const a = (s.evA||0)+(s.ppA||0)+(s.shA||0);
+
+return `
+<tr>
+<td>
+<a href="player.html?pid=${p.pid}">
+${p.firstName} ${p.lastName}
+</a>
+</td>
+<td>${r.pos||''}</td>
+<td>${g}</td>
+<td>${a}</td>
+<td>${g+a}</td>
+</tr>
+`;
+
+}).join('');
+
 });
 
 </script>
-</body></html>
+</body>
+</html>

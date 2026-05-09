@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html><head>
+<html>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Draft</title>
@@ -9,7 +10,11 @@
 
 <header>
 <div class="nav">
-<a class="brand" href="index.html"><img src="GHL.png"><span>GHL</span></a>
+<a class="brand" href="index.html">
+<img src="GHL.png">
+<span>GHL</span>
+</a>
+
 <div class="links">
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
@@ -24,13 +29,17 @@
 
 <div class="container">
 
-<div class="section-title">Draft</div>
-<table id="prospects">
-<thead><tr>
-<th onclick="sortTable('prospects',0)">Player</th>
-<th onclick="sortTable('prospects',1)">POT</th>
-</tr></thead>
-<tbody id="prospectsBody"></tbody>
+<div class="page-title">Draft Prospects</div>
+
+<table id="draftTable">
+<thead>
+<tr>
+<th onclick="sortTable('draftTable',0)">Player</th>
+<th onclick="sortTable('draftTable',1)">Pos</th>
+<th onclick="sortTable('draftTable',2)">POT</th>
+</tr>
+</thead>
+<tbody id="draftBody"></tbody>
 </table>
 
 </div>
@@ -38,12 +47,22 @@
 <script>
 
 loadLeague().then(data=>{
- document.getElementById('prospectsBody').innerHTML=
- data.players.map(p=>{
- const r=latestRating(p);
- return `<tr><td>${p.firstName} ${p.lastName}</td><td>${r.pot||0}</td></tr>`
- }).join('');
+
+document.getElementById('draftBody').innerHTML =
+data.players.map(p=>{
+const r = latestRating(p);
+
+return `
+<tr>
+<td>${p.firstName} ${p.lastName}</td>
+<td>${r.pos||''}</td>
+<td>${r.pot||0}</td>
+</tr>
+`;
+}).join('');
+
 });
 
 </script>
-</body></html>
+</body>
+</html>

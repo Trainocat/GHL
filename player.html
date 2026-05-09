@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html><head>
+<html>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Player</title>
@@ -9,7 +10,11 @@
 
 <header>
 <div class="nav">
-<a class="brand" href="index.html"><img src="GHL.png"><span>GHL</span></a>
+<a class="brand" href="index.html">
+<img src="GHL.png">
+<span>GHL</span>
+</a>
+
 <div class="links">
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
@@ -24,11 +29,21 @@
 
 <div class="container">
 
-<div class="hero"><h1 id="pname"></h1><p id="meta"></p></div>
-<table id="stats">
-<thead><tr>
-<th>Season</th><th>GP</th><th>PTS</th>
-</tr></thead>
+<div class="hero">
+<div>
+<h1 id="playerName"></h1>
+<p id="playerMeta"></p>
+</div>
+</div>
+
+<table id="statsTable">
+<thead>
+<tr>
+<th>Season</th>
+<th>GP</th>
+<th>PTS</th>
+</tr>
+</thead>
 <tbody id="statsBody"></tbody>
 </table>
 
@@ -36,18 +51,38 @@
 <script src="app.js"></script>
 <script>
 
-const pid=Number(new URLSearchParams(location.search).get('pid'));
+const pid = Number(new URLSearchParams(location.search).get('pid'));
+
 loadLeague().then(data=>{
- const p=data.players.find(p=>p.pid===pid);
- const r=latestRating(p);
- document.getElementById('pname').innerHTML=`${p.firstName} ${p.lastName}`;
- document.getElementById('meta').innerHTML=`${r.pos||''} • OVR ${r.ovr||0}`;
- document.getElementById('statsBody').innerHTML=
- p.stats.map(s=>{
- const pts=(s.evG||0)+(s.ppG||0)+(s.shG||0)+(s.evA||0)+(s.ppA||0)+(s.shA||0);
- return `<tr><td>${s.season||''}</td><td>${s.gp||0}</td><td>${pts}</td></tr>`
- }).join('');
+
+const p = data.players.find(p=>p.pid===pid);
+const r = latestRating(p);
+
+document.getElementById('playerName').innerText =
+`${p.firstName} ${p.lastName}`;
+
+document.getElementById('playerMeta').innerText =
+`${r.pos||''} • OVR ${r.ovr||0}`;
+
+document.getElementById('statsBody').innerHTML =
+p.stats.map(s=>{
+
+const pts =
+(s.evG||0)+(s.ppG||0)+(s.shG||0)+
+(s.evA||0)+(s.ppA||0)+(s.shA||0);
+
+return `
+<tr>
+<td>${s.season||''}</td>
+<td>${s.gp||0}</td>
+<td>${pts}</td>
+</tr>
+`;
+
+}).join('');
+
 });
 
 </script>
-</body></html>
+</body>
+</html>

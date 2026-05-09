@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html><head>
+<html>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Teams</title>
@@ -9,7 +10,11 @@
 
 <header>
 <div class="nav">
-<a class="brand" href="index.html"><img src="GHL.png"><span>GHL</span></a>
+<a class="brand" href="index.html">
+<img src="GHL.png">
+<span>GHL</span>
+</a>
+
 <div class="links">
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
@@ -24,14 +29,17 @@
 
 <div class="container">
 
-<div class="section-title">Teams</div>
-<table id="teams">
-<thead><tr>
-<th onclick="sortTable('teams',0)">Team</th>
-<th onclick="sortTable('teams',1)">Conference</th>
-<th onclick="sortTable('teams',2)">Division</th>
-<th onclick="sortTable('teams',3)">PTS</th>
-</tr></thead>
+<div class="page-title">Teams</div>
+
+<table id="teamsTable">
+<thead>
+<tr>
+<th onclick="sortTable('teamsTable',0)">Team</th>
+<th onclick="sortTable('teamsTable',1)">Conference</th>
+<th onclick="sortTable('teamsTable',2)">Division</th>
+<th onclick="sortTable('teamsTable',3)">PTS</th>
+</tr>
+</thead>
 <tbody id="teamsBody"></tbody>
 </table>
 
@@ -40,18 +48,32 @@
 <script>
 
 loadLeague().then(data=>{
- document.getElementById('teamsBody').innerHTML=
- [...data.teams].sort((a,b)=>getTeamName(a).localeCompare(getTeamName(b)))
- .map(t=>{
- const s=latestSeason(t);
- return `<tr>
- <td><a href="team.html?tid=${t.tid}"><div class="teamcell"><img class="logo" src="${getTeamLogo(t)}">${getTeamName(t)}</div></a></td>
- <td>${t.cid}</td>
- <td>${t.did}</td>
- <td>${s.pts||0}</td>
- </tr>`
- }).join('');
+
+document.getElementById('teamsBody').innerHTML =
+[...data.teams]
+.sort((a,b)=>getTeamName(a).localeCompare(getTeamName(b)))
+.map(t=>{
+const s = latestSeason(t);
+
+return `
+<tr>
+<td>
+<a href="team.html?tid=${t.tid}">
+<div class="teamcell">
+<img class="logo" src="${getTeamLogo(t)}">
+<span>${getTeamName(t)}</span>
+</div>
+</a>
+</td>
+<td>${t.cid}</td>
+<td>${t.did}</td>
+<td>${s.pts||0}</td>
+</tr>
+`;
+}).join('');
+
 });
 
 </script>
-</body></html>
+</body>
+</html>

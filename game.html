@@ -1,15 +1,20 @@
 <!DOCTYPE html>
-<html><head>
+<html>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Game</title>
+<title>Game Centre</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header>
 <div class="nav">
-<a class="brand" href="index.html"><img src="GHL.png"><span>GHL</span></a>
+<a class="brand" href="index.html">
+<img src="GHL.png">
+<span>GHL</span>
+</a>
+
 <div class="links">
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
@@ -24,9 +29,21 @@
 
 <div class="container">
 
-<div class="hero"><h1 id="title"></h1></div>
-<table id="summary">
-<thead><tr><th>Period</th><th>Scorer</th></tr></thead>
+<div class="page-title">Game Centre</div>
+
+<div class="card">
+<h2 id="gameTitle"></h2>
+</div>
+
+<br>
+
+<table id="summaryTable">
+<thead>
+<tr>
+<th>Period</th>
+<th>Scorer</th>
+</tr>
+</thead>
 <tbody id="summaryBody"></tbody>
 </table>
 
@@ -34,14 +51,26 @@
 <script src="app.js"></script>
 <script>
 
-const gid=Number(new URLSearchParams(location.search).get('gid'));
+const gid = Number(new URLSearchParams(location.search).get('gid'));
+
 loadLeague().then(data=>{
- const teams={}; data.teams.forEach(t=>teams[t.tid]=t);
- const g=data.games.find(g=>g.gid===gid)||data.games[0];
- document.getElementById('title').innerHTML=`${teams[g.won.tid]?.abbrev} ${g.won.pts} - ${g.lost.pts} ${teams[g.lost.tid]?.abbrev}`;
- document.getElementById('summaryBody').innerHTML=
- (g.scoringSummary||[]).map(s=>`<tr><td>${s.quarter||''}</td><td>${s.names?.[0]||''}</td></tr>`).join('');
+
+const teams = buildTeamMap(data);
+const g = data.games.find(x=>x.gid===gid) || data.games[0];
+
+document.getElementById('gameTitle').innerText =
+`${teams[g.won.tid]?.abbrev||''} ${g.won.pts} - ${g.lost.pts} ${teams[g.lost.tid]?.abbrev||''}`;
+
+document.getElementById('summaryBody').innerHTML =
+(g.scoringSummary||[]).map(s=>`
+<tr>
+<td>${s.quarter||''}</td>
+<td>${s.names?.[0]||''}</td>
+</tr>
+`).join('');
+
 });
 
 </script>
-</body></html>
+</body>
+</html>
