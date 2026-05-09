@@ -30,7 +30,7 @@
     }
 
     .container {
-      max-width: 1100px;
+      max-width: 1200px;
       margin: auto;
       padding: 20px;
     }
@@ -41,7 +41,7 @@
 
     .games-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
       gap: 15px;
     }
 
@@ -60,30 +60,14 @@
 
     .team-row {
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       padding: 8px 0;
     }
 
-    .team-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    .team-name {
       font-weight: bold;
-    }
-
-    .team-logo {
-      width: 32px;
-      height: 32px;
-      object-fit: contain;
-      background: rgba(255,255,255,0.05);
-      border-radius: 50%;
-      padding: 2px;
-    }
-
-    .score {
-      font-size: 24px;
-      font-weight: bold;
+      font-size: 17px;
     }
 
     .winner {
@@ -92,15 +76,20 @@
 
     .loser {
       color: #f87171;
-      opacity: 0.8;
+      opacity: 0.85;
+    }
+
+    .score {
+      font-size: 28px;
+      font-weight: bold;
     }
 
     .meta {
       margin-top: 10px;
-      font-size: 13px;
-      color: #9ca3af;
-      border-top: 1px solid #243152;
       padding-top: 8px;
+      border-top: 1px solid #243152;
+      color: #94a3b8;
+      font-size: 13px;
     }
   </style>
 </head>
@@ -123,7 +112,7 @@
   <h1>Latest Games</h1>
 
   <div id="games" class="games-grid">
-    Loading...
+    Loading games...
   </div>
 
 </div>
@@ -136,55 +125,36 @@ fetch("league.json")
   const teams = data.teams || [];
   const games = data.games || [];
 
-  // TEAM LOOKUP
+  // Build team lookup
   const teamMap = {};
 
   teams.forEach(t => {
     teamMap[t.tid] = {
-      name: `${t.region} ${t.name}`.trim(),
-      logo: t.imgURL
+      name: `${t.region} ${t.name}`.trim()
     };
   });
 
-  // SORT NEWEST FIRST
+  // newest first
   games.sort((a, b) => (b.day || 0) - (a.day || 0));
 
   const html = games.slice(0, 20).map(g => {
 
-    const winTid = g.won?.tid;
-    const loseTid = g.lost?.tid;
-
-    const winner = teamMap[winTid];
-    const loser = teamMap[loseTid];
+    const winner = teamMap[g.won.tid];
+    const loser = teamMap[g.lost.tid];
 
     if (!winner || !loser) return "";
-
-    const winPts = g.won?.pts ?? 0;
-    const losePts = g.lost?.pts ?? 0;
 
     return `
       <div class="game-card">
 
         <div class="team-row winner">
-          <div class="team-info">
-            <img class="team-logo" src="${winner.logo}">
-            ${winner.name}
-          </div>
-
-          <div class="score">
-            ${winPts}
-          </div>
+          <div class="team-name">${winner.name}</div>
+          <div class="score">${g.won.pts}</div>
         </div>
 
         <div class="team-row loser">
-          <div class="team-info">
-            <img class="team-logo" src="${loser.logo}">
-            ${loser.name}
-          </div>
-
-          <div class="score">
-            ${losePts}
-          </div>
+          <div class="team-name">${loser.name}</div>
+          <div class="score">${g.lost.pts}</div>
         </div>
 
         <div class="meta">
