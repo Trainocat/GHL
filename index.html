@@ -1,54 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>GHL Debug</title>
+<style>
+body { font-family: Arial; background:#0b1020; color:white; padding:20px; }
+pre { background:#111; padding:10px; overflow:auto; }
+</style>
+</head>
+<body>
+
+<h1>GHL Debug Mode</h1>
+<div id="games">Loading...</div>
+
 <script>
+try {
+
 fetch("league.json")
 .then(r => r.json())
 .then(data => {
 
-  const games = data.games || [];
-  const teams = data.teams || [];
+  console.log("DATA LOADED", data);
 
-  // 🧠 Build lookup: teamId → "City TeamName"
+  const games = data.games;
+  const teams = data.teams;
+
+  if (!games || !teams) {
+    throw new Error("Missing games or teams in league.json");
+  }
+
   const teamMap = {};
 
   teams.forEach(t => {
-    const name = `${t.region || ""} ${t.name || ""}`.trim();
-    teamMap[t.id] = name;
+    teamMap[t.id] = `${t.region || ""} ${t.name || ""}`.trim();
   });
 
-  if (!games.length) {
-    document.getElementById("games").innerHTML = "<p>No games found.</p>";
-    return;
-  }
+  document.getElementById("games").innerHTML =
+    games.slice(0,10).map(g => {
 
-  // Sort newest first
-  games.sort((a, b) => (b.day ?? b.gid ?? 0) - (a.day ?? a.gid ?? 0));
+      const away = teamMap[g.awayTid] || g.awayTid;
+      const home = teamMap[g.homeTid] || g.homeTid;
 
-  const html = games.slice(0, 25).map(g => {
-
-    // 🔁 Convert IDs → names
-    const awayName = teamMap[g.awayTid] || g.awayTeamName || g.away || "Away";
-    const homeName = teamMap[g.homeTid] || g.homeTeamName || g.home || "Home";
-
-    const awayScore = g.awayScore ?? 0;
-    const homeScore = g.homeScore ?? 0;
-
-    let line = `<b>${awayName}</b> ${awayScore} - ${homeScore} <b>${homeName}</b>`;
-
-    if (g.overtime || g.overtimes > 0) {
-      line += " (OT)";
-    }
-
-    return `
-      <div style="padding:10px;border-bottom:1px solid #27314f;">
-        ${line}
-      </div>
-    `;
-  }).join("");
-
-  document.getElementById("games").innerHTML = html;
+      return `<div>${away} ${g.awayScore} - ${g.homeScore} ${home}</div>`;
+    }).join("");
 
 })
 .catch(err => {
-  document.getElementById("games").innerHTML =
-    "Error loading games: " + err.message;
+  document.body.innerHTML += "<pre>" + err.stack + "</pre>";
 });
+
+} catch (e) {
+  document.body.innerHTML += "<pre>FATAL ERROR:\n" + e.stack + "</pre>";
+}
 </script>
+
+</body>
+</html>
