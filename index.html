@@ -1,70 +1,20 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>GHL - Home</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-<nav>
-  <a href="index.html">Home</a>
-  <a href="standings.html">Standings</a>
-  <a href="teams.html">Teams</a>
-  <a href="players.html">Players</a>
-  <a href="schedule.html">Schedule</a>
-  <a href="playoffs.html">Playoffs</a>
-</nav>
-
-<h1>Latest Games</h1>
-
-<div id="games">Loading games...</div>
-
 <script>
 fetch("league.json")
 .then(r => r.json())
 .then(data => {
 
-  // Try to locate games in different possible ZenGM structures
-  const games =
-    data.games ||
-    data.gameAttributes?.games ||
-    data.gameLog ||
-    [];
+  console.log("FULL DATA:", data);
 
-  if (!games.length) {
-    document.getElementById("games").innerHTML =
-      "<p>No games found in this export.</p>";
-    return;
-  }
+  // show top-level keys
+  document.body.innerHTML = `
+    <h1>ZenGM Debug</h1>
+    <p>Open DevTools (F12) → Console</p>
 
-  // Sort newest first if timestamp exists
-  games.sort((a, b) => (b.day || 0) - (a.day || 0));
+    <pre style="white-space:pre-wrap;background:#111;padding:10px;">
+Top-level keys:
+${Object.keys(data).join("\n")}
+    </pre>
+  `;
 
-  const output = games.slice(0, 20).map(g => {
-
-    const away = g.awayTeam || "Away";
-    const home = g.homeTeam || "Home";
-
-    const awayScore = g.awayScore ?? "?";
-    const homeScore = g.homeScore ?? "?";
-
-    const overtime = g.overtime ? " (OT)" : "";
-
-    return `
-      <div style="padding:10px;border-bottom:1px solid #27314f;">
-        <b>${away}</b> ${awayScore} - ${homeScore} <b>${home}</b>${overtime}
-      </div>
-    `;
-  }).join("");
-
-  document.getElementById("games").innerHTML = output;
-
-})
-.catch(err => {
-  document.getElementById("games").innerHTML =
-    "Error loading games: " + err.message;
 });
 </script>
-
-</body>
-</html>
