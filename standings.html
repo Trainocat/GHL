@@ -1,1 +1,109 @@
-<!DOCTYPE html><html><head><title>Standings</title><link rel='stylesheet' href='style.css'></head><body><header><div class='navbar'><div class='logo'>GHL</div></div></header><div class='page'><div class='page-title'>Standings</div><table class='standings-table'><thead><tr><th>Team</th><th>W</th><th>L</th><th>OTL</th><th>PTS</th></tr></thead><tbody id='standings'></tbody></table></div><script>fetch('league.json').then(r=>r.json()).then(data=>{const teams=[...data.teams].sort((a,b)=>(b.seasons?.at(-1)?.pts||0)-(a.seasons?.at(-1)?.pts||0));document.getElementById('standings').innerHTML=teams.map(t=>{const s=t.seasons?.at(-1)||{};return `<tr><td><div class='team-cell'><img class='team-logo' src='${t.imgURL||''}'><a href='team.html?tid=${t.tid}'>${t.region} ${t.name}</a></div></td><td>${s.won||0}</td><td>${s.lost||0}</td><td>${s.otl||0}</td><td>${s.pts||0}</td></tr>`}).join('')})</script></body></html>
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Standings</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+<div class="navbar">
+<div class="brand">
+<img src="GHL.png">
+<div class="logo-text">GHL</div>
+</div>
+<nav>
+<a href="index.html">Home</a>
+<a href="standings.html">Standings</a>
+<a href="teams.html">Teams</a>
+<a href="players.html">Players</a>
+<a href="draft.html">Draft</a>
+<a href="schedule.html">Schedule</a>
+</nav>
+</div>
+</header>
+
+<div class="page">
+<div class="section-title">Standings</div>
+
+<div class="controls">
+<select id="sort">
+<option value="pts">Points</option>
+<option value="won">Wins</option>
+<option value="diff">Goal Differential</option>
+</select>
+</div>
+
+<table class="standings-table">
+<thead>
+<tr>
+<th>Team</th>
+<th>W</th>
+<th>L</th>
+<th>OTL</th>
+<th>PTS</th>
+</tr>
+</thead>
+<tbody id="standings"></tbody>
+</table>
+
+</div>
+
+<script>
+let teams;
+
+fetch("league.json")
+.then(r=>r.json())
+.then(data=>{
+
+teams = data.teams;
+
+render();
+
+document.getElementById("sort")
+.addEventListener("change", render);
+
+});
+
+function render(){
+
+const sort = document.getElementById("sort").value;
+
+teams.sort((a,b)=>{
+
+const sa = a.seasons?.at(-1) || {};
+const sb = b.seasons?.at(-1) || {};
+
+if(sort==="won") return (sb.won||0)-(sa.won||0);
+
+return (sb.pts||0)-(sa.pts||0);
+
+});
+
+document.getElementById("standings").innerHTML =
+teams.map(t=>{
+
+const s=t.seasons?.at(-1)||{};
+
+return `
+<tr>
+<td>
+<div class="team-cell">
+<img class="team-logo" src="${t.imgURL||''}">
+<a href="team.html?tid=${t.tid}">${t.region} ${t.name}</a>
+</div>
+</td>
+<td>${s.won||0}</td>
+<td>${s.lost||0}</td>
+<td>${s.otl||0}</td>
+<td>${s.pts||0}</td>
+</tr>
+`;
+
+}).join('');
+
+}
+</script>
+</body>
+</html>

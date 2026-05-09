@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Schedule</title>
+<title>Draft</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -25,9 +25,13 @@
 </header>
 
 <div class="page">
-<div class="section-title">Schedule</div>
-<div class="games-grid" id="schedule"></div>
+
+<div class="section-title">Draft Lottery</div>
+
+<div class="news-grid" id="draft"></div>
+
 </div>
+
 <script>
 fetch("league.json")
 .then(r=>r.json())
@@ -36,24 +40,23 @@ fetch("league.json")
 const teams={};
 data.teams.forEach(t=>teams[t.tid]=t);
 
-document.getElementById("schedule").innerHTML =
-data.games.slice(-30).map(g=>`
-<div class="card game-card">
-<div class="team-row">
-<div class="team-left">
-<img src="${teams[g.won.tid]?.imgURL||''}">
-<div>${teams[g.won.tid]?.region} ${teams[g.won.tid]?.name}</div>
-</div>
-<div class="score">${g.won.pts}</div>
+document.getElementById("draft").innerHTML =
+(data.draftLotteryResults || []).map((d,i)=>`
+<div class="card news-card">
+
+<div class="news-top">
+<div class="meta">Pick #${i+1}</div>
+<div class="tag">Draft</div>
 </div>
 
-<div class="team-row">
-<div class="team-left">
-<img src="${teams[g.lost.tid]?.imgURL||''}">
-<div>${teams[g.lost.tid]?.region} ${teams[g.lost.tid]?.name}</div>
+<div class="news-title">
+${teams[d.tid]?.region} ${teams[d.tid]?.name}
 </div>
-<div class="score">${g.lost.pts}</div>
+
+<div class="meta">
+Won draft lottery positioning
 </div>
+
 </div>
 `).join('');
 

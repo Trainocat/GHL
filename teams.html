@@ -1,1 +1,88 @@
-<!DOCTYPE html><html><head><title>Teams</title><link rel='stylesheet' href='style.css'></head><body><header><div class='navbar'><div class='logo'>GHL</div></div></header><div class='page'><div class='page-title'>Teams</div><div class='teams-grid' id='teams'></div></div><script>fetch('league.json').then(r=>r.json()).then(data=>{document.getElementById('teams').innerHTML=[...data.teams].sort((a,b)=>(a.region+a.name).localeCompare(b.region+b.name)).map(t=>`<a href='team.html?tid=${t.tid}'><div class='team-card'><img class='team-logo' src='${t.imgURL||''}'><div class='team-name'>${t.region} ${t.name}</div><div class='meta'>${t.abbrev}</div></div></a>`).join('')})</script></body></html>
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Teams</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+<div class="navbar">
+<div class="brand">
+<img src="GHL.png">
+<div class="logo-text">GHL</div>
+</div>
+<nav>
+<a href="index.html">Home</a>
+<a href="standings.html">Standings</a>
+<a href="teams.html">Teams</a>
+<a href="players.html">Players</a>
+<a href="draft.html">Draft</a>
+<a href="schedule.html">Schedule</a>
+</nav>
+</div>
+</header>
+
+<div class="page">
+<div class="section-title">Teams</div>
+<div class="teams-grid" id="teams"></div>
+</div>
+
+<script>
+fetch("league.json")
+.then(r=>r.json())
+.then(data=>{
+
+document.getElementById("teams").innerHTML =
+[...data.teams]
+.sort((a,b)=>(a.region+a.name).localeCompare(b.region+b.name))
+.map(t=>{
+
+const s=t.seasons?.at(-1)||{};
+
+return `
+<a href="team.html?tid=${t.tid}">
+<div class="card team-card">
+
+<img class="team-logo" src="${t.imgURL||''}">
+
+<div class="team-name">
+${t.region} ${t.name}
+</div>
+
+<div class="meta">${t.abbrev}</div>
+
+<div class="stat-grid">
+
+<div class="stat-box">
+<div class="stat-label">W</div>
+<div class="stat-value">${s.won||0}</div>
+</div>
+
+<div class="stat-box">
+<div class="stat-label">L</div>
+<div class="stat-value">${s.lost||0}</div>
+</div>
+
+<div class="stat-box">
+<div class="stat-label">OTL</div>
+<div class="stat-value">${s.otl||0}</div>
+</div>
+
+<div class="stat-box">
+<div class="stat-label">PTS</div>
+<div class="stat-value">${s.pts||0}</div>
+</div>
+
+</div>
+</div>
+</a>
+`;
+
+}).join('');
+
+});
+</script>
+</body>
+</html>
