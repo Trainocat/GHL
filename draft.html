@@ -1,33 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GHL Draft Centre</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+
+<div class="nav">
+
+<div class="brand">
+<img src="GHL.png">
+<span>GHL</span>
+</div>
+
+<div class="links">
+<a href="index.html">Home</a>
+<a href="standings.html">Standings</a>
+<a href="teams.html">Teams</a>
+<a href="players.html">Players</a>
+<a href="draft.html">Draft</a>
+<a href="schedule.html">Schedule</a>
+</div>
+
+</div>
+
+</header>
+
+<div class="page">
+
+<div class="section">
+2026 Draft Centre
+</div>
+
+<div class="hero">
+
+<div>
+
+<h1>
+GHL Entry Draft
+</h1>
+
+<p class="meta">
+Lottery order, top prospects, and future stars.
+</p>
+
+</div>
+
+<img src="GHL.png">
+
+</div>
+
+<div class="section">
+Draft Order
+</div>
+
+<table>
+
+<thead>
+
+<tr>
+<th>#</th>
+<th>Team</th>
+<th>Record</th>
+<th>PTS</th>
+<th>GF</th>
+<th>GA</th>
+<th>DIFF</th>
+</tr>
+
+</thead>
+
+<tbody id="draftOrder"></tbody>
+
+</table>
+
+<div class="section">
+Top Prospects
+</div>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>#</th>
+<th>Player</th>
+<th>POS</th>
+<th>Age</th>
+<th>OVR</th>
+<th>POT</th>
+<th>GP</th>
+<th>G</th>
+<th>A</th>
+<th>PTS</th>
+
+</tr>
+
+</thead>
+
+<tbody id="prospects"></tbody>
+
+</table>
+
+</div>
+
 <script>
 
 fetch("league.json")
+
 .then(r => r.json())
+
 .then(data => {
 
 const teams = {};
-data.teams.forEach(t => teams[t.tid] = t);
+
+data.teams.forEach(t => {
+teams[t.tid] = t;
+});
 
 /*
-REAL DRAFT ORDER
-Uses draftLotteryResults if available
-Falls back to reverse standings if not
+========================
+DRAFT ORDER
+========================
 */
 
-let draftOrder = [];
+let order = [];
 
 if(data.draftLotteryResults && data.draftLotteryResults.length){
 
-draftOrder = data.draftLotteryResults.map((pick,index)=>{
+order = data.draftLotteryResults.map((pick,index)=>{
 
 const team = teams[pick.tid];
 
-const season = team?.seasons?.at(-1) || {};
+const s = team?.seasons?.at(-1) || {};
 
 return {
 
 pick:index + 1,
 team,
-season
+season:s
 
 };
 
@@ -35,9 +152,7 @@ season
 
 } else {
 
-/* fallback */
-
-draftOrder = [...data.teams]
+order = [...data.teams]
 
 .sort((a,b)=>{
 
@@ -60,7 +175,13 @@ season:team.seasons?.at(-1) || {}
 
 document.getElementById("draftOrder").innerHTML =
 
-draftOrder.map(d => `
+order.map(d => {
+
+const diff =
+(d.season.gf || 0) -
+(d.season.ga || 0);
+
+return `
 
 <tr>
 
@@ -87,14 +208,141 @@ ${d.team?.region} ${d.team?.name}
 </td>
 
 <td>
+
 ${d.season.won || 0}-
 ${d.season.lost || 0}-
 ${d.season.otl || 0}
+
 </td>
 
 <td>
 ${d.season.pts || 0}
 </td>
+
+<td>
+${d.season.gf || 0}
+</td>
+
+<td>
+${d.season.ga || 0}
+</td>
+
+<td>
+${diff}
+</td>
+
+</tr>
+
+`;
+
+}).join("");
+
+/*
+========================
+TOP PROSPECTS
+========================
+*/
+
+const prospects = data.players
+
+.filter(p => {
+
+const age =
+2026 - (p.born?.year || 2000);
+
+return age <= 20;
+
+})
+
+.map(p => {
+
+const rating =
+p.ratings?.at(-1) || {};
+
+const stats =
+p.stats?.at(-1) || {};
+
+const goals =
+(stats.evG || 0) +
+(stats.ppG || 0) +
+(stats.shG || 0);
+
+const assists =
+(stats.evA || 0) +
+(stats.ppA || 0) +
+(stats.shA || 0);
+
+return {
+
+pid:p.pid,
+
+name:
+p.firstName +
+' ' +
+p.lastName,
+
+pos:
+rating.pos || '',
+
+ovr:
+rating.ovr || 0,
+
+pot:
+rating.pot || 0,
+
+gp:
+stats.gp || 0,
+
+goals,
+assists,
+
+points:
+goals + assists,
+
+age:
+2026 - (p.born?.year || 2000)
+
+};
+
+})
+
+.sort((a,b)=>b.pot-a.pot)
+
+.slice(0,50);
+
+document.getElementById("prospects").innerHTML =
+
+prospects.map((p,index)=>`
+
+<tr>
+
+<td>
+${index+1}
+</td>
+
+<td>
+
+<a href="player.html?pid=${p.pid}">
+${p.name}
+</a>
+
+</td>
+
+<td>${p.pos}</td>
+
+<td>${p.age}</td>
+
+<td>${p.ovr}</td>
+
+<td>${p.pot}</td>
+
+<td>${p.gp}</td>
+
+<td>${p.goals}</td>
+
+<td>${p.assists}</td>
+
+<td>${p.points}</td>
 
 </tr>
 
@@ -103,3 +351,6 @@ ${d.season.pts || 0}
 });
 
 </script>
+
+</body>
+</html>
