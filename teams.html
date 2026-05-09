@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Teams - GHL</title>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Standings</a> |
+  <a href="teams.html">Teams</a> |
+  <a href="players.html">Players</a> |
+  <a href="schedule.html">Schedule</a> |
+  <a href="playoffs.html">Playoffs</a>
+</nav>
+
+<h1>Teams</h1>
+
+<div id="teams"></div>
+
+<script>
+fetch("league.json")
+  .then(r => r.json())
+  .then(data => {
+    const teams = data.teams || [];
+    document.getElementById("teams").innerHTML =
+      teams.map(t =>
+        `<p><b>${t.region} ${t.name}</b></p>`
+      ).join("");
+  });
+</script>
+
+</body>
+</html>
