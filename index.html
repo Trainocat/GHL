@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ZenGM League Viewer</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: #0b1020;
+    color: white;
+  }
+
+  h1 {
+    margin-bottom: 5px;
+  }
+
+  .sub {
+    color: #aab3d6;
+    margin-bottom: 20px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #151c33;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  th, td {
+    padding: 10px;
+    border-bottom: 1px solid #27314f;
+    text-align: left;
+  }
+
+  th {
+    background: #1d2747;
+  }
+
+  tr:hover {
+    background: #1a2441;
+  }
+
+  .error {
+    background: #5a1f1f;
+    padding: 10px;
+    margin-top: 15px;
+    border-radius: 6px;
+  }
+
+  .box {
+    background: #151c33;
+    padding: 10px;
+    margin-top: 15px;
+    border-radius: 6px;
+    white-space: pre-wrap;
+    overflow-x: auto;
+  }
+</style>
+</head>
+
+<body>
+
+<h1 id="title">Loading League...</h1>
+<div class="sub" id="subtitle"></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Team</th>
+      <th>W</th>
+      <th>L</th>
+      <th>OTL</th>
+      <th>PTS</th>
+    </tr>
+  </thead>
+  <tbody id="rows"></tbody>
+</table>
+
+<div id="debug"></div>
+
+<script>
+async function load() {
+  try {
+    const res = await fetch("league.json");
+
+    if (!res.ok) {
+      throw new Error("Could not load league.json (make sure it's in the same folder)");
+    }
+
+    const data = await res.json();
+
+    console.log("RAW ZEN GM DATA:", data);
+
+    // Try to find teams in different possible locations
+    let teams =
+      data.teams ||
+      data.gameAttributes?.teams ||
+      data.gameAttributes?.league?.teams ||
+      [];
+
+    // Title / season fallback
+    const leagueName =
+      data.gameAttributes?.leagueName ||
+      data.gameAttributes?.name ||
+      "ZenGM League";
+
+    const season =
+      data.gameAttributes?.season ||
+      data.season ||
+      "Unknown Season";
+
+    document.getElementById("title").textContent = leagueName;
+    document.getElementById("subtitle").textContent = "Season " + season;
+
+    if (!teams || teams.length === 0) {
+      document.getElementById("debug").innerHTML =
+        `<div class="error">
+          No teams found in file.<br><br>
+          This means your ZenGM export structure is different than expected.<br>
+          Open DevTools (F12) → Console and send me what you see.
+        </div>`;
+
+      document.getElementById("rows").innerHTML =
+        `<tr><td colspan="6">No data available</td></tr>`;
+      return;
+    }
+
+    // Build standings safely
+    const standings = teams.map(t => {
+      const s = (t.seasons && t.seasons[t.seasons.length - 1]) || {};
+
+      const w = s.won || 0;
+      const l = s.lost || 0;
+      const otl = s.otl || 0;
+      const pts = w * 2 + otl;
+
+      return {
+        name: (t.region || "") + " " + (t.name || "Team"),
+        w, l, otl, pts
+      };
+    });
+
+    standings.sort((a, b) => b.pts - a.pts || b.w - a.w);
+
+    const rows = document.getElementById("rows");
+
+    standings.forEach((t, i) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${i + 1}</td>
+        <td>${t.name}</td>
+        <td>${t.w}</td>
+        <td>${t.l}</td>
+        <td>${t.otl}</td>
+        <td>${t.pts}</td>
+      `;
+      rows.appendChild(row);
+    });
+
+  } catch (err) {
+    document.body.innerHTML = `
+      <h1>Error</h1>
+      <div class="error">${err.message}</div>
+    `;
+  }
+}
+
+load();
+</script>
+
+</body>
+</html>
