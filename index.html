@@ -1,8 +1,9 @@
-
 <!DOCTYPE html>
 <html>
 <head>
-<title>GHL</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GHL Home</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,7 +12,7 @@
 <div class="navbar">
 <div class="brand">
 <img src="GHL.png">
-<div class="logo-text">GHL</div>
+<div class="brand-text">GHL</div>
 </div>
 <nav>
 <a href="index.html">Home</a>
@@ -29,48 +30,37 @@
 <div class="hero">
 <div>
 <h1>Global Hockey League</h1>
-<p>Latest news, standings, games, and league updates.</p>
+<p>News, standings, draft coverage, and league action.</p>
 </div>
 <img src="GHL.png">
 </div>
 
 <div class="section-title">League News</div>
-<div class="news-grid" id="news"></div>
+<div class="grid" id="news"></div>
 
 <div class="section-title">Latest Games</div>
-<div class="games-grid" id="games"></div>
+<div class="grid" id="games"></div>
 
 </div>
-
 <script>
-fetch("league.json")
-.then(r=>r.json())
-.then(data=>{
 
-const teams = {};
+fetch('league.json').then(r=>r.json()).then(data=>{
+const teams={};
 data.teams.forEach(t=>teams[t.tid]=t);
 
-const events = [...(data.events || [])].reverse().slice(0,8);
+document.getElementById('news').innerHTML=
+(data.events||[]).slice(-6).reverse().map(e=>`
+<div class="card">
+<div class="meta">League News</div>
+<div class="title">${e.text||'League Update'}</div>
+</div>`).join('');
 
-document.getElementById("news").innerHTML =
-events.map(e=>`
-<div class="card news-card">
-<div class="news-top">
-<div class="meta">Season ${e.season || 2026}</div>
-<div class="tag">News</div>
-</div>
-<div class="news-title">${e.text || 'League Update'}</div>
-<div class="meta">GHL News Feed</div>
-</div>
-`).join('');
-
-document.getElementById("games").innerHTML =
-[...data.games].reverse().slice(0,12).map(g=>`
-<div class="card game-card">
-
+document.getElementById('games').innerHTML=
+data.games.slice(-8).reverse().map(g=>`
+<div class="card">
 <div class="team-row">
 <div class="team-left">
-<img src="${teams[g.won.tid]?.imgURL || ''}">
+<img class="team-logo" src="${teams[g.won.tid]?.imgURL||''}">
 <div>${teams[g.won.tid]?.region} ${teams[g.won.tid]?.name}</div>
 </div>
 <div class="score">${g.won.pts}</div>
@@ -78,20 +68,17 @@ document.getElementById("games").innerHTML =
 
 <div class="team-row">
 <div class="team-left">
-<img src="${teams[g.lost.tid]?.imgURL || ''}">
+<img class="team-logo" src="${teams[g.lost.tid]?.imgURL||''}">
 <div>${teams[g.lost.tid]?.region} ${teams[g.lost.tid]?.name}</div>
 </div>
 <div class="score">${g.lost.pts}</div>
 </div>
 
-<div class="meta">
-Season ${g.season} • Day ${g.day}
-</div>
-
+<div class="meta">Season ${g.season} • Day ${g.day}</div>
 </div>
 `).join('');
-
 });
+
 </script>
 </body>
 </html>

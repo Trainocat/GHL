@@ -1,7 +1,8 @@
-
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Schedule</title>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -11,7 +12,7 @@
 <div class="navbar">
 <div class="brand">
 <img src="GHL.png">
-<div class="logo-text">GHL</div>
+<div class="brand-text">GHL</div>
 </div>
 <nav>
 <a href="index.html">Home</a>
@@ -25,23 +26,22 @@
 </header>
 
 <div class="page">
-<div class="section-title">Schedule</div>
-<div class="games-grid" id="schedule"></div>
+
+<div class="section-title">Schedule & Results</div>
+<div class="grid" id="schedule"></div>
+
 </div>
 <script>
-fetch("league.json")
-.then(r=>r.json())
-.then(data=>{
 
+fetch('league.json').then(r=>r.json()).then(data=>{
 const teams={};
 data.teams.forEach(t=>teams[t.tid]=t);
 
-document.getElementById("schedule").innerHTML =
-data.games.slice(-30).map(g=>`
-<div class="card game-card">
+document.getElementById('schedule').innerHTML=data.games.slice(-20).reverse().map(g=>`
+<div class="card">
 <div class="team-row">
 <div class="team-left">
-<img src="${teams[g.won.tid]?.imgURL||''}">
+<img class="team-logo" src="${teams[g.won.tid]?.imgURL||''}">
 <div>${teams[g.won.tid]?.region} ${teams[g.won.tid]?.name}</div>
 </div>
 <div class="score">${g.won.pts}</div>
@@ -49,15 +49,15 @@ data.games.slice(-30).map(g=>`
 
 <div class="team-row">
 <div class="team-left">
-<img src="${teams[g.lost.tid]?.imgURL||''}">
+<img class="team-logo" src="${teams[g.lost.tid]?.imgURL||''}">
 <div>${teams[g.lost.tid]?.region} ${teams[g.lost.tid]?.name}</div>
 </div>
 <div class="score">${g.lost.pts}</div>
 </div>
 </div>
 `).join('');
-
 });
+
 </script>
 </body>
 </html>

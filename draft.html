@@ -1,7 +1,8 @@
-
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Draft</title>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -11,7 +12,7 @@
 <div class="navbar">
 <div class="brand">
 <img src="GHL.png">
-<div class="logo-text">GHL</div>
+<div class="brand-text">GHL</div>
 </div>
 <nav>
 <a href="index.html">Home</a>
@@ -27,40 +28,23 @@
 <div class="page">
 
 <div class="section-title">Draft Lottery</div>
-
-<div class="news-grid" id="draft"></div>
+<div class="grid" id="draft"></div>
 
 </div>
-
 <script>
-fetch("league.json")
-.then(r=>r.json())
-.then(data=>{
 
+fetch('league.json').then(r=>r.json()).then(data=>{
 const teams={};
 data.teams.forEach(t=>teams[t.tid]=t);
 
-document.getElementById("draft").innerHTML =
-(data.draftLotteryResults || []).map((d,i)=>`
-<div class="card news-card">
-
-<div class="news-top">
+document.getElementById('draft').innerHTML=
+(data.draftLotteryResults||[]).map((d,i)=>`
+<div class="card">
 <div class="meta">Pick #${i+1}</div>
-<div class="tag">Draft</div>
-</div>
-
-<div class="news-title">
-${teams[d.tid]?.region} ${teams[d.tid]?.name}
-</div>
-
-<div class="meta">
-Won draft lottery positioning
-</div>
-
-</div>
-`).join('');
-
+<div class="title">${teams[d.tid]?.region} ${teams[d.tid]?.name}</div>
+</div>`).join('');
 });
+
 </script>
 </body>
 </html>

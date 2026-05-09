@@ -1,7 +1,8 @@
-
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Players</title>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -11,7 +12,7 @@
 <div class="navbar">
 <div class="brand">
 <img src="GHL.png">
-<div class="logo-text">GHL</div>
+<div class="brand-text">GHL</div>
 </div>
 <nav>
 <a href="index.html">Home</a>
@@ -25,76 +26,42 @@
 </header>
 
 <div class="page">
+
 <div class="section-title">Players</div>
-<div class="players-grid" id="players"></div>
+<div class="grid" id="players"></div>
+
 </div>
-
 <script>
-fetch("league.json")
-.then(r=>r.json())
-.then(data=>{
 
+fetch('league.json').then(r=>r.json()).then(data=>{
 const teams={};
 data.teams.forEach(t=>teams[t.tid]=t.abbrev);
-
-const players =
-data.players.map(p=>{
-
+const players=data.players.map(p=>{
 const s=p.stats?.at(-1);
 if(!s) return null;
-
 const g=(s.evG||0)+(s.ppG||0)+(s.shG||0);
 const a=(s.evA||0)+(s.ppA||0)+(s.shA||0);
-
-return {
+return{
 pid:p.pid,
 name:p.firstName+' '+p.lastName,
-team:teams[p.tid] || 'FA',
-pos:p.ratings?.at(-1)?.pos || '',
-g,a,
-pts:g+a
+team:teams[p.tid]||'FA',
+g,a,pts:g+a
 };
+}).filter(Boolean).sort((a,b)=>b.pts-a.pts).slice(0,100);
 
-})
-.filter(Boolean)
-.sort((a,b)=>b.pts-a.pts)
-.slice(0,100);
-
-document.getElementById("players").innerHTML =
-players.map(p=>`
+document.getElementById('players').innerHTML=players.map(p=>`
 <a href="player.html?pid=${p.pid}">
-<div class="card player-card">
-
-<div class="player-name">${p.name}</div>
-
-<div class="meta">
-${p.team} • ${p.pos}
+<div class="card">
+<div class="title">${p.name}</div>
+<div class="meta">${p.team}</div>
+<div class="stats">
+<div class="stat"><div class="stat-label">G</div><div class="stat-value">${p.g}</div></div>
+<div class="stat"><div class="stat-label">A</div><div class="stat-value">${p.a}</div></div>
+<div class="stat"><div class="stat-label">PTS</div><div class="stat-value">${p.pts}</div></div>
 </div>
-
-<div class="stat-grid">
-
-<div class="stat-box">
-<div class="stat-label">G</div>
-<div class="stat-value">${p.g}</div>
-</div>
-
-<div class="stat-box">
-<div class="stat-label">A</div>
-<div class="stat-value">${p.a}</div>
-</div>
-
-<div class="stat-box">
-<div class="stat-label">PTS</div>
-<div class="stat-value">${p.pts}</div>
-</div>
-
-</div>
-
-</div>
-</a>
-`).join('');
-
+</div></a>`).join('');
 });
+
 </script>
 </body>
 </html>
