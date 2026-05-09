@@ -2,75 +2,116 @@
 <html>
 <head>
   <title>GHL Standings</title>
+
   <link rel="stylesheet" href="style.css">
 
   <style>
-    .standings-controls {
+
+    .controls {
       margin-bottom: 25px;
-      display: flex;
-      gap: 12px;
-      align-items: center;
     }
 
     select {
+
       background: #1a2744;
+
       color: white;
+
       border: 1px solid #24385f;
+
       padding: 10px 14px;
+
       border-radius: 10px;
+
       font-size: 15px;
+
     }
 
     .conference-title {
-      font-size: 30px;
-      margin: 35px 0 18px;
-      font-weight: bold;
-    }
 
-    .division-title {
-      font-size: 22px;
-      margin: 22px 0 12px;
-      color: #cbd5e1;
+      font-size: 32px;
+
+      font-weight: bold;
+
+      margin:
+        35px 0 18px;
+
     }
 
     .standings-table {
+
       width: 100%;
+
       border-collapse: collapse;
-      margin-bottom: 24px;
+
+      margin-bottom: 35px;
+
     }
 
     .standings-table th {
+
       background: #18243f;
-      color: white;
+
       padding: 12px;
+
       text-align: left;
-      border-bottom: 1px solid #24385f;
+
+      cursor: pointer;
+
+      user-select: none;
+
     }
 
     .standings-table td {
+
       padding: 12px;
-      border-bottom: 1px solid #24385f;
+
+      border-bottom:
+        1px solid #24385f;
+
     }
 
     .standings-row:hover {
-      background: rgba(255,255,255,0.03);
+
+      background:
+        rgba(255,255,255,0.03);
+
     }
 
     .team-cell {
+
       display: flex;
+
       align-items: center;
+
       gap: 10px;
+
     }
 
     .team-logo {
+
       width: 28px;
       height: 28px;
+
       object-fit: contain;
+
+    }
+
+    .team-link {
+
+      color: white;
+
+      text-decoration: none;
+
+    }
+
+    .team-link:hover {
+      color: #60a5fa;
     }
 
     .pts {
-      font-weight: bold;
       color: #60a5fa;
+      font-weight: bold;
     }
 
     .green {
@@ -81,14 +122,6 @@
       color: #f87171;
     }
 
-    .team-link {
-      color: white;
-      text-decoration: none;
-    }
-
-    .team-link:hover {
-      color: #60a5fa;
-    }
   </style>
 
 </head>
@@ -96,6 +129,7 @@
 <body>
 
 <header>
+
   <div class="navbar">
 
     <div class="logo">
@@ -103,15 +137,18 @@
     </div>
 
     <nav>
+
       <a href="index.html">Home</a>
       <a href="standings.html">Standings</a>
       <a href="teams.html">Teams</a>
       <a href="players.html">Players</a>
       <a href="schedule.html">Schedule</a>
       <a href="playoffs.html">Playoffs</a>
+
     </nav>
 
   </div>
+
 </header>
 
 <div class="page">
@@ -120,13 +157,21 @@
     Standings
   </div>
 
-  <div class="standings-controls">
+  <div class="controls">
 
     <select id="viewMode">
 
-      <option value="league">League</option>
-      <option value="conference">Conference</option>
-      <option value="division">Division</option>
+      <option value="league">
+        League
+      </option>
+
+      <option value="conference">
+        Conference
+      </option>
+
+      <option value="division">
+        Division
+      </option>
 
     </select>
 
@@ -142,24 +187,26 @@ let leagueData;
 
 let sortField = "pts";
 
-let sortDirection = "desc";
-
 fetch("league.json")
 .then(r => r.json())
 .then(data => {
 
   leagueData = data;
 
-  calculateTeamStats();
+  buildStats();
 
   renderStandings();
 
-  document.getElementById("viewMode")
-    .addEventListener("change", renderStandings);
+  document
+    .getElementById("viewMode")
+    .addEventListener(
+      "change",
+      renderStandings
+    );
 
 });
 
-function calculateTeamStats() {
+function buildStats() {
 
   const statMap = {};
 
@@ -197,76 +244,6 @@ function calculateTeamStats() {
       t.gf - t.ga;
 
   });
-
-}
-
-function renderStandings() {
-
-  const mode =
-    document.getElementById("viewMode").value;
-
-  const standings =
-    document.getElementById("standings");
-
-  standings.innerHTML = "";
-
-  const teams =
-    [...leagueData.teams];
-
-  sortTeams(teams);
-
-  if (mode === "league") {
-
-    standings.innerHTML +=
-      buildTable("League Standings", teams);
-
-  }
-
-  else if (mode === "conference") {
-
-    const east =
-      teams.filter(t => t.cid === 0);
-
-    const west =
-      teams.filter(t => t.cid === 1);
-
-    standings.innerHTML +=
-      buildTable("Eastern Conference", east);
-
-    standings.innerHTML +=
-      buildTable("Western Conference", west);
-
-  }
-
-  else if (mode === "division") {
-
-    const divisions = {};
-
-    teams.forEach(t => {
-
-      const key =
-        `${t.cid}-${t.did}`;
-
-      if (!divisions[key]) {
-        divisions[key] = [];
-      }
-
-      divisions[key].push(t);
-
-    });
-
-    Object.entries(divisions)
-      .forEach(([key, divTeams]) => {
-
-      standings.innerHTML +=
-        buildTable(
-          getDivisionName(key),
-          divTeams
-        );
-
-    });
-
-  }
 
 }
 
@@ -315,33 +292,90 @@ function sortTeams(teams) {
 
     }
 
-    return sortDirection === "desc"
-      ? bVal - aVal
-      : aVal - bVal;
+    return bVal - aVal;
 
   });
 
 }
 
-function setSort(field) {
+function renderStandings() {
 
-  if (sortField === field) {
+  const mode =
+    document.getElementById("viewMode").value;
 
-    sortDirection =
-      sortDirection === "desc"
-      ? "asc"
-      : "desc";
+  const standings =
+    document.getElementById("standings");
+
+  standings.innerHTML = "";
+
+  const teams =
+    [...leagueData.teams];
+
+  sortTeams(teams);
+
+  if (mode === "league") {
+
+    standings.innerHTML +=
+      buildTable(
+        "League Standings",
+        teams
+      );
+
+  }
+
+  else if (mode === "conference") {
+
+    const east =
+      teams.filter(t => t.cid === 0);
+
+    const west =
+      teams.filter(t => t.cid === 1);
+
+    standings.innerHTML +=
+      buildTable(
+        "Eastern Conference",
+        east
+      );
+
+    standings.innerHTML +=
+      buildTable(
+        "Western Conference",
+        west
+      );
 
   }
 
   else {
 
-    sortField = field;
-    sortDirection = "desc";
+    const divisions = {};
+
+    teams.forEach(t => {
+
+      const key =
+        `${t.cid}-${t.did}`;
+
+      if (!divisions[key]) {
+
+        divisions[key] = [];
+
+      }
+
+      divisions[key].push(t);
+
+    });
+
+    Object.entries(divisions)
+    .forEach(([key, divTeams]) => {
+
+      standings.innerHTML +=
+        buildTable(
+          getDivisionName(key),
+          divTeams
+        );
+
+    });
 
   }
-
-  renderStandings();
 
 }
 
@@ -350,7 +384,9 @@ function buildTable(title, teams) {
   return `
 
   <div class="conference-title">
+
     ${title}
+
   </div>
 
   <table class="standings-table">
@@ -412,7 +448,10 @@ function buildTable(title, teams) {
               src="${t.imgURL || ''}">
 
               <div>
-                ${t.region} ${t.name}
+
+                ${t.region}
+                ${t.name}
+
               </div>
 
             </div>
@@ -422,7 +461,9 @@ function buildTable(title, teams) {
         </td>
 
         <td>${t.season.won || 0}</td>
+
         <td>${t.season.lost || 0}</td>
+
         <td>${t.season.otl || 0}</td>
 
         <td class="pts">
@@ -456,15 +497,29 @@ function buildTable(title, teams) {
 
 }
 
+function setSort(field) {
+
+  sortField = field;
+
+  renderStandings();
+
+}
+
 function getDivisionName(key) {
 
   const names = {
 
-    "0-0": "Northeast Division",
-    "0-1": "Southern Division",
+    "0-0":
+      "Northeast Division",
 
-    "1-0": "Central Division",
-    "1-1": "Pacific Division"
+    "0-1":
+      "Southern Division",
+
+    "1-0":
+      "Central Division",
+
+    "1-1":
+      "Pacific Division"
 
   };
 
