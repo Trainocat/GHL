@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Draft</title>
+<title>Playoffs</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -85,7 +85,6 @@
 <table id="playoffGamesTable">
 <thead>
 <tr>
-<th>Date</th>
 <th>Round</th>
 <th>Away</th>
 <th>Score</th>
@@ -136,27 +135,6 @@ function teamName(team) {
     }
 
     return `${team.region} ${team.name}`;
-}
-
-function teamAbbrev(team) {
-    if (!team) {
-        return "";
-    }
-
-    return team.abbrev || team.name || "";
-}
-
-function formatDate(day) {
-    if (day === undefined || day === null) {
-        return "";
-    }
-
-    return new Date(day).toLocaleDateString("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-    });
 }
 
 function getConferences(data) {
@@ -505,7 +483,7 @@ function renderPlayoffGames(data, teams) {
     if (games.length === 0) {
         return `
             <tr>
-                <td colspan="6">No playoff games available.</td>
+                <td colspan="5">No playoff games available.</td>
             </tr>
         `;
     }
@@ -520,23 +498,26 @@ function renderPlayoffGames(data, teams) {
 
             return `
                 <tr>
-                    <td>${formatDate(game.day)}</td>
                     <td>${game.round || game.playoffRound || ""}</td>
+
                     <td>
                         <a href="team.html?tid=${getAwayTid(game)}">
                             ${teamName(awayTeam)}
                         </a>
                     </td>
+
                     <td>
                         <a href="game.html?gid=${game.gid}">
                             ${getAwayPts(game)} - ${getHomePts(game)}
                         </a>
                     </td>
+
                     <td>
                         <a href="team.html?tid=${getHomeTid(game)}">
                             ${teamName(homeTeam)}
                         </a>
                     </td>
+
                     <td>${game.overtimes ? `${game.overtimes}OT` : "Final"}</td>
                 </tr>
             `;
@@ -550,6 +531,11 @@ function makeTableSortable(table) {
     headers.forEach((header, index) => {
         header.addEventListener("click", () => {
             const tbody = table.querySelector("tbody");
+
+            if (!tbody) {
+                return;
+            }
+
             const rows = [...tbody.querySelectorAll("tr")];
 
             const ascending = !header.classList.contains("asc");

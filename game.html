@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Draft</title>
+<title>Game Centre</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -45,14 +45,6 @@
 </thead>
 
 <tbody id="scoreBody"></tbody>
-</table>
-</section>
-
-<section>
-<h2>Game Info</h2>
-
-<table>
-<tbody id="gameInfoBody"></tbody>
 </table>
 </section>
 
@@ -197,10 +189,18 @@ function buildPlayerMap(data) {
 
 function teamName(team) {
     if (!team) {
-        return "Unknown Team";
+        return "";
     }
 
     return `${team.region} ${team.name}`;
+}
+
+function teamAbbrev(team) {
+    if (!team) {
+        return "";
+    }
+
+    return team.abbrev || team.name || "";
 }
 
 function playerName(player) {
@@ -209,19 +209,6 @@ function playerName(player) {
     }
 
     return `${player.firstName} ${player.lastName}`;
-}
-
-function formatDate(day) {
-    if (day === undefined || day === null) {
-        return "";
-    }
-
-    return new Date(day).toLocaleDateString("en-US", {
-        weekday: "long",
-        month: "long",
-        day: "numeric",
-        year: "numeric"
-    });
 }
 
 function formatTOI(minutes) {
@@ -239,7 +226,7 @@ function getGame(data) {
     const gid = getQueryNumber("gid");
 
     if (!isNaN(gid)) {
-        const found = data.games.find(game => {
+        const found = (data.games || []).find(game => {
             return game.gid === gid;
         });
 
@@ -252,38 +239,118 @@ function getGame(data) {
 }
 
 function getAwayTid(game) {
-    return game.awayTid ?? game.away?.tid ?? game.lost?.tid ?? game.teams?.[0]?.tid;
+    if (game.awayTid !== undefined) {
+        return game.awayTid;
+    }
+
+    if (game.away?.tid !== undefined) {
+        return game.away.tid;
+    }
+
+    if (game.teams?.[0]?.tid !== undefined) {
+        return game.teams[0].tid;
+    }
+
+    if (game.lost?.tid !== undefined && game.won?.tid !== undefined) {
+        return game.lost.tid;
+    }
+
+    return undefined;
 }
 
 function getHomeTid(game) {
-    return game.homeTid ?? game.home?.tid ?? game.won?.tid ?? game.teams?.[1]?.tid;
+    if (game.homeTid !== undefined) {
+        return game.homeTid;
+    }
+
+    if (game.home?.tid !== undefined) {
+        return game.home.tid;
+    }
+
+    if (game.teams?.[1]?.tid !== undefined) {
+        return game.teams[1].tid;
+    }
+
+    if (game.won?.tid !== undefined && game.lost?.tid !== undefined) {
+        return game.won.tid;
+    }
+
+    return undefined;
+}
+
+function getAwayTeam(game, teams) {
+    const tid = getAwayTid(game);
+
+    return teams[tid] || null;
+}
+
+function getHomeTeam(game, teams) {
+    const tid = getHomeTid(game);
+
+    return teams[tid] || null;
 }
 
 function getAwayPts(game) {
-    return game.awayPts ?? game.away?.pts ?? game.lost?.pts ?? 0;
+    if (game.awayPts !== undefined) {
+        return game.awayPts;
+    }
+
+    if (game.away?.pts !== undefined) {
+        return game.away.pts;
+    }
+
+    if (game.teams?.[0]?.pts !== undefined) {
+        return game.teams[0].pts;
+    }
+
+    if (game.lost?.pts !== undefined && game.won?.pts !== undefined) {
+        return game.lost.pts;
+    }
+
+    return 0;
 }
 
 function getHomePts(game) {
-    return game.homePts ?? game.home?.pts ?? game.won?.pts ?? 0;
+    if (game.homePts !== undefined) {
+        return game.homePts;
+    }
+
+    if (game.home?.pts !== undefined) {
+        return game.home.pts;
+    }
+
+    if (game.teams?.[1]?.pts !== undefined) {
+        return game.teams[1].pts;
+    }
+
+    if (game.won?.pts !== undefined && game.lost?.pts !== undefined) {
+        return game.won.pts;
+    }
+
+    return 0;
 }
 
 function getLinescore(game, side) {
     const source =
         side === "away"
-            ? game.away || game.teams?.[0] || {}
-            : game.home || game.teams?.[1] || {};
+            ? game.away || game.teams?.[0] || game.lost || {}
+            : game.home || game.teams?.[1] || game.won || {};
 
     return (
         source.ptsQtrs ||
         source.ptsByPeriod ||
         source.line ||
+        source.ptsByQtr ||
         []
     );
 }
 
 function renderScoreboard(game, teams) {
-    const awayTeam = teams[getAwayTid(game)];
-    const homeTeam = teams[getHomeTid(game)];
+    const awayTid = getAwayTid(game);
+    const homeTid = getHomeTid(game);
+
+    const awayTeam = getAwayTeam(game, teams);
+    const homeTeam = getHomeTeam(game, teams);
 
     const awayLine = getLinescore(game, "away");
     const homeLine = getLinescore(game, "home");
@@ -307,9 +374,11 @@ function renderScoreboard(game, teams) {
     return `
         <tr>
             <td>
-                <a href="team.html?tid=${getAwayTid(game)}">
-                    ${teamName(awayTeam)}
-                </a>
+                ${
+                    awayTeam
+                        ? `<a href="team.html?tid=${awayTid}">${teamName(awayTeam)}</a>`
+                        : "Away"
+                }
             </td>
             <td>${awayPeriods[0]}</td>
             <td>${awayPeriods[1]}</td>
@@ -321,9 +390,11 @@ function renderScoreboard(game, teams) {
 
         <tr>
             <td>
-                <a href="team.html?tid=${getHomeTid(game)}">
-                    ${teamName(homeTeam)}
-                </a>
+                ${
+                    homeTeam
+                        ? `<a href="team.html?tid=${homeTid}">${teamName(homeTeam)}</a>`
+                        : "Home"
+                }
             </td>
             <td>${homePeriods[0]}</td>
             <td>${homePeriods[1]}</td>
@@ -331,36 +402,6 @@ function renderScoreboard(game, teams) {
             <td>${homePeriods[3]}</td>
             <td>${homePeriods[4]}</td>
             <td>${getHomePts(game)}</td>
-        </tr>
-    `;
-}
-
-function renderGameInfo(game, teams) {
-    const awayTeam = teams[getAwayTid(game)];
-    const homeTeam = teams[getHomeTid(game)];
-
-    return `
-        <tr>
-        </tr>
-
-        <tr>
-            <th>Away</th>
-            <td>${teamName(awayTeam)}</td>
-        </tr>
-
-        <tr>
-            <th>Home</th>
-            <td>${teamName(homeTeam)}</td>
-        </tr>
-
-        <tr>
-            <th>Status</th>
-            <td>${game.overtimes ? `${game.overtimes}OT` : "Final"}</td>
-        </tr>
-
-        <tr>
-            <th>Attendance</th>
-            <td>${game.att !== undefined ? Number(game.att).toLocaleString() : "-"}</td>
         </tr>
     `;
 }
@@ -402,7 +443,7 @@ function renderScoringSummary(game, teams, players) {
             <tr>
                 <td>${event.period ?? event.quarter ?? event.per ?? ""}</td>
                 <td>${event.time ?? event.clock ?? ""}</td>
-                <td>${team?.abbrev || teamName(team)}</td>
+                <td>${teamAbbrev(team)}</td>
                 <td>
                     ${
                         scorer
@@ -443,7 +484,7 @@ function renderPenalties(game, teams, players) {
             <tr>
                 <td>${event.period ?? event.quarter ?? event.per ?? ""}</td>
                 <td>${event.time ?? event.clock ?? ""}</td>
-                <td>${team?.abbrev || teamName(team)}</td>
+                <td>${teamAbbrev(team)}</td>
                 <td>
                     ${
                         player
@@ -473,12 +514,14 @@ function renderTeamStats(game) {
         game.teamStats?.away ||
         game.away?.teamStats ||
         game.teams?.[0]?.teamStats ||
+        game.lost?.teamStats ||
         {};
 
     const home =
         game.teamStats?.home ||
         game.home?.teamStats ||
         game.teams?.[1]?.teamStats ||
+        game.won?.teamStats ||
         {};
 
     const rows = [
@@ -572,7 +615,7 @@ function renderPlayerStats(game, teams, players) {
                             : stat.name || "Player"
                     }
                 </td>
-                <td>${team?.abbrev || ""}</td>
+                <td>${teamAbbrev(team)}</td>
                 <td>${stat.pos || ""}</td>
                 <td>${stat.g || stat.evG || 0}</td>
                 <td>${stat.a || stat.evA || 0}</td>
@@ -613,7 +656,7 @@ function renderGoalieStats(game, teams, players) {
             teams[stat.tid];
 
         const shotsAgainst =
-            stat.sa || stat.sv + stat.ga || 0;
+            stat.sa || ((stat.sv || 0) + (stat.ga || 0));
 
         const goalsAgainst =
             stat.ga || 0;
@@ -637,7 +680,7 @@ function renderGoalieStats(game, teams, players) {
                             : stat.name || "Goalie"
                     }
                 </td>
-                <td>${team?.abbrev || ""}</td>
+                <td>${teamAbbrev(team)}</td>
                 <td>${shotsAgainst}</td>
                 <td>${goalsAgainst}</td>
                 <td>${saves}</td>
@@ -654,6 +697,11 @@ function makeTableSortable(table) {
     headers.forEach((header, index) => {
         header.addEventListener("click", () => {
             const tbody = table.querySelector("tbody");
+
+            if (!tbody) {
+                return;
+            }
+
             const rows = [...tbody.querySelectorAll("tr")];
 
             const ascending = !header.classList.contains("asc");
@@ -702,17 +750,16 @@ loadLeague().then(data => {
     const teams = buildTeamMap(data);
     const players = buildPlayerMap(data);
 
-    const awayTeam = teams[getAwayTid(game)];
-    const homeTeam = teams[getHomeTid(game)];
+    const awayTeam = getAwayTeam(game, teams);
+    const homeTeam = getHomeTeam(game, teams);
 
     document.getElementById("gameTitle").innerText =
-        `${teamName(awayTeam)} @ ${teamName(homeTeam)}`;
+        awayTeam && homeTeam
+            ? `${teamName(awayTeam)} @ ${teamName(homeTeam)}`
+            : "Game Centre";
 
     document.getElementById("scoreBody").innerHTML =
         renderScoreboard(game, teams);
-
-    document.getElementById("gameInfoBody").innerHTML =
-        renderGameInfo(game, teams);
 
     document.getElementById("scoringBody").innerHTML =
         renderScoringSummary(game, teams, players);
@@ -721,10 +768,10 @@ loadLeague().then(data => {
         renderPenalties(game, teams, players);
 
     document.getElementById("awayStatsHead").innerText =
-        awayTeam?.abbrev || "Away";
+        teamAbbrev(awayTeam) || "Away";
 
     document.getElementById("homeStatsHead").innerText =
-        homeTeam?.abbrev || "Home";
+        teamAbbrev(homeTeam) || "Home";
 
     document.getElementById("teamStatsBody").innerHTML =
         renderTeamStats(game);

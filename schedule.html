@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Draft</title>
+<title>Schedule</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -50,7 +50,6 @@
 <table id="completedTable">
 <thead>
 <tr>
-<th>Date</th>
 <th>Away</th>
 <th>Score</th>
 <th>Home</th>
@@ -68,7 +67,6 @@
 <table id="scheduleTable">
 <thead>
 <tr>
-<th>Date</th>
 <th>Away</th>
 <th>Score</th>
 <th>Home</th>
@@ -105,27 +103,6 @@ function teamName(team) {
     }
 
     return `${team.region} ${team.name}`;
-}
-
-function teamAbbrev(team) {
-    if (!team) {
-        return "";
-    }
-
-    return team.abbrev || team.name || "";
-}
-
-function formatDate(day) {
-    if (day === undefined || day === null) {
-        return "";
-    }
-
-    return new Date(day).toLocaleDateString("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-    });
 }
 
 function getAwayTid(game) {
@@ -220,7 +197,7 @@ function renderUpcomingGames(data, teams) {
     if (games.length === 0) {
         return `
             <tr>
-                <td colspan="4">No upcoming games scheduled.</td>
+                <td colspan="3">No upcoming games scheduled.</td>
             </tr>
         `;
     }
@@ -234,8 +211,6 @@ function renderUpcomingGames(data, teams) {
 
         return `
             <tr>
-                <td>${formatDate(game.day)}</td>
-
                 <td>
                     <a href="team.html?tid=${getAwayTid(game)}">
                         ${teamName(awayTeam)}
@@ -263,7 +238,7 @@ function renderCompletedGames(data, teams) {
     if (games.length === 0) {
         return `
             <tr>
-                <td colspan="5">No completed games available.</td>
+                <td colspan="4">No completed games available.</td>
             </tr>
         `;
     }
@@ -277,8 +252,6 @@ function renderCompletedGames(data, teams) {
 
         return `
             <tr>
-                <td>${formatDate(game.day)}</td>
-
                 <td>
                     <a href="team.html?tid=${getAwayTid(game)}">
                         ${teamName(awayTeam)}
@@ -310,7 +283,7 @@ function renderFullSchedule(data, teams) {
     if (games.length === 0) {
         return `
             <tr>
-                <td colspan="5">No schedule available.</td>
+                <td colspan="4">No schedule available.</td>
             </tr>
         `;
     }
@@ -330,8 +303,6 @@ function renderFullSchedule(data, teams) {
 
         return `
             <tr>
-                <td>${formatDate(game.day)}</td>
-
                 <td>
                     <a href="team.html?tid=${getAwayTid(game)}">
                         ${teamName(awayTeam)}
@@ -366,6 +337,11 @@ function makeTableSortable(table) {
     headers.forEach((header, index) => {
         header.addEventListener("click", () => {
             const tbody = table.querySelector("tbody");
+
+            if (!tbody) {
+                return;
+            }
+
             const rows = [...tbody.querySelectorAll("tr")];
 
             const ascending = !header.classList.contains("asc");

@@ -190,16 +190,23 @@ function getAverageAttendance(teamSeason) {
         return teamSeason.attAvg;
     }
 
-    const homeGames =
-        (teamSeason.homeWon || 0) +
-        (teamSeason.homeLost || 0) +
-        (teamSeason.homeOtl || 0);
+    const totalAttendance =
+        teamSeason.att || 0;
 
-    if (homeGames > 0 && teamSeason.att !== undefined) {
-        return Math.round(teamSeason.att / homeGames);
-    }
+    const gamesPlayed =
+        (teamSeason.won || 0) +
+        (teamSeason.lost || 0) +
+        (teamSeason.otl || 0);
 
-    return teamSeason.att || 0;
+    const estimatedHomeGames =
+        Math.max(
+            1,
+            Math.round(gamesPlayed / 2)
+        );
+
+    return Math.round(
+        totalAttendance / estimatedHomeGames
+    );
 }
 
 function getSalaryCap(data) {
