@@ -1,120 +1,25 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-  <title>GHL Home</title>
-
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0b1020;
-      color: white;
-    }
-
-    header {
-      background: #11182d;
-      padding: 15px 25px;
-      border-bottom: 2px solid #1f2b4d;
-    }
-
-    nav {
-      display: flex;
-      gap: 18px;
-      flex-wrap: wrap;
-    }
-
-    nav a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: auto;
-      padding: 20px;
-    }
-
-    h1 {
-      margin-bottom: 20px;
-    }
-
-    .games-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-      gap: 15px;
-    }
-
-    .game-card {
-      background: #151c33;
-      border-radius: 12px;
-      padding: 15px;
-      border: 1px solid #243152;
-      transition: 0.2s;
-    }
-
-    .game-card:hover {
-      transform: translateY(-2px);
-      border-color: #3b82f6;
-    }
-
-    .team-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 0;
-    }
-
-    .team-name {
-      font-weight: bold;
-      font-size: 17px;
-    }
-
-    .winner {
-      color: #4ade80;
-    }
-
-    .loser {
-      color: #f87171;
-      opacity: 0.85;
-    }
-
-    .score {
-      font-size: 28px;
-      font-weight: bold;
-    }
-
-    .meta {
-      margin-top: 10px;
-      padding-top: 8px;
-      border-top: 1px solid #243152;
-      color: #94a3b8;
-      font-size: 13px;
-    }
-  </style>
+<title>GHL Home</title>
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
 <header>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="standings.html">Standings</a>
-    <a href="teams.html">Teams</a>
-    <a href="players.html">Players</a>
-    <a href="schedule.html">Schedule</a>
-    <a href="playoffs.html">Playoffs</a>
-  </nav>
+<nav>
+<a href="index.html">Home</a>
+<a href="standings.html">Standings</a>
+<a href="teams.html">Teams</a>
+<a href="players.html">Players</a>
+<a href="schedule.html">Schedule</a>
+<a href="playoffs.html">Playoffs</a>
+</nav>
 </header>
 
 <div class="container">
-
-  <h1>Latest Games</h1>
-
-  <div id="games" class="games-grid">
-    Loading games...
-  </div>
-
+<h1>Latest Games</h1>
+<div id="games" class="games-grid"></div>
 </div>
 
 <script>
@@ -122,57 +27,30 @@ fetch("league.json")
 .then(r => r.json())
 .then(data => {
 
-  const teams = data.teams || [];
-  const games = data.games || [];
+const teamMap = {};
+data.teams.forEach(t => {
+teamMap[t.tid] = `${t.region} ${t.name}`;
+});
 
-  // Build team lookup
-  const teamMap = {};
+data.games.sort((a,b) => b.day - a.day);
 
-  teams.forEach(t => {
-    teamMap[t.tid] = {
-      name: `${t.region} ${t.name}`.trim()
-    };
-  });
+document.getElementById("games").innerHTML =
+data.games.slice(0,20).map(g => `
+<div class="game-card">
+<div class="team-row">
+<div>${teamMap[g.won.tid]}</div>
+<div class="score">${g.won.pts}</div>
+</div>
 
-  // newest first
-  games.sort((a, b) => (b.day || 0) - (a.day || 0));
+<div class="team-row">
+<div>${teamMap[g.lost.tid]}</div>
+<div class="score">${g.lost.pts}</div>
+</div>
 
-  const html = games.slice(0, 20).map(g => {
-
-    const winner = teamMap[g.won.tid];
-    const loser = teamMap[g.lost.tid];
-
-    if (!winner || !loser) return "";
-
-    return `
-      <div class="game-card">
-
-        <div class="team-row winner">
-          <div class="team-name">${winner.name}</div>
-          <div class="score">${g.won.pts}</div>
-        </div>
-
-        <div class="team-row loser">
-          <div class="team-name">${loser.name}</div>
-          <div class="score">${g.lost.pts}</div>
-        </div>
-
-        <div class="meta">
-          Season ${g.season} • Day ${g.day}
-        </div>
-
-      </div>
-    `;
-  }).join("");
-
-  document.getElementById("games").innerHTML = html;
-
-})
-.catch(err => {
-  document.getElementById("games").innerHTML =
-    "Error loading league: " + err.message;
+<div>Season ${g.season} • Day ${g.day}</div>
+</div>
+`).join("");
 });
 </script>
-
 </body>
 </html>

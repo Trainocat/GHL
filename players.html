@@ -1,38 +1,62 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-<title>GHL Players</title>
+<title>Players</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<header><nav>
+<a href="index.html">Home</a>
+<a href="standings.html">Standings</a>
+<a href="teams.html">Teams</a>
+<a href="players.html">Players</a>
+<a href="schedule.html">Schedule</a>
+<a href="playoffs.html">Playoffs</a>
+</nav></header>
 
-<nav>
-  <a href="index.html">Home</a>
-  <a href="standings.html">Standings</a>
-  <a href="teams.html">Teams</a>
-  <a href="players.html">Players</a>
-  <a href="schedule.html">Schedule</a>
-  <a href="playoffs.html">Playoffs</a>
-</nav>
-
-<h1>Players</h1>
-
-<div id="players"></div>
+<div class="container">
+<h1>Player Leaders</h1>
+<table class="table">
+<thead>
+<tr><th>Name</th><th>Pos</th><th>Points</th></tr>
+</thead>
+<tbody id="players"></tbody>
+</table>
+</div>
 
 <script>
 fetch("league.json")
 .then(r => r.json())
 .then(data => {
-  const players = data.players || [];
 
-  document.getElementById("players").innerHTML =
-    players.slice(0,200).map(p => `
-      <div style="padding:6px;border-bottom:1px solid #27314f;">
-        ${p.firstName} ${p.lastName}
-      </div>
-    `).join("");
+const players = data.players.map(p => {
+
+const stats = p.stats?.[0];
+const ratings = p.ratings?.[0];
+
+if (!stats || !ratings) return null;
+
+const goals = (stats.evG||0)+(stats.ppG||0)+(stats.shG||0);
+const assists = (stats.evA||0)+(stats.ppA||0)+(stats.shA||0);
+
+return {
+name: p.firstName + " " + p.lastName,
+pos: ratings.pos,
+points: goals + assists
+};
+
+}).filter(Boolean).sort((a,b)=>b.points-a.points).slice(0,100);
+
+document.getElementById("players").innerHTML =
+players.map(p => `
+<tr>
+<td>${p.name}</td>
+<td>${p.pos}</td>
+<td>${p.points}</td>
+</tr>
+`).join("");
 });
 </script>
-
 </body>
 </html>

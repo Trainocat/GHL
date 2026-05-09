@@ -1,37 +1,39 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-<title>GHL Teams</title>
+<title>Teams</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<header><nav>
+<a href="index.html">Home</a>
+<a href="standings.html">Standings</a>
+<a href="teams.html">Teams</a>
+<a href="players.html">Players</a>
+<a href="schedule.html">Schedule</a>
+<a href="playoffs.html">Playoffs</a>
+</nav></header>
 
-<nav>
-  <a href="index.html">Home</a>
-  <a href="standings.html">Standings</a>
-  <a href="teams.html">Teams</a>
-  <a href="players.html">Players</a>
-  <a href="schedule.html">Schedule</a>
-  <a href="playoffs.html">Playoffs</a>
-</nav>
-
+<div class="container">
 <h1>Teams</h1>
-
-<div id="teams"></div>
+<div class="team-grid" id="teams"></div>
+</div>
 
 <script>
 fetch("league.json")
 .then(r => r.json())
 .then(data => {
-  const teams = data.teams || [];
-  document.getElementById("teams").innerHTML =
-    teams.map(t => `
-      <div style="padding:8px;border-bottom:1px solid #27314f;">
-        <b>${t.region} ${t.name}</b>
-      </div>
-    `).join("");
+
+document.getElementById("teams").innerHTML =
+data.teams.map(t => `
+<div class="card">
+<h2>${t.region} ${t.name}</h2>
+<p>${t.abbrev}</p>
+<a href="team.html?tid=${t.tid}">View Team Page</a>
+</div>
+`).join("");
 });
 </script>
-
 </body>
 </html>

@@ -1,63 +1,51 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-<title>GHL Standings</title>
+<title>Standings</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<header><nav>
+<a href="index.html">Home</a>
+<a href="standings.html">Standings</a>
+<a href="teams.html">Teams</a>
+<a href="players.html">Players</a>
+<a href="schedule.html">Schedule</a>
+<a href="playoffs.html">Playoffs</a>
+</nav></header>
 
-<nav>
-  <a href="index.html">Home</a>
-  <a href="standings.html">Standings</a>
-  <a href="teams.html">Teams</a>
-  <a href="players.html">Players</a>
-  <a href="schedule.html">Schedule</a>
-  <a href="playoffs.html">Playoffs</a>
-</nav>
-
+<div class="container">
 <h1>Standings</h1>
-
-<table>
-  <thead>
-    <tr>
-      <th>#</th><th>Team</th><th>W</th><th>L</th><th>OTL</th><th>PTS</th>
-    </tr>
-  </thead>
-  <tbody id="rows"></tbody>
+<table class="table">
+<thead>
+<tr><th>Team</th><th>W</th><th>L</th><th>OTL</th><th>PTS</th></tr>
+</thead>
+<tbody id="standings"></tbody>
 </table>
+</div>
 
 <script>
 fetch("league.json")
 .then(r => r.json())
 .then(data => {
-  const teams = data.teams || [];
 
-  const standings = teams.map(t => {
-    const s = (t.seasons && t.seasons.at(-1)) || {};
-    return {
-      name: (t.region || "") + " " + (t.name || ""),
-      w: s.won || 0,
-      l: s.lost || 0,
-      otl: s.otl || 0,
-      pts: (s.won || 0)*2 + (s.otl || 0)
-    };
-  });
+document.getElementById("standings").innerHTML =
+data.teams.map(t => {
+const s = t.seasons?.[0];
+if (!s) return "";
 
-  standings.sort((a,b)=>b.pts-a.pts);
-
-  document.getElementById("rows").innerHTML =
-    standings.map((t,i)=>`
-      <tr>
-        <td>${i+1}</td>
-        <td>${t.name}</td>
-        <td>${t.w}</td>
-        <td>${t.l}</td>
-        <td>${t.otl}</td>
-        <td>${t.pts}</td>
-      </tr>
-    `).join("");
+return `
+<tr>
+<td><a href="team.html?tid=${t.tid}">${t.region} ${t.name}</a></td>
+<td>${s.won}</td>
+<td>${s.lost}</td>
+<td>${s.otl}</td>
+<td>${s.pts}</td>
+</tr>
+`;
+}).join("");
 });
 </script>
-
 </body>
 </html>

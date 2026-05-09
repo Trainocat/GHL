@@ -1,0 +1,61 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Team Page</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><nav>
+<a href="index.html">Home</a>
+<a href="standings.html">Standings</a>
+<a href="teams.html">Teams</a>
+<a href="players.html">Players</a>
+<a href="schedule.html">Schedule</a>
+<a href="playoffs.html">Playoffs</a>
+</nav></header>
+
+<div class="container">
+<div id="team"></div>
+<div id="roster"></div>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const tid = Number(params.get("tid"));
+
+fetch("league.json")
+.then(r => r.json())
+.then(data => {
+
+const team = data.teams.find(t => t.tid === tid);
+
+if (!team) {
+document.getElementById("team").innerHTML = "Team not found";
+return;
+}
+
+document.getElementById("team").innerHTML = `
+<div class="card">
+<h1>${team.region} ${team.name}</h1>
+<p>Abbrev: ${team.abbrev}</p>
+<p>Team ID: ${team.tid}</p>
+</div>
+`;
+
+const roster = data.players.filter(p => p.tid === tid);
+
+document.getElementById("roster").innerHTML = `
+<div class="card">
+<h2>Roster</h2>
+${roster.map(p => {
+const r = p.ratings?.[0];
+return `<p>${p.firstName} ${p.lastName} - ${r?.pos || ""}</p>`;
+}).join("")}
+</div>
+`;
+
+});
+</script>
+</body>
+</html>
