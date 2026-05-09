@@ -1,124 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>GHL - Home</title>
-
-<style>
-body {
-  font-family: Arial;
-  background: #0b1020;
-  color: white;
-  margin: 0;
-}
-
-header {
-  padding: 15px;
-  background: #151c33;
-}
-
-nav a {
-  color: white;
-  margin-right: 12px;
-  text-decoration: none;
-}
-
-.container {
-  padding: 20px;
-}
-
-.game-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  background: #151c33;
-  margin-bottom: 10px;
-  padding: 12px;
-  border-radius: 10px;
-}
-
-.team {
-  width: 40%;
-  font-weight: bold;
-}
-
-.score {
-  width: 20%;
-  text-align: center;
-  font-size: 20px;
-}
-
-.winner {
-  color: #4ade80;
-}
-
-.loser {
-  color: #f87171;
-}
-</style>
-
+  <title>GHL Debug Final</title>
+  <style>
+    body { font-family: Arial; background:#0b1020; color:white; padding:20px; }
+    pre { background:#111; padding:10px; overflow:auto; }
+  </style>
 </head>
-
 <body>
 
-<header>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="standings.html">Standings</a>
-    <a href="teams.html">Teams</a>
-    <a href="players.html">Players</a>
-    <a href="schedule.html">Schedule</a>
-    <a href="playoffs.html">Playoffs</a>
-  </nav>
-</header>
+<h1>FINAL GAME STRUCTURE CHECK</h1>
 
-<div class="container">
-  <h1>Latest Games</h1>
-  <div id="games">Loading...</div>
-</div>
+<div id="out">Loading...</div>
 
 <script>
 fetch("league.json")
 .then(r => r.json())
 .then(data => {
 
-  const games = data.games || [];
-  const teams = data.teams || [];
+  const g = data.games?.[0];
 
-  const teamMap = {};
-  teams.forEach(t => {
-    teamMap[t.id] = (t.region + " " + t.name).trim();
-  });
-
-  const getName = id => teamMap[id] || ("Team " + id);
-
-  const html = games.slice(0, 20).map(g => {
-
-    const win = g.won?.tid;
-    const lose = g.lost?.tid;
-
-    const winName = getName(win);
-    const loseName = getName(lose);
-
-    const winPts = g.won?.pts ?? 0;
-    const losePts = g.lost?.pts ?? 0;
-
-    return `
-      <div class="game-card">
-
-        <div class="team winner">${winName}</div>
-
-        <div class="score">
-          ${winPts} - ${losePts}
-        </div>
-
-        <div class="team loser">${loseName}</div>
-
-      </div>
-    `;
-  }).join("");
-
-  document.getElementById("games").innerHTML = html;
+  document.getElementById("out").innerHTML =
+    "<h3>First game object (RAW):</h3>" +
+    "<pre>" + JSON.stringify(g, null, 2) + "</pre>";
 
 });
 </script>
