@@ -1,43 +1,224 @@
-<div class="team-card">
 
-  <div class="team-card-top">
+:root {
+  --bg: #0f172a;
+  --panel: #111827;
+  --panel2: #1f2937;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #3b82f6;
+  --green: #22c55e;
+  --red: #ef4444;
+}
 
-    <img class="team-card-logo" src="TEAMLOGO.png">
+* {
+  box-sizing: border-box;
+}
 
-    <div>
-      <div class="team-card-name">
-        Orlando Fantasy
-      </div>
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+}
 
-      <div>
-        ORL
-      </div>
-    </div>
+header {
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
 
-  </div>
+.navbar {
+  max-width: 1400px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+}
 
-  <div class="record-grid">
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+}
 
-    <div class="record-box">
-      <div class="record-label">W</div>
-      <div class="record-value">42</div>
-    </div>
+nav {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
 
-    <div class="record-box">
-      <div class="record-label">L</div>
-      <div class="record-value">18</div>
-    </div>
+nav a {
+  color: var(--text);
+  text-decoration: none;
+  opacity: 0.85;
+}
 
-    <div class="record-box">
-      <div class="record-label">OTL</div>
-      <div class="record-value">5</div>
-    </div>
+.page {
+  max-width: 1400px;
+  margin: auto;
+  padding: 24px;
+}
 
-    <div class="record-box">
-      <div class="record-label">PTS</div>
-      <div class="record-value">89</div>
-    </div>
+.page-title {
+  font-size: 32px;
+  margin-bottom: 24px;
+}
 
-  </div>
+.grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
 
-</div>
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.panel-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.panel-content {
+  padding: 18px;
+}
+
+.game-card {
+  background: var(--panel2);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 12px;
+  border: 1px solid transparent;
+}
+
+.team-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.team-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.team-logo {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+.team-name {
+  font-weight: bold;
+}
+
+.score {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.winner {
+  color: var(--green);
+}
+
+.loser {
+  color: var(--red);
+}
+
+.meta {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  background: var(--panel2);
+  padding: 12px;
+  text-align: left;
+}
+
+.table td {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.team-card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.teams-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 18px;
+}
+
+.team-card {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.team-card-top {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.team-card-logo {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+}
+
+.team-card-name {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.record-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.record-box {
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+}
+
+.record-label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.record-value {
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 4px;
+}

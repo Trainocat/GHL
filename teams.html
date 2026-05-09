@@ -2,26 +2,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>GHL Teams</title>
+<title>Teams</title>
 <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
+
 <header>
-<nav>
-<a href="index.html">Home</a>
-<a href="standings.html">Standings</a>
-<a href="teams.html">Teams</a>
-<a href="players.html">Players</a>
-<a href="schedule.html">Schedule</a>
-<a href="playoffs.html">Playoffs</a>
-</nav>
+  <div class="navbar">
+    <div class="logo">GHL</div>
+
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="standings.html">Standings</a>
+      <a href="teams.html">Teams</a>
+      <a href="players.html">Players</a>
+      <a href="schedule.html">Schedule</a>
+      <a href="playoffs.html">Playoffs</a>
+    </nav>
+  </div>
 </header>
 
-<div class="container">
 
-<h1>Teams</h1>
+<div class="page">
+
+<div class="page-title">Teams</div>
 
 <div class="teams-grid" id="teams"></div>
 
@@ -32,56 +37,47 @@ fetch("league.json")
 .then(r => r.json())
 .then(data => {
 
-const html = data.teams.map(t => {
+document.getElementById("teams").innerHTML =
+data.teams.map(t => {
 
-const season = t.seasons?.[0];
+const s = t.seasons?.[0];
 
 return `
 <a class="team-card-link" href="team.html?tid=${t.tid}">
 
 <div class="team-card">
 
-<div class="team-top">
+<div class="team-card-top">
 
-<img
-class="team-logo"
-src="${t.imgURL || ''}"
-alt="${t.region} ${t.name}">
+<img class="team-card-logo" src="${t.imgURL || ''}">
 
 <div>
-
-<div class="team-name">
-${t.region} ${t.name}
-</div>
-
-<div class="team-abbrev">
-${t.abbrev}
+<div class="team-card-name">${t.region} ${t.name}</div>
+<div>${t.abbrev}</div>
 </div>
 
 </div>
 
-</div>
-
-<div class="team-record">
+<div class="record-grid">
 
 <div class="record-box">
 <div class="record-label">W</div>
-<div class="record-value">${season?.won || 0}</div>
+<div class="record-value">${s?.won || 0}</div>
 </div>
 
 <div class="record-box">
 <div class="record-label">L</div>
-<div class="record-value">${season?.lost || 0}</div>
+<div class="record-value">${s?.lost || 0}</div>
 </div>
 
 <div class="record-box">
 <div class="record-label">OTL</div>
-<div class="record-value">${season?.otl || 0}</div>
+<div class="record-value">${s?.otl || 0}</div>
 </div>
 
 <div class="record-box">
 <div class="record-label">PTS</div>
-<div class="record-value">${season?.pts || 0}</div>
+<div class="record-value">${s?.pts || 0}</div>
 </div>
 
 </div>
@@ -92,8 +88,6 @@ ${t.abbrev}
 `;
 
 }).join("");
-
-document.getElementById("teams").innerHTML = html;
 
 });
 </script>

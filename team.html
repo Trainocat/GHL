@@ -2,101 +2,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Team Page</title>
+<title>Team</title>
 <link rel="stylesheet" href="style.css">
-
-<style>
-.team-header {
-  border-radius: 16px;
-  padding: 30px;
-  margin-bottom: 20px;
-  color: white;
-}
-
-.roster-player {
-  padding: 10px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 15px;
-  margin-top: 20px;
-}
-
-.stat-card {
-  background: rgba(255,255,255,0.08);
-  border-radius: 12px;
-  padding: 15px;
-}
-
-.stat-label {
-  opacity: 0.7;
-  font-size: 13px;
-}
-
-.stat-value {
-  font-size: 28px;
-  font-weight: bold;
-}
-</style>
-
 </head>
 <body>
 
+
 <header>
-<nav>
-<a href="index.html">Home</a>
-<a href="standings.html">Standings</a>
-<a href="teams.html">Teams</a>
-<a href="players.html">Players</a>
-<a href="schedule.html">Schedule</a>
-<a href="playoffs.html">Playoffs</a>
-</nav>
+  <div class="navbar">
+    <div class="logo">GHL</div>
+
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="standings.html">Standings</a>
+      <a href="teams.html">Teams</a>
+      <a href="players.html">Players</a>
+      <a href="schedule.html">Schedule</a>
+      <a href="playoffs.html">Playoffs</a>
+    </nav>
+  </div>
 </header>
 
-<div class="container">
+
+<div class="page">
 
 <div id="teamHeader"></div>
 
-<div class="card">
-<h2>Roster</h2>
-<div id="roster"></div>
-</div>
-
-<div class="card">
-<h2>Recent Games</h2>
-<div id="recentGames"></div>
+<div class="panel">
+<div class="panel-header">Roster</div>
+<div class="panel-content" id="roster"></div>
 </div>
 
 </div>
 
 <script>
-
-const TEAM_COLORS = {
-0: ["#00205B", "#BA0C2F"],
-1: ["#111111", "#FFD100"],
-2: ["#005BBB", "#EF3340"],
-3: ["#00843D", "#FFB81C"],
-4: ["#6F263D", "#236192"],
-5: ["#041E42", "#C8102E"],
-6: ["#CE1126", "#000000"],
-7: ["#CF0A2C", "#000000"],
-8: ["#002B5C", "#F47920"],
-9: ["#0038A8", "#CE1126"],
-10:["#041E42", "#8A1538"],
-11:["#003087", "#FFB81C"],
-12:["#154734", "#DDCBA4"],
-13:["#041E42", "#C8102E"],
-14:["#002D62", "#C8102E"],
-15:["#002868", "#CF0A2C"],
-16:["#002F87", "#F2A900"],
-17:["#111111", "#00A3E0"],
-18:["#1B365D", "#E03A3E"],
-19:["#85714D", "#111111"]
-};
-
 const params = new URLSearchParams(window.location.search);
 const tid = Number(params.get("tid"));
 
@@ -106,41 +45,46 @@ fetch("league.json")
 
 const team = data.teams.find(t => t.tid === tid);
 
-if (!team) {
-document.body.innerHTML = "Team not found";
-return;
-}
-
-const season = team.seasons?.[0];
-
-const colors = TEAM_COLORS[tid] || ["#1e293b", "#475569"];
+const s = team.seasons?.[0];
 
 document.getElementById("teamHeader").innerHTML = `
-<div class="team-header"
-style="background: linear-gradient(135deg, ${colors[0]}, ${colors[1]});">
+<div class="panel" style="margin-bottom:20px;">
 
-<h1>${team.region} ${team.name}</h1>
+<div class="panel-content">
 
-<div class="stat-grid">
+<div class="team-card-top">
 
-<div class="stat-card">
-<div class="stat-label">Wins</div>
-<div class="stat-value">${season?.won || 0}</div>
+<img class="team-card-logo" src="${team.imgURL || ''}">
+
+<div>
+<div class="team-card-name">${team.region} ${team.name}</div>
+<div>${team.abbrev}</div>
 </div>
 
-<div class="stat-card">
-<div class="stat-label">Losses</div>
-<div class="stat-value">${season?.lost || 0}</div>
 </div>
 
-<div class="stat-card">
-<div class="stat-label">OTL</div>
-<div class="stat-value">${season?.otl || 0}</div>
+<div class="record-grid">
+
+<div class="record-box">
+<div class="record-label">W</div>
+<div class="record-value">${s?.won || 0}</div>
 </div>
 
-<div class="stat-card">
-<div class="stat-label">Points</div>
-<div class="stat-value">${season?.pts || 0}</div>
+<div class="record-box">
+<div class="record-label">L</div>
+<div class="record-value">${s?.lost || 0}</div>
+</div>
+
+<div class="record-box">
+<div class="record-label">OTL</div>
+<div class="record-value">${s?.otl || 0}</div>
+</div>
+
+<div class="record-box">
+<div class="record-label">PTS</div>
+<div class="record-value">${s?.pts || 0}</div>
+</div>
+
 </div>
 
 </div>
@@ -148,73 +92,13 @@ style="background: linear-gradient(135deg, ${colors[0]}, ${colors[1]});">
 </div>
 `;
 
-const roster = data.players
-.filter(p => p.tid === tid)
-.sort((a,b) => {
-
-const ap = a.stats?.[0];
-const bp = b.stats?.[0];
-
-const aPts =
-(ap?.evG||0)+(ap?.ppG||0)+(ap?.shG||0)+
-(ap?.evA||0)+(ap?.ppA||0)+(ap?.shA||0);
-
-const bPts =
-(bp?.evG||0)+(bp?.ppG||0)+(bp?.shG||0)+
-(bp?.evA||0)+(bp?.ppA||0)+(bp?.shA||0);
-
-return bPts - aPts;
-});
+const roster = data.players.filter(p => p.tid === tid);
 
 document.getElementById("roster").innerHTML =
-roster.map(p => {
-
-const r = p.ratings?.[0];
-const s = p.stats?.[0];
-
-const goals = (s?.evG||0)+(s?.ppG||0)+(s?.shG||0);
-const assists = (s?.evA||0)+(s?.ppA||0)+(s?.shA||0);
-
-return `
-<div class="roster-player">
-
-<strong>${p.firstName} ${p.lastName}</strong>
-(${r?.pos || ""})
-
-<br>
-
-${goals} G • ${assists} A • ${goals+assists} P
-
-</div>
-`;
-
-}).join("");
-
-const teamGames = data.games
-.filter(g =>
-g.won?.tid === tid ||
-g.lost?.tid === tid
-)
-.sort((a,b) => b.day - a.day)
-.slice(0,10);
-
-const teamMap = {};
-
-data.teams.forEach(t => {
-teamMap[t.tid] = `${t.region} ${t.name}`;
-});
-
-document.getElementById("recentGames").innerHTML =
-teamGames.map(g => `
-<div class="roster-player">
-<strong>${teamMap[g.won.tid]}</strong>
-${g.won.pts}
--
-${g.lost.pts}
-<strong>${teamMap[g.lost.tid]}</strong>
-
-<br>
-Day ${g.day}
+roster.map(p => `
+<div class="team-row">
+<div>${p.firstName} ${p.lastName}</div>
+<div>${p.ratings?.[0]?.pos || ''}</div>
 </div>
 `).join("");
 

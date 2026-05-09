@@ -6,23 +6,46 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header><nav>
-<a href="index.html">Home</a>
-<a href="standings.html">Standings</a>
-<a href="teams.html">Teams</a>
-<a href="players.html">Players</a>
-<a href="schedule.html">Schedule</a>
-<a href="playoffs.html">Playoffs</a>
-</nav></header>
 
-<div class="container">
-<h1>Standings</h1>
+
+<header>
+  <div class="navbar">
+    <div class="logo">GHL</div>
+
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="standings.html">Standings</a>
+      <a href="teams.html">Teams</a>
+      <a href="players.html">Players</a>
+      <a href="schedule.html">Schedule</a>
+      <a href="playoffs.html">Playoffs</a>
+    </nav>
+  </div>
+</header>
+
+
+<div class="page">
+
+<div class="page-title">Standings</div>
+
+<div class="panel">
+
 <table class="table">
 <thead>
-<tr><th>Team</th><th>W</th><th>L</th><th>OTL</th><th>PTS</th></tr>
+<tr>
+<th>Team</th>
+<th>W</th>
+<th>L</th>
+<th>OTL</th>
+<th>PTS</th>
+</tr>
 </thead>
+
 <tbody id="standings"></tbody>
 </table>
+
+</div>
+
 </div>
 
 <script>
@@ -32,20 +55,23 @@ fetch("league.json")
 
 document.getElementById("standings").innerHTML =
 data.teams.map(t => {
+
 const s = t.seasons?.[0];
-if (!s) return "";
 
 return `
 <tr>
 <td><a href="team.html?tid=${t.tid}">${t.region} ${t.name}</a></td>
-<td>${s.won}</td>
-<td>${s.lost}</td>
-<td>${s.otl}</td>
-<td>${s.pts}</td>
+<td>${s?.won || 0}</td>
+<td>${s?.lost || 0}</td>
+<td>${s?.otl || 0}</td>
+<td>${s?.pts || 0}</td>
 </tr>
 `;
+
 }).join("");
+
 });
 </script>
+
 </body>
 </html>
