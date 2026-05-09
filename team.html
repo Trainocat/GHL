@@ -12,6 +12,8 @@ content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="style.css">
 
+<script src="helpers.js"></script>
+
 <style>
 
 .team-header{
@@ -312,7 +314,7 @@ async function loadLeague() {
 
 }
 
-function latestSeason(team) {
+function currentSeasonTeam(team, currentSeason(data)) {
 
     return team.seasons?.[
         team.seasons.length - 1
@@ -344,7 +346,7 @@ function latestRating(player) {
 
 }
 
-function latestStats(player) {
+function currentSeasonStats(player, currentSeason(data)) {
 
     return player.stats?.[
         player.stats.length - 1
@@ -477,7 +479,7 @@ loadLeague().then(data => {
         }) || data.teams[0];
 
     const season =
-        latestSeason(team);
+        currentSeasonTeam(team, currentSeason(data));
 
     const roster =
         data.players
@@ -714,7 +716,7 @@ loadLeague().then(data => {
                                         latestRating(player);
 
                                     const stats =
-                                        latestStats(player);
+                                        currentSeasonStats(player, currentSeason(data));
 
                                     const goals =
                                         (stats.evG || 0)
@@ -896,7 +898,7 @@ loadLeague().then(data => {
 
                                             ${
                                                 playerPoints(
-                                                    latestStats(player)
+                                                    currentSeasonStats(player, currentSeason(data))
                                                 )
                                             }
 

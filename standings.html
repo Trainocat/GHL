@@ -12,6 +12,8 @@ content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="style.css">
 
+<script src="helpers.js"></script>
+
 </head>
 <body>
 
@@ -114,7 +116,7 @@ function getTeamLogo(team) {
 
 }
 
-function latestSeason(team) {
+function currentSeasonTeam(team, currentSeason(data)) {
 
     return team.seasons?.[
         team.seasons.length - 1
@@ -226,7 +228,7 @@ function createStandingsTable(
                 ${teams.map(team => {
 
                     const s =
-                        latestSeason(team);
+                        currentSeasonTeam(team, currentSeason(data));
 
                     const games =
                         (s.won || 0) +

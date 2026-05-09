@@ -12,6 +12,8 @@ content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="style.css">
 
+<script src="helpers.js"></script>
+
 <style>
 
 .teams-grid{
@@ -269,7 +271,7 @@ async function loadLeague() {
 
 }
 
-function latestSeason(team) {
+function currentSeasonTeam(team, currentSeason(data)) {
 
     return team.seasons?.[
         team.seasons.length - 1
@@ -335,7 +337,7 @@ loadLeague().then(data => {
         teams.map(team => {
 
             const season =
-                latestSeason(team);
+                currentSeasonTeam(team, currentSeason(data));
 
             const conference =
                 conferences.find(c => {

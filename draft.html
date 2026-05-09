@@ -12,6 +12,8 @@ content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="style.css">
 
+<script src="helpers.js"></script>
+
 <style>
 
 .draft-grid{
@@ -385,7 +387,7 @@ function latestRating(player) {
 
 }
 
-function latestStats(player) {
+function currentSeasonStats(player, currentSeason(data)) {
 
     return player.stats?.[
         player.stats.length - 1
@@ -584,7 +586,7 @@ loadLeague().then(data => {
                 <div class="pick-change pick-up">
 
                     ▲ ${Math.floor(
-                        Math.random() * 3
+                        0 * 3
                     )}
 
                 </div>
@@ -676,7 +678,7 @@ loadLeague().then(data => {
                 latestRating(player);
 
             const stats =
-                latestStats(player);
+                currentSeasonStats(player, currentSeason(data));
 
             return `
 

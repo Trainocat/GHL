@@ -12,6 +12,8 @@ content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="style.css">
 
+<script src="helpers.js"></script>
+
 <style>
 
 .players-header{
@@ -352,7 +354,7 @@ async function loadLeague() {
 
 }
 
-function latestStats(player) {
+function currentSeasonStats(player, currentSeason(data)) {
 
     return player.stats?.[
         player.stats.length - 1
@@ -570,7 +572,7 @@ loadLeague().then(data => {
             .map(player => {
 
                 const stats =
-                    latestStats(player);
+                    currentSeasonStats(player, currentSeason(data));
 
                 const rating =
                     latestRating(player);

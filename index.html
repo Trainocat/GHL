@@ -12,6 +12,8 @@ content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="style.css">
 
+<script src="helpers.js"></script>
+
 <style>
 
 .home-layout{
@@ -408,7 +410,7 @@ async function loadLeague() {
 
 }
 
-function latestStats(player) {
+function currentSeasonStats(player, currentSeason(data)) {
 
     return player.stats?.[
         player.stats.length - 1
@@ -491,7 +493,7 @@ loadLeague().then(data => {
         ${leaders.map(player => {
 
             const stats =
-                latestStats(player);
+                currentSeasonStats(player, currentSeason(data));
 
             const team =
                 teams[player.tid];
