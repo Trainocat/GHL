@@ -1,6 +1,13 @@
-
-<html><head><title>Draft</title><link rel="stylesheet" href="style.css"></head>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Draft</title>
+<link rel="stylesheet" href="style.css">
+</head>
 <body>
+
 <header>
 <div class="nav">
 <a class="brand" href="index.html">
@@ -12,42 +19,52 @@
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
 <a href="players.html">Players</a>
-<a href="draft.html">Draft</a>
 <a href="schedule.html">Schedule</a>
+<a href="draft.html">Draft</a>
 <a href="playoffs.html">Playoffs</a>
 </div>
 </div>
 </header>
 
 <div class="container">
-<h1 class="section-title">2026 GHL Draft</h1>
+
+<div class="section-title">2026 Draft Centre</div>
+
 <div class="grid">
+
 <div class="card">
 <h2>Draft Order</h2>
-<table id="draftTable">
+
+<table id="draft">
+<tbody>
 <tr>
-<th onclick="sortTable(0,'draftTable')">Pick</th>
-<th onclick="sortTable(1,'draftTable')">Team</th>
+<th onclick="sortTable('draft',0)">Pick</th>
+<th onclick="sortTable('draft',1)">Team</th>
 </tr>
 <tr><td>1</td><td>Upstate Ironclads</td></tr>
 <tr><td>2</td><td>Saskatchewan Scythes</td></tr>
-<tr><td>3</td><td>Portland Hatchets</td></tr>
+</tbody>
 </table>
 </div>
 
 <div class="card">
 <h2>Top Prospects</h2>
-<table id="prospectsTable">
+
+<table id="prospects">
+<tbody>
 <tr>
-<th onclick="sortTable(0,'prospectsTable')">Player</th>
-<th onclick="sortTable(1,'prospectsTable')">Pos</th>
-<th onclick="sortTable(2,'prospectsTable')">OVR</th>
+<th onclick="sortTable('prospects',0)">Player</th>
+<th onclick="sortTable('prospects',1)">Pos</th>
+<th onclick="sortTable('prospects',2)">OVR</th>
 </tr>
 <tr><td>Liam Eriksson</td><td>C</td><td>72</td></tr>
-<tr><td>Jacob Moreau</td><td>D</td><td>70</td></tr>
+</tbody>
 </table>
 </div>
+
 </div>
+
 </div>
 <script src="app.js"></script>
-</body></html>
+</body>
+</html>

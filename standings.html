@@ -1,6 +1,13 @@
-
-<html><head><title>Standings</title><link rel="stylesheet" href="style.css"></head>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Standings</title>
+<link rel="stylesheet" href="style.css">
+</head>
 <body>
+
 <header>
 <div class="nav">
 <a class="brand" href="index.html">
@@ -12,33 +19,43 @@
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
 <a href="players.html">Players</a>
-<a href="draft.html">Draft</a>
 <a href="schedule.html">Schedule</a>
+<a href="draft.html">Draft</a>
 <a href="playoffs.html">Playoffs</a>
 </div>
 </div>
 </header>
 
 <div class="container">
-<h1 class="section-title">Standings</h1>
-<div class="card">
-<select><option>League</option><option>Conference</option><option>Division</option></select>
-</div><br>
-<table id="standingsTable">
+
+<div class="section-title">Standings</div>
+
+<div class="controls">
+<select>
+<option>League</option>
+<option>Conference</option>
+<option>Division</option>
+</select>
+</div>
+
+<table id="standings">
+<tbody>
 <tr>
-<th onclick="sortTable(0,'standingsTable')">Team</th>
-<th onclick="sortTable(1,'standingsTable')">W</th>
-<th onclick="sortTable(2,'standingsTable')">L</th>
-<th onclick="sortTable(3,'standingsTable')">OTL</th>
-<th onclick="sortTable(4,'standingsTable')">PTS</th>
-<th onclick="sortTable(5,'standingsTable')">GF</th>
-<th onclick="sortTable(6,'standingsTable')">GA</th>
-<th onclick="sortTable(7,'standingsTable')">DIFF</th>
+<th onclick="sortTable('standings',0)">Team</th>
+<th onclick="sortTable('standings',1)">W</th>
+<th onclick="sortTable('standings',2)">L</th>
+<th onclick="sortTable('standings',3)">OTL</th>
+<th onclick="sortTable('standings',4)">PTS</th>
+<th onclick="sortTable('standings',5)">GF</th>
+<th onclick="sortTable('standings',6)">GA</th>
+<th onclick="sortTable('standings',7)">DIFF</th>
 </tr>
-<tr><td>Minnesota Snowbirds</td><td>52</td><td>16</td><td>6</td><td>110</td><td>287</td><td>201</td><td>+86</td></tr>
-<tr><td>Kansas City Grillers</td><td>45</td><td>25</td><td>4</td><td>94</td><td>251</td><td>212</td><td>+39</td></tr>
-<tr><td>Bay Area Robots</td><td>41</td><td>28</td><td>5</td><td>87</td><td>236</td><td>224</td><td>+12</td></tr>
+<tr><td>Minnesota Snowbirds</td><td>52</td><td>16</td><td>6</td><td>110</td><td>287</td><td>201</td><td>86</td></tr>
+<tr><td>Kansas City Grillers</td><td>45</td><td>25</td><td>4</td><td>94</td><td>251</td><td>212</td><td>39</td></tr>
+</tbody>
 </table>
+
 </div>
 <script src="app.js"></script>
-</body></html>
+</body>
+</html>

@@ -1,6 +1,13 @@
-
-<html><head><title>Teams</title><link rel="stylesheet" href="style.css"></head>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Teams</title>
+<link rel="stylesheet" href="style.css">
+</head>
 <body>
+
 <header>
 <div class="nav">
 <a class="brand" href="index.html">
@@ -12,26 +19,31 @@
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
 <a href="players.html">Players</a>
-<a href="draft.html">Draft</a>
 <a href="schedule.html">Schedule</a>
+<a href="draft.html">Draft</a>
 <a href="playoffs.html">Playoffs</a>
 </div>
 </div>
 </header>
 
 <div class="container">
-<h1 class="section-title">Teams</h1>
-<table id="teamsTable">
+
+<div class="section-title">Teams</div>
+
+<table id="teams">
+<tbody>
 <tr>
-<th onclick="sortTable(0,'teamsTable')">Team</th>
-<th onclick="sortTable(1,'teamsTable')">Conference</th>
-<th onclick="sortTable(2,'teamsTable')">Division</th>
-<th onclick="sortTable(3,'teamsTable')">PTS</th>
+<th onclick="sortTable('teams',0)">Team</th>
+<th onclick="sortTable('teams',1)">Conference</th>
+<th onclick="sortTable('teams',2)">Division</th>
+<th onclick="sortTable('teams',3)">PTS</th>
 </tr>
-<tr><td>Minnesota Snowbirds</td><td>Eastern</td><td>Northeast</td><td>110</td></tr>
-<tr><td>Bay Area Robots</td><td>Western</td><td>Pacific</td><td>87</td></tr>
-<tr><td>Arizona Dragonflies</td><td>Western</td><td>Pacific</td><td>82</td></tr>
+<tr><td><a href="team.html">Minnesota Snowbirds</a></td><td>East</td><td>North</td><td>110</td></tr>
+<tr><td><a href="team.html">Bay Area Robots</a></td><td>West</td><td>Pacific</td><td>87</td></tr>
+</tbody>
 </table>
+
 </div>
 <script src="app.js"></script>
-</body></html>
+</body>
+</html>

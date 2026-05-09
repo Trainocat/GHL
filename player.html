@@ -1,1 +1,54 @@
-<!-- Player profile -->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Player</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+<div class="nav">
+<a class="brand" href="index.html">
+<img src="GHL.png">
+<span>GHL</span>
+</a>
+<div class="links">
+<a href="index.html">Home</a>
+<a href="standings.html">Standings</a>
+<a href="teams.html">Teams</a>
+<a href="players.html">Players</a>
+<a href="schedule.html">Schedule</a>
+<a href="draft.html">Draft</a>
+<a href="playoffs.html">Playoffs</a>
+</div>
+</div>
+</header>
+
+<div class="container">
+
+<div class="hero">
+<h1>Jani Eronen</h1>
+<p>Center • Sacramento</p>
+</div>
+
+<div class="section-title">Season Stats</div>
+
+<table id="stats">
+<tbody>
+<tr>
+<th onclick="sortTable('stats',0)">Season</th>
+<th onclick="sortTable('stats',1)">GP</th>
+<th onclick="sortTable('stats',2)">G</th>
+<th onclick="sortTable('stats',3)">A</th>
+<th onclick="sortTable('stats',4)">PTS</th>
+</tr>
+<tr><td>2026</td><td>74</td><td>20</td><td>76</td><td>96</td></tr>
+</tbody>
+</table>
+
+</div>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,1 +1,55 @@
-<!-- Team page structure -->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Team</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+<div class="nav">
+<a class="brand" href="index.html">
+<img src="GHL.png">
+<span>GHL</span>
+</a>
+<div class="links">
+<a href="index.html">Home</a>
+<a href="standings.html">Standings</a>
+<a href="teams.html">Teams</a>
+<a href="players.html">Players</a>
+<a href="schedule.html">Schedule</a>
+<a href="draft.html">Draft</a>
+<a href="playoffs.html">Playoffs</a>
+</div>
+</div>
+</header>
+
+<div class="container">
+
+<div class="hero">
+<h1>Minnesota Snowbirds</h1>
+<p>52-16-6 • 110 Points</p>
+</div>
+
+<div class="section-title">Roster</div>
+
+<table id="roster">
+<tbody>
+<tr>
+<th onclick="sortTable('roster',0)">Player</th>
+<th onclick="sortTable('roster',1)">Pos</th>
+<th onclick="sortTable('roster',2)">GP</th>
+<th onclick="sortTable('roster',3)">G</th>
+<th onclick="sortTable('roster',4)">A</th>
+<th onclick="sortTable('roster',5)">PTS</th>
+</tr>
+<tr><td><a href="player.html">Patrik Karlsson</a></td><td>C</td><td>74</td><td>41</td><td>55</td><td>96</td></tr>
+</tbody>
+</table>
+
+</div>
+<script src="app.js"></script>
+</body>
+</html>
