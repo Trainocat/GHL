@@ -1,63 +1,44 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>GHL - Home</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-<nav>
-  <a href="index.html">Home</a>
-  <a href="standings.html">Standings</a>
-  <a href="teams.html">Teams</a>
-  <a href="players.html">Players</a>
-  <a href="schedule.html">Schedule</a>
-  <a href="playoffs.html">Playoffs</a>
-</nav>
-
-<h1>Latest Games</h1>
-
-<div id="games">Loading games...</div>
-
 <script>
 fetch("league.json")
 .then(r => r.json())
 .then(data => {
 
-  // Try to locate games in different possible ZenGM structures
-  const games =
-    data.games ||
-    data.gameAttributes?.games ||
-    data.gameLog ||
-    [];
+  const games = data.games || [];
 
   if (!games.length) {
     document.getElementById("games").innerHTML =
-      "<p>No games found in this export.</p>";
+      "<p>No games found.</p>";
     return;
   }
 
-  // Sort newest first if timestamp exists
-  games.sort((a, b) => (b.day || 0) - (a.day || 0));
+  // Sort newest first (ZenGM usually uses day or gid)
+  games.sort((a, b) => {
+    return (b.day ?? b.gid ?? 0) - (a.day ?? a.gid ?? 0);
+  });
 
-  const output = games.slice(0, 20).map(g => {
+  const html = games.slice(0, 25).map(g => {
 
-    const away = g.awayTeam || "Away";
-    const home = g.homeTeam || "Home";
+    // ZenGM uses city/team IDs, not full names sometimes
+    const away = g.awayTeamName || g.away || "Away";
+    const home = g.homeTeamName || g.home || "Home";
 
-    const awayScore = g.awayScore ?? "?";
-    const homeScore = g.homeScore ?? "?";
+    const awayScore = g.awayScore ?? 0;
+    const homeScore = g.homeScore ?? 0;
 
-    const overtime = g.overtime ? " (OT)" : "";
+    let label = `${away} ${awayScore} - ${homeScore} ${home}`;
+
+    if (g.overtimes > 0 || g.overtime) {
+      label += " (OT)";
+    }
 
     return `
       <div style="padding:10px;border-bottom:1px solid #27314f;">
-        <b>${away}</b> ${awayScore} - ${homeScore} <b>${home}</b>${overtime}
+        ${label}
       </div>
     `;
   }).join("");
 
-  document.getElementById("games").innerHTML = output;
+  document.getElementById("games").innerHTML = html;
 
 })
 .catch(err => {
@@ -65,6 +46,3 @@ fetch("league.json")
     "Error loading games: " + err.message;
 });
 </script>
-
-</body>
-</html>
