@@ -40,7 +40,6 @@
 <th>Status</th>
 </tr>
 </thead>
-
 <tbody id="upcomingBody"></tbody>
 </table>
 </section>
@@ -58,7 +57,6 @@
 <th>Status</th>
 </tr>
 </thead>
-
 <tbody id="completedBody"></tbody>
 </table>
 </section>
@@ -76,7 +74,6 @@
 <th>Status</th>
 </tr>
 </thead>
-
 <tbody id="scheduleBody"></tbody>
 </table>
 </section>
@@ -159,20 +156,18 @@ function getGameDay(game) {
         return game.date;
     }
 
-    return 0;
+    return "";
 }
 
 function getDayNumber(game) {
-    const rawDay =
-        getGameDay(game);
+    const rawDay = getGameDay(game);
 
     if (typeof rawDay === "number") {
         return rawDay;
     }
 
     if (typeof rawDay === "string") {
-        const match =
-            rawDay.match(/\d+/);
+        const match = rawDay.match(/\d+/);
 
         if (match) {
             return Number(match[0]);
@@ -183,8 +178,7 @@ function getDayNumber(game) {
 }
 
 function displayDay(game) {
-    const day =
-        getGameDay(game);
+    const day = getGameDay(game);
 
     if (day === undefined || day === null || day === "") {
         return "-";
@@ -194,8 +188,7 @@ function displayDay(game) {
         return `Day ${day}`;
     }
 
-    const text =
-        String(day);
+    const text = String(day);
 
     if (/^day\s*\d+$/i.test(text)) {
         return text.replace(/^day/i, "Day ");
@@ -245,31 +238,23 @@ function getUpcomingGames(data) {
 }
 
 function getFullSchedule(data) {
-    const completed =
-        getCompletedGames(data)
-        .map(game => {
-            return {
-                type: "completed",
-                game
-            };
-        });
+    const completed = getCompletedGames(data).map(game => {
+        return {
+            type: "completed",
+            game
+        };
+    });
 
-    const upcoming =
-        getUpcomingGames(data)
-        .map(game => {
-            return {
-                type: "upcoming",
-                game
-            };
-        });
+    const upcoming = getUpcomingGames(data).map(game => {
+        return {
+            type: "upcoming",
+            game
+        };
+    });
 
-    return [...completed, ...upcoming]
-        .sort((a, b) => {
-            return (
-                getDayNumber(a.game) -
-                getDayNumber(b.game)
-            );
-        });
+    return [...completed, ...upcoming].sort((a, b) => {
+        return getDayNumber(a.game) - getDayNumber(b.game);
+    });
 }
 
 function gameStatus(game, completed) {
@@ -285,8 +270,7 @@ function gameStatus(game, completed) {
 }
 
 function renderUpcomingGames(data, teams) {
-    const games =
-        getUpcomingGames(data);
+    const games = getUpcomingGames(data);
 
     if (games.length === 0) {
         return `
@@ -297,11 +281,8 @@ function renderUpcomingGames(data, teams) {
     }
 
     return games.map(game => {
-        const awayTeam =
-            teams[getAwayTid(game)];
-
-        const homeTeam =
-            teams[getHomeTid(game)];
+        const awayTeam = teams[getAwayTid(game)];
+        const homeTeam = teams[getHomeTid(game)];
 
         return `
             <tr>
@@ -326,10 +307,7 @@ function renderUpcomingGames(data, teams) {
 }
 
 function renderCompletedGames(data, teams) {
-    const games =
-        getCompletedGames(data)
-        .slice()
-        .reverse();
+    const games = getCompletedGames(data).slice().reverse();
 
     if (games.length === 0) {
         return `
@@ -340,11 +318,8 @@ function renderCompletedGames(data, teams) {
     }
 
     return games.map(game => {
-        const awayTeam =
-            teams[getAwayTid(game)];
-
-        const homeTeam =
-            teams[getHomeTid(game)];
+        const awayTeam = teams[getAwayTid(game)];
+        const homeTeam = teams[getHomeTid(game)];
 
         return `
             <tr>
@@ -375,8 +350,7 @@ function renderCompletedGames(data, teams) {
 }
 
 function renderFullSchedule(data, teams) {
-    const games =
-        getFullSchedule(data);
+    const games = getFullSchedule(data);
 
     if (games.length === 0) {
         return `
@@ -387,17 +361,11 @@ function renderFullSchedule(data, teams) {
     }
 
     return games.map(item => {
-        const game =
-            item.game;
+        const game = item.game;
+        const completed = item.type === "completed";
 
-        const completed =
-            item.type === "completed";
-
-        const awayTeam =
-            teams[getAwayTid(game)];
-
-        const homeTeam =
-            teams[getHomeTid(game)];
+        const awayTeam = teams[getAwayTid(game)];
+        const homeTeam = teams[getHomeTid(game)];
 
         return `
             <tr>
@@ -456,26 +424,18 @@ function makeTableSortable(table) {
             );
 
             rows.sort((a, b) => {
-                const aText =
-                    a.children[index].innerText.trim();
+                const aText = a.children[index].innerText.trim();
+                const bText = b.children[index].innerText.trim();
 
-                const bText =
-                    b.children[index].innerText.trim();
+                const aNum = parseFloat(
+                    aText.replace(/[^\d.-]/g, "")
+                );
 
-                const aNum =
-                    parseFloat(
-                        aText.replace(/[^\d.-]/g, "")
-                    );
+                const bNum = parseFloat(
+                    bText.replace(/[^\d.-]/g, "")
+                );
 
-                const bNum =
-                    parseFloat(
-                        bText.replace(/[^\d.-]/g, "")
-                    );
-
-                if (
-                    !isNaN(aNum) &&
-                    !isNaN(bNum)
-                ) {
+                if (!isNaN(aNum) && !isNaN(bNum)) {
                     return ascending
                         ? aNum - bNum
                         : bNum - aNum;
@@ -496,8 +456,7 @@ function makeTableSortable(table) {
 }
 
 loadLeague().then(data => {
-    const teams =
-        buildTeamMap(data);
+    const teams = buildTeamMap(data);
 
     document.getElementById("upcomingBody").innerHTML =
         renderUpcomingGames(data, teams);

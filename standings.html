@@ -54,13 +54,11 @@
 
 <section>
 <h2>Conference Standings</h2>
-
 <div id="conferenceStandings"></div>
 </section>
 
 <section>
 <h2>Division Standings</h2>
-
 <div id="divisionStandings"></div>
 </section>
 
@@ -73,43 +71,18 @@ async function loadLeague() {
     return await response.json();
 }
 
-function currentSeason(data) {
-    return data.gameAttributes?.season || 0;
+function buildTeamMap(data) {
+    const teams = {};
+
+    data.teams.forEach(team => {
+        teams[team.tid] = team;
+    });
+
+    return teams;
 }
 
-function currentSeasonTeam(team, data) {
-    const season = currentSeason(data);
-
-    const seasons =
-        team.seasons || [];
-
-    const exact =
-        seasons.find(s => {
-            return s.season === season;
-        });
-
-    if (exact) {
-        return exact;
-    }
-
-    const beforeOrEqual =
-        seasons
-        .filter(s => {
-            return s.season <= season;
-        })
-        .sort((a, b) => {
-            return b.season - a.season;
-        })[0];
-
-    if (beforeOrEqual) {
-        return beforeOrEqual;
-    }
-
-    return seasons
-        .slice()
-        .sort((a, b) => {
-            return (b.season || 0) - (a.season || 0);
-        })[0] || {};
+function currentSeason(data) {
+    return data.gameAttributes?.season || 0;
 }
 
 function teamName(team) {
@@ -144,106 +117,297 @@ function divisionName(data, did) {
     return division?.name || "";
 }
 
-function gamesPlayed(season) {
-    if (season.gp !== undefined) {
-        return season.gp;
-    }
-
+function getAwayTid(game) {
     return (
-        (season.won || 0) +
-        (season.lost || 0) +
-        (season.otl || 0)
+        game.awayTid ??
+        game.away?.tid ??
+        game.lost?.tid ??
+        game.teams?.[0]?.tid
     );
 }
 
-function getPoints(season) {
-    if (season.pts !== undefined) {
-        return season.pts;
-    }
-
+function getHomeTid(game) {
     return (
-        ((season.won || 0) * 2) +
-        (season.otl || 0)
+        game.homeTid ??
+        game.home?.tid ??
+        game.won?.tid ??
+        game.teams?.[1]?.tid
     );
 }
 
-function pointsPct(season) {
-    const gp = gamesPlayed(season);
+function getAwayPts(game) {
+    return (
+        game.awayPts ??
+        game.away?.pts ??
+        game.lost?.pts
+    );
+}
 
-    if (!gp) {
+function getHomePts(game) {
+    return (
+        game.homePts ??
+        game.home?.pts ??
+        game.won?.pts
+    );
+}
+
+function getGameDay(game) {
+    if (game.day !== undefined) {
+        return game.day;
+    }
+
+    if (game.dayNum !== undefined) {
+        return game.dayNum;
+    }
+
+    if (game.gameDay !== undefined) {
+        return game.gameDay;
+    }
+
+    return 0;
+}
+
+function getDayNumber(game) {
+    const day = getGameDay(game);
+
+    if (typeof day === "number") {
+        return day;
+    }
+
+    if (typeof day === "string") {
+        const match = day.match(/\d+/);
+
+        if (match) {
+            return Number(match[0]);
+        }
+    }
+
+    return 0;
+}
+
+function isCompletedGame(game) {
+    return (
+        getAwayTid(game) !== undefined &&
+        getHomeTid(game) !== undefined &&
+        getAwayPts(game) !== undefined &&
+        getHomePts(game) !== undefined
+    );
+}
+
+function completedGames(data) {
+    return (data.games || [])
+        .filter(game => {
+            return isCompletedGame(game);
+        })
+        .sort((a, b) => {
+            return getDayNumber(a) - getDayNumber(b);
+        });
+}
+
+function emptyStanding(team) {
+    return {
+        tid: team.tid,
+        gp: 0,
+        won: 0,
+        lost: 0,
+        otl: 0,
+        pts: 0,
+        gf: 0,
+        ga: 0,
+        streak: "-"
+    };
+}
+
+function buildComputedStandings(data) {
+    const standings = {};
+
+    data.teams.forEach(team => {
+        standings[team.tid] = emptyStanding(team);
+    });
+
+    completedGames(data).forEach(game => {
+        const awayTid = getAwayTid(game);
+        const homeTid = getHomeTid(game);
+
+        const awayPts = Number(getAwayPts(game));
+        const homePts = Number(getHomePts(game));
+
+        if (
+            standings[awayTid] === undefined ||
+            standings[homeTid] === undefined
+        ) {
+            return;
+        }
+
+        const away = standings[awayTid];
+        const home = standings[homeTid];
+
+        away.gp++;
+        home.gp++;
+
+        away.gf += awayPts;
+        away.ga += homePts;
+
+        home.gf += homePts;
+        home.ga += awayPts;
+
+        const overtime =
+            Boolean(game.overtimes) ||
+            Boolean(game.ot) ||
+            game.numPeriods > 3;
+
+        if (awayPts > homePts) {
+            away.won++;
+            away.pts += 2;
+            away.streak = "W";
+
+            if (overtime) {
+                home.otl++;
+                home.pts += 1;
+                home.streak = "OTL";
+            } else {
+                home.lost++;
+                home.streak = "L";
+            }
+        } else if (homePts > awayPts) {
+            home.won++;
+            home.pts += 2;
+            home.streak = "W";
+
+            if (overtime) {
+                away.otl++;
+                away.pts += 1;
+                away.streak = "OTL";
+            } else {
+                away.lost++;
+                away.streak = "L";
+            }
+        }
+    });
+
+    return standings;
+}
+
+function latestSeasonFromTeam(team, data) {
+    const season = currentSeason(data);
+    const seasons = team.seasons || [];
+
+    const exact = seasons.find(s => {
+        return s.season === season;
+    });
+
+    if (exact) {
+        return exact;
+    }
+
+    return seasons
+        .slice()
+        .sort((a, b) => {
+            return (b.season || 0) - (a.season || 0);
+        })[0] || {};
+}
+
+function normalizeTeamSeason(team, data, computed) {
+    const season =
+        latestSeasonFromTeam(team, data);
+
+    const fromGames =
+        computed[team.tid] || emptyStanding(team);
+
+    const won =
+        season.won ?? season.wins ?? fromGames.won;
+
+    const lost =
+        season.lost ?? season.losses ?? fromGames.lost;
+
+    const otl =
+        season.otl ?? season.otLosses ?? season.tied ?? fromGames.otl;
+
+    const gp =
+        season.gp ??
+        (
+            Number(won || 0) +
+            Number(lost || 0) +
+            Number(otl || 0)
+        ) ||
+        fromGames.gp;
+
+    const pts =
+        season.pts ??
+        season.points ??
+        (
+            (Number(won || 0) * 2) +
+            Number(otl || 0)
+        ) ||
+        fromGames.pts;
+
+    const gf =
+        season.gf ??
+        season.goalsFor ??
+        season.f ??
+        fromGames.gf;
+
+    const ga =
+        season.ga ??
+        season.goalsAgainst ??
+        season.a ??
+        fromGames.ga;
+
+    const streak =
+        season.streak ??
+        season.strk ??
+        fromGames.streak ??
+        "-";
+
+    return {
+        gp,
+        won,
+        lost,
+        otl,
+        pts,
+        gf,
+        ga,
+        diff: gf - ga,
+        streak
+    };
+}
+
+function pointsPct(record) {
+    if (!record.gp) {
         return ".000";
     }
 
     return (
-        getPoints(season) /
-        (gp * 2)
+        record.pts /
+        (record.gp * 2)
     ).toFixed(3).replace(/^0/, "");
 }
 
-function goalsFor(season) {
-    return (
-        season.gf ||
-        season.goalsFor ||
-        season.f ||
-        0
-    );
-}
-
-function goalsAgainst(season) {
-    return (
-        season.ga ||
-        season.goalsAgainst ||
-        season.a ||
-        0
-    );
-}
-
-function goalDiff(season) {
-    return (
-        goalsFor(season) -
-        goalsAgainst(season)
-    );
-}
-
-function getStreak(season) {
-    return (
-        season.streak ||
-        season.strk ||
-        "-"
-    );
-}
-
-function sortTeamsByStandings(data, teams) {
+function sortTeamsByStandings(data, teams, computed) {
     return [...teams].sort((a, b) => {
-        const aSeason = currentSeasonTeam(a, data);
-        const bSeason = currentSeasonTeam(b, data);
+        const aRecord = normalizeTeamSeason(a, data, computed);
+        const bRecord = normalizeTeamSeason(b, data, computed);
 
-        const aPts = getPoints(aSeason);
-        const bPts = getPoints(bSeason);
-
-        if (bPts !== aPts) {
-            return bPts - aPts;
+        if (bRecord.pts !== aRecord.pts) {
+            return bRecord.pts - aRecord.pts;
         }
 
-        const bPct = Number(pointsPct(bSeason));
-        const aPct = Number(pointsPct(aSeason));
+        const bPct = Number(pointsPct(bRecord));
+        const aPct = Number(pointsPct(aRecord));
 
         if (bPct !== aPct) {
             return bPct - aPct;
         }
 
-        const bWins = bSeason.won || 0;
-        const aWins = aSeason.won || 0;
-
-        if (bWins !== aWins) {
-            return bWins - aWins;
+        if (bRecord.won !== aRecord.won) {
+            return bRecord.won - aRecord.won;
         }
 
-        return goalDiff(bSeason) - goalDiff(aSeason);
+        return bRecord.diff - aRecord.diff;
     });
 }
 
-function renderStandingsRows(data, teams) {
+function renderStandingsRows(data, teams, computed) {
     if (!teams || teams.length === 0) {
         return `
             <tr>
@@ -252,15 +416,10 @@ function renderStandingsRows(data, teams) {
         `;
     }
 
-    return sortTeamsByStandings(data, teams)
+    return sortTeamsByStandings(data, teams, computed)
         .map(team => {
-            const season = currentSeasonTeam(team, data);
-
-            const gp = gamesPlayed(season);
-            const pts = getPoints(season);
-            const gf = goalsFor(season);
-            const ga = goalsAgainst(season);
-            const diff = gf - ga;
+            const record =
+                normalizeTeamSeason(team, data, computed);
 
             return `
                 <tr>
@@ -269,23 +428,23 @@ function renderStandingsRows(data, teams) {
                             ${teamName(team)}
                         </a>
                     </td>
-                    <td>${gp}</td>
-                    <td>${season.won || 0}</td>
-                    <td>${season.lost || 0}</td>
-                    <td>${season.otl || 0}</td>
-                    <td>${pts}</td>
-                    <td>${pointsPct(season)}</td>
-                    <td>${gf}</td>
-                    <td>${ga}</td>
-                    <td>${diff > 0 ? "+" : ""}${diff}</td>
-                    <td>${getStreak(season)}</td>
+                    <td>${record.gp}</td>
+                    <td>${record.won}</td>
+                    <td>${record.lost}</td>
+                    <td>${record.otl}</td>
+                    <td>${record.pts}</td>
+                    <td>${pointsPct(record)}</td>
+                    <td>${record.gf}</td>
+                    <td>${record.ga}</td>
+                    <td>${record.diff > 0 ? "+" : ""}${record.diff}</td>
+                    <td>${record.streak}</td>
                 </tr>
             `;
         })
         .join("");
 }
 
-function renderConferenceStandings(data) {
+function renderConferenceStandings(data, computed) {
     const conferences = getConferences(data);
 
     if (conferences.length === 0) {
@@ -319,7 +478,7 @@ function renderConferenceStandings(data) {
                     </thead>
 
                     <tbody>
-                        ${renderStandingsRows(data, teams)}
+                        ${renderStandingsRows(data, teams, computed)}
                     </tbody>
                 </table>
             </section>
@@ -327,7 +486,7 @@ function renderConferenceStandings(data) {
     }).join("");
 }
 
-function renderDivisionStandings(data) {
+function renderDivisionStandings(data, computed) {
     const divisions = getDivisions(data);
 
     if (divisions.length === 0) {
@@ -361,7 +520,7 @@ function renderDivisionStandings(data) {
                     </thead>
 
                     <tbody>
-                        ${renderStandingsRows(data, teams)}
+                        ${renderStandingsRows(data, teams, computed)}
                     </tbody>
                 </table>
             </section>
@@ -417,14 +576,17 @@ function makeTableSortable(table) {
 }
 
 loadLeague().then(data => {
+    const computed =
+        buildComputedStandings(data);
+
     document.getElementById("leagueStandingsBody").innerHTML =
-        renderStandingsRows(data, data.teams);
+        renderStandingsRows(data, data.teams, computed);
 
     document.getElementById("conferenceStandings").innerHTML =
-        renderConferenceStandings(data);
+        renderConferenceStandings(data, computed);
 
     document.getElementById("divisionStandings").innerHTML =
-        renderDivisionStandings(data);
+        renderDivisionStandings(data, computed);
 
     document.querySelectorAll("table").forEach(table => {
         makeTableSortable(table);
