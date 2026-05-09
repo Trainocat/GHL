@@ -15,29 +15,54 @@
   <a href="playoffs.html">Playoffs</a>
 </nav>
 
-<h1>GHL News</h1>
+<h1>Latest Games</h1>
 
-<div id="news"></div>
+<div id="games">Loading games...</div>
 
 <script>
 fetch("league.json")
 .then(r => r.json())
 .then(data => {
 
-  const season = data.gameAttributes?.season || "Unknown Season";
+  // Try to locate games in different possible ZenGM structures
+  const games =
+    data.games ||
+    data.gameAttributes?.games ||
+    data.gameLog ||
+    [];
 
-  const sampleNews = [
-    `🏒 Season ${season} is underway in the GHL!`,
-    `📊 Standings updated after latest games.`,
-    `🔥 Teams are battling for playoff positioning.`,
-    `🧊 Check out the latest player stats in the Players tab.`,
-    `🏆 The race for the championship is heating up.`
-  ];
+  if (!games.length) {
+    document.getElementById("games").innerHTML =
+      "<p>No games found in this export.</p>";
+    return;
+  }
 
-  document.getElementById("news").innerHTML =
-    sampleNews.map(n =>
-      `<div style="padding:10px;border-bottom:1px solid #27314f;">${n}</div>`
-    ).join("");
+  // Sort newest first if timestamp exists
+  games.sort((a, b) => (b.day || 0) - (a.day || 0));
+
+  const output = games.slice(0, 20).map(g => {
+
+    const away = g.awayTeam || "Away";
+    const home = g.homeTeam || "Home";
+
+    const awayScore = g.awayScore ?? "?";
+    const homeScore = g.homeScore ?? "?";
+
+    const overtime = g.overtime ? " (OT)" : "";
+
+    return `
+      <div style="padding:10px;border-bottom:1px solid #27314f;">
+        <b>${away}</b> ${awayScore} - ${homeScore} <b>${home}</b>${overtime}
+      </div>
+    `;
+  }).join("");
+
+  document.getElementById("games").innerHTML = output;
+
+})
+.catch(err => {
+  document.getElementById("games").innerHTML =
+    "Error loading games: " + err.message;
 });
 </script>
 
