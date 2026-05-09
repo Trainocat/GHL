@@ -2,12 +2,261 @@
 <html>
 <head>
   <title>GHL Teams</title>
+
   <link rel="stylesheet" href="style.css">
+
+  <style>
+
+    .teams-controls {
+      margin-bottom: 25px;
+    }
+
+    .teams-grid {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(auto-fit, minmax(360px, 1fr));
+
+      gap: 24px;
+
+    }
+
+    .team-link {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .team-card {
+
+      position: relative;
+
+      background: #111c33;
+
+      border: 1px solid #24385f;
+
+      border-radius: 18px;
+
+      overflow: hidden;
+
+      transition: 0.2s;
+
+    }
+
+    .team-card:hover {
+
+      transform: translateY(-5px);
+
+      border-color: #3b82f6;
+
+      box-shadow:
+        0 0 25px rgba(59,130,246,0.2);
+
+    }
+
+    .team-banner {
+
+      height: 90px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(59,130,246,0.9),
+          rgba(37,99,235,0.25)
+        );
+
+    }
+
+    .west {
+      background:
+        linear-gradient(
+          135deg,
+          rgba(249,115,22,0.9),
+          rgba(234,88,12,0.25)
+        );
+    }
+
+    .team-content {
+      padding: 24px;
+    }
+
+    .team-top {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 18px;
+
+      margin-top: -65px;
+
+      margin-bottom: 24px;
+
+    }
+
+    .team-logo-wrap {
+
+      width: 115px;
+      height: 115px;
+
+      background:
+        rgba(255,255,255,0.04);
+
+      border-radius: 18px;
+
+      display: flex;
+
+      align-items: center;
+      justify-content: center;
+
+      overflow: hidden;
+
+      border:
+        1px solid rgba(255,255,255,0.08);
+
+      flex-shrink: 0;
+
+      backdrop-filter: blur(6px);
+
+    }
+
+    .team-logo {
+
+      max-width: 90px;
+      max-height: 90px;
+
+      width: auto;
+      height: auto;
+
+      object-fit: contain;
+
+    }
+
+    .team-name {
+
+      font-size: 30px;
+      font-weight: bold;
+
+      line-height: 1.1;
+
+    }
+
+    .team-sub {
+
+      margin-top: 6px;
+
+      color: #94a3b8;
+
+      font-size: 15px;
+
+    }
+
+    .conference-badge {
+
+      margin-top: 10px;
+
+      display: inline-block;
+
+      background:
+        rgba(255,255,255,0.06);
+
+      border:
+        1px solid rgba(255,255,255,0.06);
+
+      padding: 6px 10px;
+
+      border-radius: 999px;
+
+      font-size: 13px;
+
+      color: #cbd5e1;
+
+    }
+
+    .record-grid {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(4, 1fr);
+
+      gap: 14px;
+
+    }
+
+    .record-box {
+
+      background: #1a2744;
+
+      border-radius: 14px;
+
+      padding: 14px;
+
+      text-align: center;
+
+      border:
+        1px solid rgba(255,255,255,0.04);
+
+    }
+
+    .record-label {
+
+      font-size: 12px;
+
+      color: #94a3b8;
+
+    }
+
+    .record-value {
+
+      font-size: 34px;
+
+      font-weight: bold;
+
+      margin-top: 6px;
+
+    }
+
+    @media (max-width: 700px) {
+
+      .team-top {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        margin-top: -50px;
+
+      }
+
+      .team-logo-wrap {
+
+        width: 95px;
+        height: 95px;
+
+      }
+
+      .team-logo {
+
+        max-width: 75px;
+        max-height: 75px;
+
+      }
+
+      .team-name {
+        font-size: 24px;
+      }
+
+    }
+
+  </style>
+
 </head>
 
 <body>
 
 <header>
+
   <div class="navbar">
 
     <div class="logo">
@@ -15,15 +264,18 @@
     </div>
 
     <nav>
+
       <a href="index.html">Home</a>
       <a href="standings.html">Standings</a>
       <a href="teams.html">Teams</a>
       <a href="players.html">Players</a>
       <a href="schedule.html">Schedule</a>
       <a href="playoffs.html">Playoffs</a>
+
     </nav>
 
   </div>
+
 </header>
 
 <div class="page">
@@ -37,139 +289,154 @@
 </div>
 
 <script>
+
 fetch("league.json")
 .then(r => r.json())
 .then(data => {
 
-  const html = data.teams.map(t => {
+  const teams =
+    [...data.teams];
 
-    const s = t.seasons?.[0];
+  teams.sort((a,b) => {
 
-    return `
+    const aName =
+      `${a.region} ${a.name}`;
 
-    <a class="team-link" href="team.html?tid=${t.tid}">
+    const bName =
+      `${b.region} ${b.name}`;
 
-      <div class="team-card">
+    return aName.localeCompare(bName);
 
-        <div class="team-banner"></div>
+  });
 
-        <div class="team-content">
+  document.getElementById("teams")
+    .innerHTML =
 
-          <div class="team-top">
+    teams.map(t => {
 
-            <div class="team-logo-wrap">
+      const s =
+        t.seasons?.[0];
 
-              <img
-              class="team-logo"
-              src="${t.imgURL || ''}"
-              alt="${t.region} ${t.name}">
+      const conf =
+        t.cid === 0
+        ? "Eastern Conference"
+        : "Western Conference";
 
-            </div>
+      return `
 
-            <div>
+      <a
+      class="team-link"
+      href="team.html?tid=${t.tid}">
 
-              <div class="team-name">
-                ${t.region} ${t.name}
+        <div class="team-card">
+
+          <div class="
+            team-banner
+            ${t.cid === 1 ? 'west' : ''}
+          "></div>
+
+          <div class="team-content">
+
+            <div class="team-top">
+
+              <div class="team-logo-wrap">
+
+                <img
+                class="team-logo"
+                src="${t.imgURL || ''}"
+                alt="${t.region} ${t.name}">
+
               </div>
 
-              <div class="team-abbrev">
-                ${t.abbrev}
+              <div>
+
+                <div class="team-name">
+
+                  ${t.region}
+                  ${t.name}
+
+                </div>
+
+                <div class="team-sub">
+
+                  ${t.abbrev}
+
+                </div>
+
+                <div class="conference-badge">
+
+                  ${conf}
+
+                </div>
+
               </div>
 
             </div>
 
-          </div>
+            <div class="record-grid">
 
-          <div class="record-grid">
+              <div class="record-box">
 
-            <div class="record-box">
-              <div class="record-label">W</div>
-              <div class="record-value">${s?.won || 0}</div>
-            </div>
+                <div class="record-label">
+                  W
+                </div>
 
-            <div class="record-box">
-              <div class="record-label">L</div>
-              <div class="record-value">${s?.lost || 0}</div>
-            </div>
+                <div class="record-value">
+                  ${s?.won || 0}
+                </div>
 
-            <div class="record-box">
-              <div class="record-label">OTL</div>
-              <div class="record-value">${s?.otl || 0}</div>
-            </div>
+              </div>
 
-            <div class="record-box">
-              <div class="record-label">PTS</div>
-              <div class="record-value">${s?.pts || 0}</div>
+              <div class="record-box">
+
+                <div class="record-label">
+                  L
+                </div>
+
+                <div class="record-value">
+                  ${s?.lost || 0}
+                </div>
+
+              </div>
+
+              <div class="record-box">
+
+                <div class="record-label">
+                  OTL
+                </div>
+
+                <div class="record-value">
+                  ${s?.otl || 0}
+                </div>
+
+              </div>
+
+              <div class="record-box">
+
+                <div class="record-label">
+                  PTS
+                </div>
+
+                <div class="record-value">
+                  ${s?.pts || 0}
+                </div>
+
+              </div>
+
             </div>
 
           </div>
 
         </div>
 
-      </div>
+      </a>
 
-    </a>
+      `;
 
-    `;
-
-  }).join("");
-
-  document.getElementById("teams").innerHTML = html;
+    }).join("");
 
 });
-</script>
 
-</body>
-</html>
-
-<div class="team-card">
-
-<div class="team-row">
-
-<div class="team-left">
-<img class="team-logo" src="${t.imgURL || ''}">
-
-<div>
-<div><strong>${t.region} ${t.name}</strong></div>
-<div>${t.abbrev}</div>
-</div>
-
-</div>
-
-</div>
-
-<div class="stat-grid">
-
-<div class="stat-box">
-<div class="stat-label">W</div>
-<div class="stat-value">${s?.won || 0}</div>
-</div>
-
-<div class="stat-box">
-<div class="stat-label">L</div>
-<div class="stat-value">${s?.lost || 0}</div>
-</div>
-
-<div class="stat-box">
-<div class="stat-label">OTL</div>
-<div class="stat-value">${s?.otl || 0}</div>
-</div>
-
-<div class="stat-box">
-<div class="stat-label">PTS</div>
-<div class="stat-value">${s?.pts || 0}</div>
-</div>
-
-</div>
-
-</div>
-
-</a>
-`;
-
-}).join("");
-
-});
 </script>
 
 </body>
