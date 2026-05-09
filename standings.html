@@ -31,207 +31,66 @@
 <div class="section">Standings</div>
 
 <div class="controls">
-<button class="active mode-btn" data-mode="league">League</button>
-<button class="mode-btn" data-mode="conference">Conference</button>
-<button class="mode-btn" data-mode="division">Division</button>
+<button class="active">League</button>
+<button>Conference</button>
+<button>Division</button>
 </div>
 
-<table>
-
+<table id="standingsTable">
 <thead>
 <tr>
-<th data-sort="team">Team</th>
-<th data-sort="won">W</th>
-<th data-sort="lost">L</th>
-<th data-sort="otl">OTL</th>
-<th data-sort="pts">PTS</th>
-<th data-sort="gf">GF</th>
-<th data-sort="ga">GA</th>
-<th data-sort="diff">DIFF</th>
+<th>Team</th>
+<th>W</th>
+<th>L</th>
+<th>OTL</th>
+<th>PTS</th>
+<th>GF</th>
+<th>GA</th>
+<th>DIFF</th>
 </tr>
 </thead>
-
-<tbody id="table"></tbody>
-
+<tbody id="standingsBody"></tbody>
 </table>
 
 </div>
 
+<script src="app.js"></script>
 <script>
 
-let mode='league';
-let sort='pts';
-let teams=[];
+loadLeague().then(data=>{
 
-fetch('league.json')
-.then(r=>r.json())
-.then(data=>{
+const body=document.getElementById('standingsBody');
 
-teams=data.teams;
+body.innerHTML = [...data.teams]
+.sort((a,b)=>(latestSeason(b).pts||0)-(latestSeason(a).pts||0))
+.map(t=>{
 
-document.querySelectorAll('.mode-btn').forEach(btn=>{
-
-btn.onclick=()=>{
-
-document.querySelectorAll('.mode-btn')
-.forEach(b=>b.classList.remove('active'));
-
-btn.classList.add('active');
-
-mode=btn.dataset.mode;
-
-render();
-
-};
-
-});
-
-document.querySelectorAll('th[data-sort]').forEach(th=>{
-
-th.onclick=()=>{
-
-sort=th.dataset.sort;
-
-render();
-
-};
-
-});
-
-render();
-
-});
-
-function latest(team){
-
-return team.seasons?.at(-1)||{};
-
-}
-
-function diff(team){
-
-const s=latest(team);
-
-return (s.gf||0)-(s.ga||0);
-
-}
-
-function sortTeams(arr){
-
-return arr.sort((a,b)=>{
-
-if(sort==='team'){
-
-return (a.region+a.name)
-.localeCompare(b.region+b.name);
-
-}
-
-if(sort==='diff'){
-
-return diff(b)-diff(a);
-
-}
-
-return (latest(b)[sort]||0)-(latest(a)[sort]||0);
-
-});
-
-}
-
-function row(t){
-
-const s=latest(t);
+const s=latestSeason(t);
+const diff=(s.gf||0)-(s.ga||0);
 
 return `
 <tr>
-
 <td>
 <div class="teamcell">
-
 <img class="small-logo" src="${t.imgURL||''}">
-
-<a href="team.html?tid=${t.tid}">
-${t.region} ${t.name}
-</a>
-
+<a href="team.html?tid=${t.tid}">${t.region} ${t.name}</a>
 </div>
 </td>
-
 <td>${s.won||0}</td>
 <td>${s.lost||0}</td>
 <td>${s.otl||0}</td>
 <td>${s.pts||0}</td>
 <td>${s.gf||0}</td>
 <td>${s.ga||0}</td>
-<td>${diff(t)}</td>
-
+<td>${diff}</td>
 </tr>
 `;
 
-}
+}).join('');
 
-function render(){
-
-let html='';
-
-if(mode==='league'){
-
-html += sortTeams([...teams]).map(row).join('');
-
-}
-
-if(mode==='conference'){
-
-[0,1].forEach(cid=>{
-
-html += `
-<tr class="group-row">
-<td colspan="8">
-${cid===0?'Eastern Conference':'Western Conference'}
-</td>
-</tr>
-`;
-
-html += sortTeams(
-teams.filter(t=>t.cid===cid)
-).map(row).join('');
+makeSortable(document.getElementById('standingsTable'));
 
 });
-
-}
-
-if(mode==='division'){
-
-const groups={};
-
-teams.forEach(t=>{
-
-if(!groups[t.did]) groups[t.did]=[];
-
-groups[t.did].push(t);
-
-});
-
-Object.keys(groups).forEach(id=>{
-
-html += `
-<tr class="group-row">
-<td colspan="8">
-Division ${Number(id)+1}
-</td>
-</tr>
-`;
-
-html += sortTeams(groups[id]).map(row).join('');
-
-});
-
-}
-
-document.getElementById('table').innerHTML=html;
-
-}
 
 </script>
 

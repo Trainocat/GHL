@@ -29,55 +29,41 @@
 <div class="page">
 
 <div class="section">Teams</div>
-
-<div class="teams-grid" id="teams"></div>
+<div class="grid" id="teams"></div>
 
 </div>
 
+<script src="app.js"></script>
 <script>
 
-fetch("league.json")
-.then(r=>r.json())
-.then(data=>{
+loadLeague().then(data=>{
 
-const teams=[...data.teams]
-.sort((a,b)=>(a.region+a.name).localeCompare(b.region+b.name));
+document.getElementById('teams').innerHTML =
+[...data.teams]
+.sort((a,b)=>(a.region+a.name).localeCompare(b.region+b.name))
+.map(t=>{
 
-document.getElementById("teams").innerHTML=teams.map(t=>{
-
-const s=t.seasons?.at(-1)||{};
+const s=latestSeason(t);
 
 return `
 <a href="team.html?tid=${t.tid}">
-
-<div class="team-card">
-
-<div class="team-top">
+<div class="card">
+<div style="text-align:center">
 <img class="team-logo" src="${t.imgURL||''}">
 </div>
 
-<div class="team-bottom">
+<h2>${t.region} ${t.name}</h2>
 
-<div class="team-name">
-${t.region} ${t.name}
-</div>
-
-<div class="team-record">
-${s.won||0}-${s.lost||0}-${s.otl||0}
-</div>
-
-<div class="team-points">
+<div>${s.won||0}-${s.lost||0}-${s.otl||0}</div>
+<div style="color:var(--accent);margin-top:10px;font-weight:700">
 ${s.pts||0} PTS
 </div>
 
 </div>
-
-</div>
-
 </a>
 `;
 
-}).join("");
+}).join('');
 
 });
 

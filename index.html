@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Home</title>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -31,7 +31,7 @@
 <div class="hero">
 <div>
 <div class="section">Global Hockey League</div>
-<div class="meta">League news, standings, players and game centre.</div>
+<p>Modern hockey coverage, standings, stats and game centre.</p>
 </div>
 <img src="GHL.png">
 </div>
@@ -40,37 +40,27 @@
 <div class="grid" id="games"></div>
 
 </div>
+
+<script src="app.js"></script>
 <script>
 
-fetch('league.json')
-.then(r=>r.json())
-.then(data=>{
+loadLeague().then(data=>{
 
 const teams={};
 data.teams.forEach(t=>teams[t.tid]=t);
 
-document.getElementById('games').innerHTML=data.games.slice(-10).reverse().map(g=>`
+document.getElementById('games').innerHTML =
+data.games.slice(-8).reverse().map(g=>`
 <a href="game.html?gid=${g.gid}">
 <div class="card">
-
-<div class="teamrow">
-<div class="left">
-<img class="logo" src="${teams[g.won.tid]?.imgURL||''}">
-<div>${teams[g.won.tid]?.abbrev}</div>
+<div class="teamcell">
+<img class="small-logo" src="${teams[g.won.tid]?.imgURL||''}">
+<div>${teams[g.won.tid]?.abbrev} ${g.won.pts}</div>
 </div>
-<div class="score">${g.won.pts}</div>
+<div class="teamcell" style="margin-top:12px">
+<img class="small-logo" src="${teams[g.lost.tid]?.imgURL||''}">
+<div>${teams[g.lost.tid]?.abbrev} ${g.lost.pts}</div>
 </div>
-
-<div class="teamrow">
-<div class="left">
-<img class="logo" src="${teams[g.lost.tid]?.imgURL||''}">
-<div>${teams[g.lost.tid]?.abbrev}</div>
-</div>
-<div class="score">${g.lost.pts}</div>
-</div>
-
-<div class="meta">Open Game Centre</div>
-
 </div>
 </a>
 `).join('');
@@ -78,5 +68,6 @@ document.getElementById('games').innerHTML=data.games.slice(-10).reverse().map(g
 });
 
 </script>
+
 </body>
 </html>
