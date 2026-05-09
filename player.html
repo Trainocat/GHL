@@ -1,0 +1,105 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Player</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+
+<header>
+<div class="navbar">
+<div class="logo">GHL</div>
+
+<nav>
+<a href="index.html">Home</a>
+<a href="standings.html">Standings</a>
+<a href="teams.html">Teams</a>
+<a href="players.html">Players</a>
+<a href="schedule.html">Schedule</a>
+<a href="playoffs.html">Playoffs</a>
+</nav>
+
+</div>
+</header>
+
+
+<div class="page">
+
+<div id="player"></div>
+
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const pid = Number(params.get("pid"));
+
+fetch("league.json")
+.then(r=>r.json())
+.then(data=>{
+
+const p = data.players.find(x=>x.pid===pid);
+
+if (!p) {
+document.getElementById("player").innerHTML = "Player not found";
+return;
+}
+
+const stats = p.stats?.[0];
+const ratings = p.ratings?.[0];
+
+const goals = (stats?.evG||0)+(stats?.ppG||0)+(stats?.shG||0);
+const assists = (stats?.evA||0)+(stats?.ppA||0)+(stats?.shA||0);
+
+document.getElementById("player").innerHTML = `
+
+<div class="panel">
+
+<div class="panel-content">
+
+<div style="font-size:38px;font-weight:bold;">
+${p.firstName} ${p.lastName}
+</div>
+
+<div class="meta">
+${ratings?.pos || ''}
+</div>
+
+<br>
+
+<div class="stat-grid">
+
+<div class="stat-box">
+<div class="stat-label">Goals</div>
+<div class="stat-value">${goals}</div>
+</div>
+
+<div class="stat-box">
+<div class="stat-label">Assists</div>
+<div class="stat-value">${assists}</div>
+</div>
+
+<div class="stat-box">
+<div class="stat-label">Points</div>
+<div class="stat-value">${goals+assists}</div>
+</div>
+
+<div class="stat-box">
+<div class="stat-label">Games</div>
+<div class="stat-value">${stats?.gp || 0}</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+});
+</script>
+
+</body>
+</html>

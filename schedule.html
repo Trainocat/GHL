@@ -6,39 +6,69 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header><nav>
+
+
+<header>
+<div class="navbar">
+<div class="logo">GHL</div>
+
+<nav>
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
 <a href="players.html">Players</a>
 <a href="schedule.html">Schedule</a>
 <a href="playoffs.html">Playoffs</a>
-</nav></header>
+</nav>
 
-<div class="container">
-<h1>Schedule & Results</h1>
+</div>
+</header>
+
+
+<div class="page">
+
+<div class="page-title">Schedule & Results</div>
+
 <div id="schedule"></div>
+
 </div>
 
 <script>
 fetch("league.json")
-.then(r => r.json())
-.then(data => {
+.then(r=>r.json())
+.then(data=>{
 
 const teamMap = {};
-data.teams.forEach(t => {
-teamMap[t.tid] = `${t.region} ${t.name}`;
+
+data.teams.forEach(t=>{
+teamMap[t.tid] = t;
 });
 
 document.getElementById("schedule").innerHTML =
-data.games.map(g => `
-<div class="card">
-<a href="game.html?gid=${g.gid}">
-${teamMap[g.won.tid]} ${g.won.pts} - ${g.lost.pts} ${teamMap[g.lost.tid]}
-</a>
+data.games.map(g=>`
+<div class="game-card">
+
+<div class="team-row winner">
+<div>
+${teamMap[g.won.tid].region} ${teamMap[g.won.tid].name}
+</div>
+
+<div class="score">${g.won.pts}</div>
+</div>
+
+<div class="team-row loser">
+<div>
+${teamMap[g.lost.tid].region} ${teamMap[g.lost.tid].name}
+</div>
+
+<div class="score">${g.lost.pts}</div>
+</div>
+
 </div>
 `).join("");
+
 });
 </script>
+
 </body>
 </html>

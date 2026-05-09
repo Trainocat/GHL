@@ -9,18 +9,19 @@
 
 
 <header>
-  <div class="navbar">
-    <div class="logo">GHL</div>
+<div class="navbar">
+<div class="logo">GHL</div>
 
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="standings.html">Standings</a>
-      <a href="teams.html">Teams</a>
-      <a href="players.html">Players</a>
-      <a href="schedule.html">Schedule</a>
-      <a href="playoffs.html">Playoffs</a>
-    </nav>
-  </div>
+<nav>
+<a href="index.html">Home</a>
+<a href="standings.html">Standings</a>
+<a href="teams.html">Teams</a>
+<a href="players.html">Players</a>
+<a href="schedule.html">Schedule</a>
+<a href="playoffs.html">Playoffs</a>
+</nav>
+
+</div>
 </header>
 
 
@@ -31,6 +32,7 @@
 <div class="panel">
 
 <table class="table">
+
 <thead>
 <tr>
 <th>Team</th>
@@ -42,6 +44,7 @@
 </thead>
 
 <tbody id="standings"></tbody>
+
 </table>
 
 </div>
@@ -50,17 +53,21 @@
 
 <script>
 fetch("league.json")
-.then(r => r.json())
-.then(data => {
+.then(r=>r.json())
+.then(data=>{
 
 document.getElementById("standings").innerHTML =
-data.teams.map(t => {
+data.teams.map(t=>{
 
 const s = t.seasons?.[0];
 
 return `
 <tr>
-<td><a href="team.html?tid=${t.tid}">${t.region} ${t.name}</a></td>
+<td>
+<a href="team.html?tid=${t.tid}">
+${t.region} ${t.name}
+</a>
+</td>
 <td>${s?.won || 0}</td>
 <td>${s?.lost || 0}</td>
 <td>${s?.otl || 0}</td>

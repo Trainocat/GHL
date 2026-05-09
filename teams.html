@@ -9,18 +9,19 @@
 
 
 <header>
-  <div class="navbar">
-    <div class="logo">GHL</div>
+<div class="navbar">
+<div class="logo">GHL</div>
 
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="standings.html">Standings</a>
-      <a href="teams.html">Teams</a>
-      <a href="players.html">Players</a>
-      <a href="schedule.html">Schedule</a>
-      <a href="playoffs.html">Playoffs</a>
-    </nav>
-  </div>
+<nav>
+<a href="index.html">Home</a>
+<a href="standings.html">Standings</a>
+<a href="teams.html">Teams</a>
+<a href="players.html">Players</a>
+<a href="schedule.html">Schedule</a>
+<a href="playoffs.html">Playoffs</a>
+</nav>
+
+</div>
 </header>
 
 
@@ -34,50 +35,53 @@
 
 <script>
 fetch("league.json")
-.then(r => r.json())
-.then(data => {
+.then(r=>r.json())
+.then(data=>{
 
 document.getElementById("teams").innerHTML =
-data.teams.map(t => {
+data.teams.map(t=>{
 
 const s = t.seasons?.[0];
 
 return `
-<a class="team-card-link" href="team.html?tid=${t.tid}">
+<a href="team.html?tid=${t.tid}">
 
 <div class="team-card">
 
-<div class="team-card-top">
+<div class="team-row">
 
-<img class="team-card-logo" src="${t.imgURL || ''}">
+<div class="team-left">
+<img class="team-logo" src="${t.imgURL || ''}">
 
 <div>
-<div class="team-card-name">${t.region} ${t.name}</div>
+<div><strong>${t.region} ${t.name}</strong></div>
 <div>${t.abbrev}</div>
 </div>
 
 </div>
 
-<div class="record-grid">
-
-<div class="record-box">
-<div class="record-label">W</div>
-<div class="record-value">${s?.won || 0}</div>
 </div>
 
-<div class="record-box">
-<div class="record-label">L</div>
-<div class="record-value">${s?.lost || 0}</div>
+<div class="stat-grid">
+
+<div class="stat-box">
+<div class="stat-label">W</div>
+<div class="stat-value">${s?.won || 0}</div>
 </div>
 
-<div class="record-box">
-<div class="record-label">OTL</div>
-<div class="record-value">${s?.otl || 0}</div>
+<div class="stat-box">
+<div class="stat-label">L</div>
+<div class="stat-value">${s?.lost || 0}</div>
 </div>
 
-<div class="record-box">
-<div class="record-label">PTS</div>
-<div class="record-value">${s?.pts || 0}</div>
+<div class="stat-box">
+<div class="stat-label">OTL</div>
+<div class="stat-value">${s?.otl || 0}</div>
+</div>
+
+<div class="stat-box">
+<div class="stat-label">PTS</div>
+<div class="stat-value">${s?.pts || 0}</div>
 </div>
 
 </div>
