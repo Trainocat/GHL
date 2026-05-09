@@ -245,38 +245,17 @@ id="financeTable">
 
 <script>
 
-async function loadLeague() {
+async 
 
-    const response =
-        await fetch("league.json");
+function currentSeasonTeam(team, data) {
 
-    return await response.json();
-
-}
-
-function latestSeason(team) {
-
-    return team.seasons?.[
-        team.seasons.length - 1
-    ] || {};
+    return currentSeasonTeam(team, data);
 
 }
 
-function getTeamLogo(team) {
 
-    return (
-        team.imgURL ||
-        team.imgURLSmall ||
-        "GHL.png"
-    );
 
-}
 
-function getTeamName(team) {
-
-    return `${team.region} ${team.name}`;
-
-}
 
 function money(value) {
 
@@ -418,7 +397,7 @@ loadLeague().then(data => {
         teams.map(team => {
 
             const s =
-                latestSeason(team);
+                currentSeasonTeam(team, data);
 
             const payroll =
                 (team.payroll || 0) / 1000;

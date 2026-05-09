@@ -279,6 +279,7 @@ font-weight:700;
 <a href="schedule.html">Schedule</a>
 <a href="playoffs.html">Playoffs</a>
 <a href="draft.html">Draft</a>
+<a href="finance.html">Finance</a>
 
 </div>
 
@@ -344,30 +345,15 @@ id="playersTable">
 
 <script>
 
-async function loadLeague() {
+async 
 
-    const response =
-        await fetch("league.json");
+function currentSeasonStats(player, data) {
 
-    return await response.json();
-
-}
-
-function latestStats(player) {
-
-    return player.stats?.[
-        player.stats.length - 1
-    ] || {};
+    return currentSeasonStats(player, data);
 
 }
 
-function latestRating(player) {
 
-    return player.ratings?.[
-        player.ratings.length - 1
-    ] || {};
-
-}
 
 function getGoals(stats) {
 
@@ -571,7 +557,7 @@ loadLeague().then(data => {
             .map(player => {
 
                 const stats =
-                    currentSeasonStats(player, currentSeason(data));
+                    currentSeasonStats(player, data);
 
                 const rating =
                     latestRating(player);

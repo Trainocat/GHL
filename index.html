@@ -295,6 +295,7 @@ justify-content:center;
 <a href="schedule.html">Schedule</a>
 <a href="playoffs.html">Playoffs</a>
 <a href="draft.html">Draft</a>
+<a href="finance.html">Finance</a>
 
 </div>
 
@@ -400,20 +401,11 @@ id="upcomingGames">
 
 <script>
 
-async function loadLeague() {
+async 
 
-    const response =
-        await fetch("league.json");
+function currentSeasonStats(player, data) {
 
-    return await response.json();
-
-}
-
-function latestStats(player) {
-
-    return player.stats?.[
-        player.stats.length - 1
-    ] || {};
+    return currentSeasonStats(player, data);
 
 }
 
@@ -492,7 +484,7 @@ loadLeague().then(data => {
         ${leaders.map(player => {
 
             const stats =
-                currentSeasonStats(player, currentSeason(data));
+                currentSeasonStats(player, data);
 
             const team =
                 teams[player.tid];

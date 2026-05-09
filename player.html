@@ -322,6 +322,7 @@ repeat(2,1fr);
 <a href="schedule.html">Schedule</a>
 <a href="playoffs.html">Playoffs</a>
 <a href="draft.html">Draft</a>
+<a href="finance.html">Finance</a>
 
 </div>
 
@@ -337,22 +338,9 @@ repeat(2,1fr);
 
 <script>
 
-async function loadLeague() {
+async 
 
-    const response =
-        await fetch("league.json");
 
-    return await response.json();
-
-}
-
-function latestRating(player) {
-
-    return player.ratings?.[
-        player.ratings.length - 1
-    ] || {};
-
-}
 
 function getPlayerPoints(stats) {
 

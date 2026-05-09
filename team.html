@@ -289,6 +289,7 @@ repeat(2,1fr);
 <a href="schedule.html">Schedule</a>
 <a href="playoffs.html">Playoffs</a>
 <a href="draft.html">Draft</a>
+<a href="finance.html">Finance</a>
 
 </div>
 
@@ -304,52 +305,23 @@ repeat(2,1fr);
 
 <script>
 
-async function loadLeague() {
+async 
 
-    const response =
-        await fetch("league.json");
+function currentSeasonTeam(team, data) {
 
-    return await response.json();
-
-}
-
-function latestSeason(team) {
-
-    return team.seasons?.[
-        team.seasons.length - 1
-    ] || {};
+    return currentSeasonTeam(team, data);
 
 }
 
-function getTeamName(team) {
 
-    return `${team.region} ${team.name}`;
 
-}
 
-function getTeamLogo(team) {
 
-    return (
-        team.imgURL ||
-        team.imgURLSmall ||
-        "GHL.png"
-    );
 
-}
 
-function latestRating(player) {
+function currentSeasonStats(player, data) {
 
-    return player.ratings?.[
-        player.ratings.length - 1
-    ] || {};
-
-}
-
-function latestStats(player) {
-
-    return player.stats?.[
-        player.stats.length - 1
-    ] || {};
+    return currentSeasonStats(player, data);
 
 }
 
@@ -478,7 +450,7 @@ loadLeague().then(data => {
         }) || data.teams[0];
 
     const season =
-        currentSeasonTeam(team, currentSeason(data));
+        currentSeasonTeam(team, data);
 
     const roster =
         data.players
@@ -715,7 +687,7 @@ loadLeague().then(data => {
                                         latestRating(player);
 
                                     const stats =
-                                        latestStats(player);
+                                        currentSeasonStats(player, data);
 
                                     const goals =
                                         (stats.evG || 0)
@@ -897,7 +869,7 @@ loadLeague().then(data => {
 
                                             ${
                                                 playerPoints(
-                                                    latestStats(player)
+                                                    currentSeasonStats(player, data)
                                                 )
                                             }
 

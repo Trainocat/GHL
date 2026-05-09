@@ -14,11 +14,14 @@ function currentSeason(data) {
 
 }
 
-function currentSeasonTeam(team, season) {
+function currentSeasonTeam(team, data) {
 
-    return team.seasons?.find(s => {
+    return team.seasons?.find(season => {
 
-        return s.season === season;
+        return (
+            season.season ===
+            currentSeason(data)
+        );
 
     }) || team.seasons?.[
         team.seasons.length - 1
@@ -26,18 +29,32 @@ function currentSeasonTeam(team, season) {
 
 }
 
-function currentSeasonStats(player, season) {
+function currentSeasonStats(player, data) {
 
-    return player.stats?.find(stat => {
+    const season =
+        currentSeason(data);
 
-        return (
-            stat.season === season &&
-            !stat.playoffs
-        );
+    const stats =
+        player.stats?.filter(stat => {
 
-    }) || player.stats?.[
-        player.stats.length - 1
-    ] || {};
+            return (
+                stat.season === season &&
+                !stat.playoffs
+            );
+
+        }) || [];
+
+    if (stats.length > 1) {
+
+        return stats.find(stat => {
+
+            return stat.tid === player.tid;
+
+        }) || stats[0];
+
+    }
+
+    return stats[0] || {};
 
 }
 
@@ -94,6 +111,24 @@ function formatTOI(minutes) {
             (minutes - mins) * 60
         );
 
-    return `${mins}:${secs.toString().padStart(2,"0")}`;
+    return `${mins}:${secs
+        .toString()
+        .padStart(2,"0")}`;
+
+}
+
+function getTeamLogo(team) {
+
+    return (
+        team.imgURL ||
+        team.imgURLSmall ||
+        "GHL.png"
+    );
+
+}
+
+function getTeamName(team) {
+
+    return `${team.region} ${team.name}`;
 
 }

@@ -369,28 +369,13 @@ id="prospectsTable">
 
 <script>
 
-async function loadLeague() {
+async 
 
-    const response =
-        await fetch("league.json");
 
-    return await response.json();
 
-}
+function currentSeasonStats(player, data) {
 
-function latestRating(player) {
-
-    return player.ratings?.[
-        player.ratings.length - 1
-    ] || {};
-
-}
-
-function latestStats(player) {
-
-    return player.stats?.[
-        player.stats.length - 1
-    ] || {};
+    return currentSeasonStats(player, data);
 
 }
 
@@ -585,7 +570,7 @@ loadLeague().then(data => {
                 <div class="pick-change pick-up">
 
                     ▲ ${Math.floor(
-                        Math.random() * 3
+                        0 * 3
                     )}
 
                 </div>
@@ -677,7 +662,7 @@ loadLeague().then(data => {
                 latestRating(player);
 
             const stats =
-                currentSeasonStats(player, currentSeason(data));
+                currentSeasonStats(player, data);
 
             return `
 

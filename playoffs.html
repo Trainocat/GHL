@@ -235,6 +235,7 @@ margin-bottom:12px;
 <a href="schedule.html">Schedule</a>
 <a href="playoffs.html">Playoffs</a>
 <a href="draft.html">Draft</a>
+<a href="finance.html">Finance</a>
 
 </div>
 
@@ -366,36 +367,15 @@ Eastern Conference
 
 <script>
 
-async function loadLeague() {
+async 
 
-    const response =
-        await fetch("league.json");
 
-    return await response.json();
 
-}
 
-function getTeamName(team) {
 
-    return `${team.region} ${team.name}`;
+function currentSeasonTeam(team, data) {
 
-}
-
-function getTeamLogo(team) {
-
-    return (
-        team.imgURL ||
-        team.imgURLSmall ||
-        "GHL.png"
-    );
-
-}
-
-function latestSeason(team) {
-
-    return team.seasons?.[
-        team.seasons.length - 1
-    ] || {};
+    return currentSeasonTeam(team, data);
 
 }
 

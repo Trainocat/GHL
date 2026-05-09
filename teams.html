@@ -236,6 +236,7 @@ font-size:28px;
 <a href="schedule.html">Schedule</a>
 <a href="playoffs.html">Playoffs</a>
 <a href="draft.html">Draft</a>
+<a href="finance.html">Finance</a>
 
 </div>
 
@@ -261,20 +262,11 @@ id="teamsGrid">
 
 <script>
 
-async function loadLeague() {
+async 
 
-    const response =
-        await fetch("league.json");
+function currentSeasonTeam(team, data) {
 
-    return await response.json();
-
-}
-
-function latestSeason(team) {
-
-    return team.seasons?.[
-        team.seasons.length - 1
-    ] || {};
+    return currentSeasonTeam(team, data);
 
 }
 
@@ -336,7 +328,7 @@ loadLeague().then(data => {
         teams.map(team => {
 
             const season =
-                latestSeason(team);
+                currentSeasonTeam(team, data);
 
             const conference =
                 conferences.find(c => {
