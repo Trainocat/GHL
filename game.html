@@ -1,338 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Game Centre</title>
-
-<link rel="stylesheet" href="style.css">
-<script src="helpers.js"></script>
-
-<style>
-
-.game-header{
-
-display:flex;
-justify-content:space-between;
-align-items:center;
-
-background:#111827;
-
-border:
-1px solid #334155;
-
-border-radius:12px;
-
-padding:24px;
-
-margin-bottom:24px;
-
-}
-
-.game-team{
-
-display:flex;
-flex-direction:column;
-align-items:center;
-
-width:260px;
-
-}
-
-.game-team img{
-
-width:90px;
-height:90px;
-
-object-fit:contain;
-
-margin-bottom:10px;
-
-}
-
-.game-team-name{
-
-font-size:28px;
-font-weight:800;
-
-text-align:center;
-
-}
-
-.game-score{
-
-font-size:72px;
-font-weight:900;
-
-line-height:1;
-
-margin-top:8px;
-
-}
-
-.game-center-info{
-
-text-align:center;
-
-}
-
-.game-status{
-
-font-size:32px;
-font-weight:900;
-
-margin-bottom:10px;
-
-}
-
-.game-meta{
-
-color:#94a3b8;
-
-font-size:15px;
-
-}
-
-.game-grid{
-
-display:grid;
-
-grid-template-columns:
-2fr 1fr;
-
-gap:24px;
-
-}
-
-.section{
-
-background:#111827;
-
-border:
-1px solid #334155;
-
-border-radius:10px;
-
-margin-bottom:24px;
-
-overflow:hidden;
-
-}
-
-.section-title{
-
-background:#172033;
-
-padding:12px 16px;
-
-font-size:20px;
-font-weight:800;
-
-}
-
-.section-body{
-
-padding:16px;
-
-}
-
-.summary-event{
-
-display:flex;
-justify-content:space-between;
-align-items:center;
-
-padding:12px 0;
-
-border-bottom:
-1px solid #334155;
-
-}
-
-.summary-event:last-child{
-
-border-bottom:none;
-
-}
-
-.event-main{
-
-display:flex;
-flex-direction:column;
-
-}
-
-.event-title{
-
-font-weight:700;
-
-}
-
-.event-detail{
-
-font-size:14px;
-color:#94a3b8;
-
-margin-top:4px;
-
-}
-
-.event-time{
-
-font-size:14px;
-font-weight:700;
-
-color:#f59e0b;
-
-}
-
-.team-stat-table{
-
-width:100%;
-
-border-collapse:collapse;
-
-}
-
-.team-stat-table th,
-.team-stat-table td{
-
-padding:10px;
-
-border-bottom:
-1px solid #334155;
-
-}
-
-.player-table{
-
-width:100%;
-
-border-collapse:collapse;
-
-}
-
-.player-table th,
-.player-table td{
-
-padding:10px;
-
-border-bottom:
-1px solid #334155;
-
-}
-
-.player-table th{
-
-background:#172033;
-
-}
-
-.three-stars{
-
-display:grid;
-
-grid-template-columns:
-repeat(3,1fr);
-
-gap:18px;
-
-}
-
-.star-card{
-
-background:#1b2432;
-
-border:
-1px solid #334155;
-
-border-radius:10px;
-
-padding:16px;
-
-text-align:center;
-
-}
-
-.star-rank{
-
-font-size:22px;
-font-weight:900;
-
-margin-bottom:10px;
-
-}
-
-.star-player{
-
-font-size:18px;
-font-weight:700;
-
-}
-
-.star-stat{
-
-font-size:14px;
-color:#94a3b8;
-
-margin-top:6px;
-
-}
-
-@media(max-width:1100px){
-
-.game-grid{
-
-grid-template-columns:1fr;
-
-}
-
-.game-header{
-
-flex-direction:column;
-
-gap:20px;
-
-}
-
-.game-score{
-
-font-size:54px;
-
-}
-
-.three-stars{
-
-grid-template-columns:1fr;
-
-}
-
-}
-
-</style>
-
 </head>
+
 <body>
 
 <header>
+<h1>GHL</h1>
 
-<div class="nav">
-
-<a class="brand" href="index.html">
-
-<img src="GHL.png">
-
-<span>GHL</span>
-
-</a>
-
-<div class="links">
-
+<nav>
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
@@ -341,424 +20,732 @@ grid-template-columns:1fr;
 <a href="playoffs.html">Playoffs</a>
 <a href="draft.html">Draft</a>
 <a href="finance.html">Finance</a>
-
-</div>
-
-</div>
-
+</nav>
 </header>
 
-<div class="container">
+<main>
 
-<div id="gameContent"></div>
+<h1>Game Centre</h1>
 
-</div>
+<section>
+<h2 id="gameTitle">Game</h2>
+
+<table>
+<thead>
+<tr>
+<th>Team</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>OT</th>
+<th>SO</th>
+<th>Total</th>
+</tr>
+</thead>
+
+<tbody id="scoreBody"></tbody>
+</table>
+</section>
+
+<section>
+<h2>Game Info</h2>
+
+<table>
+<tbody id="gameInfoBody"></tbody>
+</table>
+</section>
+
+<section>
+<h2>Scoring Summary</h2>
+
+<table>
+<thead>
+<tr>
+<th>Period</th>
+<th>Time</th>
+<th>Team</th>
+<th>Scorer</th>
+<th>Assists</th>
+<th>Score</th>
+</tr>
+</thead>
+
+<tbody id="scoringBody"></tbody>
+</table>
+</section>
+
+<section>
+<h2>Penalties</h2>
+
+<table>
+<thead>
+<tr>
+<th>Period</th>
+<th>Time</th>
+<th>Team</th>
+<th>Player</th>
+<th>Penalty</th>
+<th>Minutes</th>
+</tr>
+</thead>
+
+<tbody id="penaltiesBody"></tbody>
+</table>
+</section>
+
+<section>
+<h2>Team Stats</h2>
+
+<table>
+<thead>
+<tr>
+<th>Stat</th>
+<th id="awayStatsHead">Away</th>
+<th id="homeStatsHead">Home</th>
+</tr>
+</thead>
+
+<tbody id="teamStatsBody"></tbody>
+</table>
+</section>
+
+<section>
+<h2>Three Stars</h2>
+
+<ol id="starsList"></ol>
+</section>
+
+<section>
+<h2>Player Stats</h2>
+
+<table id="playerStatsTable">
+<thead>
+<tr>
+<th>Player</th>
+<th>Team</th>
+<th>Pos</th>
+<th>G</th>
+<th>A</th>
+<th>PTS</th>
+<th>+/-</th>
+<th>PIM</th>
+<th>S</th>
+<th>Hits</th>
+<th>Blocks</th>
+<th>TOI</th>
+</tr>
+</thead>
+
+<tbody id="playerStatsBody"></tbody>
+</table>
+</section>
+
+<section>
+<h2>Goalie Stats</h2>
+
+<table id="goalieStatsTable">
+<thead>
+<tr>
+<th>Goalie</th>
+<th>Team</th>
+<th>SA</th>
+<th>GA</th>
+<th>SV</th>
+<th>SV%</th>
+<th>MIN</th>
+</tr>
+</thead>
+
+<tbody id="goalieStatsBody"></tbody>
+</table>
+</section>
+
+</main>
 
 <script>
-function formatDate(timestamp) {
 
-    if (!timestamp) {
-
-        return "";
-
-    }
-
-    return new Date(timestamp)
-    .toLocaleDateString(
-        "en-US",
-        {
-
-            weekday:"long",
-            month:"long",
-            day:"numeric",
-            year:"numeric"
-
-        }
-    );
-
+async function loadLeague() {
+    const response = await fetch("league.json");
+    return await response.json();
 }
 
-loadLeague().then(data => {
+function getQueryNumber(name) {
+    const params = new URLSearchParams(window.location.search);
+    return Number(params.get(name));
+}
 
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
-
-    const gid =
-        Number(params.get("gid"));
-
-    const game =
-        data.games.find(g => {
-
-            return g.gid === gid;
-
-        }) || data.games[0];
-
+function buildTeamMap(data) {
     const teams = {};
 
     data.teams.forEach(team => {
-
         teams[team.tid] = team;
-
     });
 
-    const home =
-        teams[game.homeTid];
-
-    const away =
-        teams[game.awayTid];
-
-    // =========================
-    // CONTENT
-    // =========================
-
-    document
-    .getElementById("gameContent")
-    .innerHTML = `
-
-    <!-- =====================
-         HEADER
-    ====================== -->
-
-    <div class="game-header">
-
-        <!-- AWAY -->
-
-        <div class="game-team">
-
-            <img
-            src="${getTeamLogo(away)}">
-
-            <div class="game-team-name">
-
-                ${away.region}
-
-            </div>
-
-            <div class="game-score">
-
-                ${game.awayPts || 0}
-
-            </div>
-
-        </div>
-
-        <!-- CENTER -->
-
-        <div class="game-center-info">
-
-            <div class="game-status">
-
-                FINAL
-
-            </div>
-
-            <div class="game-meta">
-
-                ${formatDate(game.day)}
-
-            </div>
-
-        </div>
-
-        <!-- HOME -->
-
-        <div class="game-team">
-
-            <img
-            src="${getTeamLogo(home)}">
-
-            <div class="game-team-name">
-
-                ${home.region}
-
-            </div>
-
-            <div class="game-score">
-
-                ${game.homePts || 0}
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- =====================
-         GRID
-    ====================== -->
-
-    <div class="game-grid">
-
-        <!-- LEFT -->
-
-        <div>
-
-            <!-- SCORING -->
-
-            <div class="section">
-
-                <div class="section-title">
-
-                    Scoring Summary
-
-                </div>
-
-                <div class="section-body">
-
-                    ${
-                        (game.scoringSummary || [])
-                        .map(event => {
-
-                            return `
-
-                            <div class="summary-event">
-
-                                <div class="event-main">
-
-                                    <div class="event-title">
-
-                                        ${event.text || "Goal"}
-
-                                    </div>
-
-                                    <div class="event-detail">
-
-                                        ${event.names?.join(", ") || ""}
-
-                                    </div>
-
-                                </div>
-
-                                <div class="event-time">
-
-                                    Q${event.quarter || 1}
-
-                                </div>
-
-                            </div>
-
-                            `;
-
-                        }).join("")
-                    }
-
-                </div>
-
-            </div>
-
-            <!-- PLAYER STATS -->
-
-            <div class="section">
-
-                <div class="section-title">
-
-                    Player Stats
-
-                </div>
-
-                <div class="section-body">
-
-                    <table class="player-table">
-
-                        <thead>
-
-                            <tr>
-
-                                <th>Player</th>
-                                <th>PTS</th>
-                                <th>MIN</th>
-
-                            </tr>
-
-                        </thead>
-
-                        <tbody>
-
-                            ${
-                                (game.players || [])
-                                .slice(0,20)
-                                .map(player => {
-
-                                    return `
-
-                                    <tr>
-
-                                        <td>
-
-                                            ${player.name || "Player"}
-
-                                        </td>
-
-                                        <td>
-
-                                            ${player.pts || 0}
-
-                                        </td>
-
-                                        <td>
-
-                                            ${player.min || 0}
-
-                                        </td>
-
-                                    </tr>
-
-                                    `;
-
-                                }).join("")
-                            }
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- RIGHT -->
-
-        <div>
-
-            <!-- TEAM STATS -->
-
-            <div class="section">
-
-                <div class="section-title">
-
-                    Team Stats
-
-                </div>
-
-                <div class="section-body">
-
-                    <table class="team-stat-table">
-
-                        <tr>
-
-                            <th>Stat</th>
-                            <th>${away.abbrev}</th>
-                            <th>${home.abbrev}</th>
-
-                        </tr>
-
-                        <tr>
-
-                            <td>Goals</td>
-
-                            <td>
-                                ${game.awayPts || 0}
-                            </td>
-
-                            <td>
-                                ${game.homePts || 0}
-                            </td>
-
-                        </tr>
-
-                        <tr>
-
-                            <td>Shots</td>
-
-                            <td>
-                                ${game.teamStats?.away?.s || 0}
-                            </td>
-
-                            <td>
-                                ${game.teamStats?.home?.s || 0}
-                            </td>
-
-                        </tr>
-
-                        <tr>
-
-                            <td>Hits</td>
-
-                            <td>
-                                ${game.teamStats?.away?.hit || 0}
-                            </td>
-
-                            <td>
-                                ${game.teamStats?.home?.hit || 0}
-                            </td>
-
-                        </tr>
-
-                    </table>
-
-                </div>
-
-            </div>
-
-            <!-- THREE STARS -->
-
-            <div class="section">
-
-                <div class="section-title">
-
-                    Three Stars
-
-                </div>
-
-                <div class="section-body">
-
-                    <div class="three-stars">
-
-                        ${
-                            (game.stars || [])
-                            .slice(0,3)
-                            .map((star, index) => {
-
-                                return `
-
-                                <div class="star-card">
-
-                                    <div class="star-rank">
-
-                                        ${
-                                            index + 1
-                                        }★
-
-                                    </div>
-
-                                    <div class="star-player">
-
-                                        ${star.name || "Player"}
-
-                                    </div>
-
-                                    <div class="star-stat">
-
-                                        ${
-                                            star.statLine ||
-                                            ""
-                                        }
-
-                                    </div>
-
-                                </div>
-
-                                `;
-
-                            }).join("")
-                        }
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
+    return teams;
+}
+
+function buildPlayerMap(data) {
+    const players = {};
+
+    data.players.forEach(player => {
+        players[player.pid] = player;
+    });
+
+    return players;
+}
+
+function teamName(team) {
+    if (!team) {
+        return "Unknown Team";
+    }
+
+    return `${team.region} ${team.name}`;
+}
+
+function playerName(player) {
+    if (!player) {
+        return "Unknown Player";
+    }
+
+    return `${player.firstName} ${player.lastName}`;
+}
+
+function formatDate(day) {
+    if (day === undefined || day === null) {
+        return "";
+    }
+
+    return new Date(day).toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric"
+    });
+}
+
+function formatTOI(minutes) {
+    if (!minutes) {
+        return "0:00";
+    }
+
+    const mins = Math.floor(minutes);
+    const secs = Math.round((minutes - mins) * 60);
+
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+}
+
+function getGame(data) {
+    const gid = getQueryNumber("gid");
+
+    if (!isNaN(gid)) {
+        const found = data.games.find(game => {
+            return game.gid === gid;
+        });
+
+        if (found) {
+            return found;
+        }
+    }
+
+    return data.games?.[0];
+}
+
+function getAwayTid(game) {
+    return game.awayTid ?? game.away?.tid ?? game.lost?.tid ?? game.teams?.[0]?.tid;
+}
+
+function getHomeTid(game) {
+    return game.homeTid ?? game.home?.tid ?? game.won?.tid ?? game.teams?.[1]?.tid;
+}
+
+function getAwayPts(game) {
+    return game.awayPts ?? game.away?.pts ?? game.lost?.pts ?? 0;
+}
+
+function getHomePts(game) {
+    return game.homePts ?? game.home?.pts ?? game.won?.pts ?? 0;
+}
+
+function getLinescore(game, side) {
+    const source =
+        side === "away"
+            ? game.away || game.teams?.[0] || {}
+            : game.home || game.teams?.[1] || {};
+
+    return (
+        source.ptsQtrs ||
+        source.ptsByPeriod ||
+        source.line ||
+        []
+    );
+}
+
+function renderScoreboard(game, teams) {
+    const awayTeam = teams[getAwayTid(game)];
+    const homeTeam = teams[getHomeTid(game)];
+
+    const awayLine = getLinescore(game, "away");
+    const homeLine = getLinescore(game, "home");
+
+    const awayPeriods = [
+        awayLine[0] || 0,
+        awayLine[1] || 0,
+        awayLine[2] || 0,
+        awayLine[3] || 0,
+        awayLine[4] || 0
+    ];
+
+    const homePeriods = [
+        homeLine[0] || 0,
+        homeLine[1] || 0,
+        homeLine[2] || 0,
+        homeLine[3] || 0,
+        homeLine[4] || 0
+    ];
+
+    return `
+        <tr>
+            <td>
+                <a href="team.html?tid=${getAwayTid(game)}">
+                    ${teamName(awayTeam)}
+                </a>
+            </td>
+            <td>${awayPeriods[0]}</td>
+            <td>${awayPeriods[1]}</td>
+            <td>${awayPeriods[2]}</td>
+            <td>${awayPeriods[3]}</td>
+            <td>${awayPeriods[4]}</td>
+            <td>${getAwayPts(game)}</td>
+        </tr>
+
+        <tr>
+            <td>
+                <a href="team.html?tid=${getHomeTid(game)}">
+                    ${teamName(homeTeam)}
+                </a>
+            </td>
+            <td>${homePeriods[0]}</td>
+            <td>${homePeriods[1]}</td>
+            <td>${homePeriods[2]}</td>
+            <td>${homePeriods[3]}</td>
+            <td>${homePeriods[4]}</td>
+            <td>${getHomePts(game)}</td>
+        </tr>
     `;
+}
 
+function renderGameInfo(game, teams) {
+    const awayTeam = teams[getAwayTid(game)];
+    const homeTeam = teams[getHomeTid(game)];
+
+    return `
+        <tr>
+            <th>Date</th>
+            <td>${formatDate(game.day)}</td>
+        </tr>
+
+        <tr>
+            <th>Away</th>
+            <td>${teamName(awayTeam)}</td>
+        </tr>
+
+        <tr>
+            <th>Home</th>
+            <td>${teamName(homeTeam)}</td>
+        </tr>
+
+        <tr>
+            <th>Status</th>
+            <td>${game.overtimes ? `${game.overtimes}OT` : "Final"}</td>
+        </tr>
+
+        <tr>
+            <th>Attendance</th>
+            <td>${game.att !== undefined ? Number(game.att).toLocaleString() : "-"}</td>
+        </tr>
+    `;
+}
+
+function renderScoringSummary(game, teams, players) {
+    const summary =
+        game.scoringSummary ||
+        game.scoring ||
+        [];
+
+    if (summary.length === 0) {
+        return `
+            <tr>
+                <td colspan="6">No scoring summary available.</td>
+            </tr>
+        `;
+    }
+
+    return summary.map(event => {
+        const team =
+            teams[event.tid] ||
+            teams[event.teamTid];
+
+        const scorer =
+            players[event.pid] ||
+            players[event.scorerPid];
+
+        const assists =
+            event.assists ||
+            event.assistPids ||
+            [];
+
+        const assistNames =
+            Array.isArray(assists)
+                ? assists.map(pid => playerName(players[pid])).join(", ")
+                : assists;
+
+        return `
+            <tr>
+                <td>${event.period ?? event.quarter ?? event.per ?? ""}</td>
+                <td>${event.time ?? event.clock ?? ""}</td>
+                <td>${team?.abbrev || teamName(team)}</td>
+                <td>
+                    ${
+                        scorer
+                            ? `<a href="player.html?pid=${scorer.pid}">${playerName(scorer)}</a>`
+                            : event.name || event.scorer || "Goal"
+                    }
+                </td>
+                <td>${assistNames || ""}</td>
+                <td>${event.score || ""}</td>
+            </tr>
+        `;
+    }).join("");
+}
+
+function renderPenalties(game, teams, players) {
+    const penalties =
+        game.penalties ||
+        game.penaltySummary ||
+        [];
+
+    if (penalties.length === 0) {
+        return `
+            <tr>
+                <td colspan="6">No penalties available.</td>
+            </tr>
+        `;
+    }
+
+    return penalties.map(event => {
+        const team =
+            teams[event.tid] ||
+            teams[event.teamTid];
+
+        const player =
+            players[event.pid];
+
+        return `
+            <tr>
+                <td>${event.period ?? event.quarter ?? event.per ?? ""}</td>
+                <td>${event.time ?? event.clock ?? ""}</td>
+                <td>${team?.abbrev || teamName(team)}</td>
+                <td>
+                    ${
+                        player
+                            ? `<a href="player.html?pid=${player.pid}">${playerName(player)}</a>`
+                            : event.name || ""
+                    }
+                </td>
+                <td>${event.type || event.penalty || ""}</td>
+                <td>${event.minutes || event.min || ""}</td>
+            </tr>
+        `;
+    }).join("");
+}
+
+function statValue(obj, keys) {
+    for (const key of keys) {
+        if (obj && obj[key] !== undefined) {
+            return obj[key];
+        }
+    }
+
+    return 0;
+}
+
+function renderTeamStats(game) {
+    const away =
+        game.teamStats?.away ||
+        game.away?.teamStats ||
+        game.teams?.[0]?.teamStats ||
+        {};
+
+    const home =
+        game.teamStats?.home ||
+        game.home?.teamStats ||
+        game.teams?.[1]?.teamStats ||
+        {};
+
+    const rows = [
+        ["Goals", [getAwayPts(game), getHomePts(game)]],
+        ["Shots", [statValue(away, ["s", "shots"]), statValue(home, ["s", "shots"])]],
+        ["Hits", [statValue(away, ["hit", "hits"]), statValue(home, ["hit", "hits"])]],
+        ["Blocks", [statValue(away, ["blk", "blocks"]), statValue(home, ["blk", "blocks"])]],
+        ["Faceoffs Won", [statValue(away, ["fow", "faceoffsWon"]), statValue(home, ["fow", "faceoffsWon"])]],
+        ["Power Play Goals", [statValue(away, ["ppG", "ppg"]), statValue(home, ["ppG", "ppg"])]],
+        ["Power Play Chances", [statValue(away, ["ppo", "ppOpportunities"]), statValue(home, ["ppo", "ppOpportunities"])]],
+        ["Penalty Minutes", [statValue(away, ["pim"]), statValue(home, ["pim"])]]
+    ];
+
+    return rows.map(row => {
+        return `
+            <tr>
+                <td>${row[0]}</td>
+                <td>${row[1][0]}</td>
+                <td>${row[1][1]}</td>
+            </tr>
+        `;
+    }).join("");
+}
+
+function renderStars(game, players) {
+    const stars =
+        game.stars ||
+        game.threeStars ||
+        [];
+
+    if (stars.length === 0) {
+        return "<li>No stars available.</li>";
+    }
+
+    return stars.slice(0, 3).map(star => {
+        const player =
+            players[star.pid] ||
+            players[star];
+
+        return `
+            <li>
+                ${
+                    player
+                        ? `<a href="player.html?pid=${player.pid}">${playerName(player)}</a>`
+                        : star.name || "Player"
+                }
+                ${star.statLine ? ` — ${star.statLine}` : ""}
+            </li>
+        `;
+    }).join("");
+}
+
+function getGamePlayers(game) {
+    return (
+        game.players ||
+        game.boxScore?.players ||
+        []
+    );
+}
+
+function renderPlayerStats(game, teams, players) {
+    const gamePlayers =
+        getGamePlayers(game);
+
+    const skaters =
+        gamePlayers.filter(player => {
+            return !player.gpGoalie && player.pos !== "G";
+        });
+
+    if (skaters.length === 0) {
+        return `
+            <tr>
+                <td colspan="12">No player stats available.</td>
+            </tr>
+        `;
+    }
+
+    return skaters.map(stat => {
+        const player =
+            players[stat.pid];
+
+        const team =
+            teams[stat.tid];
+
+        return `
+            <tr>
+                <td>
+                    ${
+                        player
+                            ? `<a href="player.html?pid=${player.pid}">${playerName(player)}</a>`
+                            : stat.name || "Player"
+                    }
+                </td>
+                <td>${team?.abbrev || ""}</td>
+                <td>${stat.pos || ""}</td>
+                <td>${stat.g || stat.evG || 0}</td>
+                <td>${stat.a || stat.evA || 0}</td>
+                <td>${stat.pts || ((stat.g || 0) + (stat.a || 0))}</td>
+                <td>${stat.pm || 0}</td>
+                <td>${stat.pim || 0}</td>
+                <td>${stat.s || 0}</td>
+                <td>${stat.hit || 0}</td>
+                <td>${stat.blk || 0}</td>
+                <td>${formatTOI(stat.min)}</td>
+            </tr>
+        `;
+    }).join("");
+}
+
+function renderGoalieStats(game, teams, players) {
+    const gamePlayers =
+        getGamePlayers(game);
+
+    const goalies =
+        gamePlayers.filter(player => {
+            return player.gpGoalie || player.pos === "G";
+        });
+
+    if (goalies.length === 0) {
+        return `
+            <tr>
+                <td colspan="7">No goalie stats available.</td>
+            </tr>
+        `;
+    }
+
+    return goalies.map(stat => {
+        const player =
+            players[stat.pid];
+
+        const team =
+            teams[stat.tid];
+
+        const shotsAgainst =
+            stat.sa || stat.sv + stat.ga || 0;
+
+        const goalsAgainst =
+            stat.ga || 0;
+
+        const saves =
+            stat.sv !== undefined
+                ? stat.sv
+                : shotsAgainst - goalsAgainst;
+
+        const savePct =
+            shotsAgainst > 0
+                ? (saves / shotsAgainst).toFixed(3)
+                : ".000";
+
+        return `
+            <tr>
+                <td>
+                    ${
+                        player
+                            ? `<a href="player.html?pid=${player.pid}">${playerName(player)}</a>`
+                            : stat.name || "Goalie"
+                    }
+                </td>
+                <td>${team?.abbrev || ""}</td>
+                <td>${shotsAgainst}</td>
+                <td>${goalsAgainst}</td>
+                <td>${saves}</td>
+                <td>${savePct}</td>
+                <td>${formatTOI(stat.min)}</td>
+            </tr>
+        `;
+    }).join("");
+}
+
+function makeTableSortable(table) {
+    const headers = table.querySelectorAll("th");
+
+    headers.forEach((header, index) => {
+        header.addEventListener("click", () => {
+            const tbody = table.querySelector("tbody");
+            const rows = [...tbody.querySelectorAll("tr")];
+
+            const ascending = !header.classList.contains("asc");
+
+            headers.forEach(h => {
+                h.classList.remove("asc");
+                h.classList.remove("desc");
+            });
+
+            header.classList.add(ascending ? "asc" : "desc");
+
+            rows.sort((a, b) => {
+                const aText = a.children[index].innerText.trim();
+                const bText = b.children[index].innerText.trim();
+
+                const aNum = parseFloat(aText.replace(/[^\d.-]/g, ""));
+                const bNum = parseFloat(bText.replace(/[^\d.-]/g, ""));
+
+                if (!isNaN(aNum) && !isNaN(bNum)) {
+                    return ascending ? aNum - bNum : bNum - aNum;
+                }
+
+                return ascending
+                    ? aText.localeCompare(bText)
+                    : bText.localeCompare(aText);
+            });
+
+            tbody.innerHTML = "";
+
+            rows.forEach(row => {
+                tbody.appendChild(row);
+            });
+        });
+    });
+}
+
+loadLeague().then(data => {
+    const game = getGame(data);
+
+    if (!game) {
+        document.querySelector("main").innerHTML =
+            "<h1>Game Centre</h1><p>No game found.</p>";
+        return;
+    }
+
+    const teams = buildTeamMap(data);
+    const players = buildPlayerMap(data);
+
+    const awayTeam = teams[getAwayTid(game)];
+    const homeTeam = teams[getHomeTid(game)];
+
+    document.getElementById("gameTitle").innerText =
+        `${teamName(awayTeam)} @ ${teamName(homeTeam)}`;
+
+    document.getElementById("scoreBody").innerHTML =
+        renderScoreboard(game, teams);
+
+    document.getElementById("gameInfoBody").innerHTML =
+        renderGameInfo(game, teams);
+
+    document.getElementById("scoringBody").innerHTML =
+        renderScoringSummary(game, teams, players);
+
+    document.getElementById("penaltiesBody").innerHTML =
+        renderPenalties(game, teams, players);
+
+    document.getElementById("awayStatsHead").innerText =
+        awayTeam?.abbrev || "Away";
+
+    document.getElementById("homeStatsHead").innerText =
+        homeTeam?.abbrev || "Home";
+
+    document.getElementById("teamStatsBody").innerHTML =
+        renderTeamStats(game);
+
+    document.getElementById("starsList").innerHTML =
+        renderStars(game, players);
+
+    document.getElementById("playerStatsBody").innerHTML =
+        renderPlayerStats(game, teams, players);
+
+    document.getElementById("goalieStatsBody").innerHTML =
+        renderGoalieStats(game, teams, players);
+
+    makeTableSortable(
+        document.getElementById("playerStatsTable")
+    );
+
+    makeTableSortable(
+        document.getElementById("goalieStatsTable")
+    );
 });
 
 </script>

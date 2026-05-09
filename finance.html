@@ -1,170 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0">
-
-<title>League Finances</title>
-
-<link rel="stylesheet" href="style.css">
-<script src="helpers.js"></script>
-
-<style>
-
-.finance-header{
-
-margin-bottom:20px;
-
-}
-
-.finance-subtitle{
-
-font-size:15px;
-color:#94a3b8;
-
-margin-top:6px;
-
-line-height:1.6;
-
-}
-
-.finance-table{
-
-width:100%;
-
-border-collapse:collapse;
-
-background:#111827;
-
-border:
-1px solid #334155;
-
-}
-
-.finance-table th,
-.finance-table td{
-
-padding:10px;
-
-border-bottom:
-1px solid #334155;
-
-text-align:left;
-
-white-space:nowrap;
-
-}
-
-.finance-table th{
-
-background:#172033;
-
-cursor:pointer;
-
-position:sticky;
-top:69px;
-
-z-index:2;
-
-}
-
-.finance-table tr:nth-child(even){
-
-background:
-rgba(255,255,255,0.02);
-
-}
-
-.finance-table tr:hover td{
-
-background:#1b2432;
-
-}
-
-.finance-wrapper{
-
-overflow-x:auto;
-
-border-radius:10px;
-
-}
-
-.team-cell{
-
-display:flex;
-align-items:center;
-gap:10px;
-
-font-weight:700;
-
-min-width:240px;
-
-}
-
-.team-cell img{
-
-width:32px;
-height:32px;
-
-object-fit:contain;
-
-}
-
-.positive{
-
-color:#22c55e;
-font-weight:700;
-
-}
-
-.negative{
-
-color:#ef4444;
-font-weight:700;
-
-}
-
-.trade-button{
-
-background:#1e293b;
-
-border:
-1px solid #475569;
-
-border-radius:6px;
-
-padding:4px 8px;
-
-font-size:13px;
-font-weight:700;
-
-display:inline-block;
-
-}
-
-</style>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finance</title>
 </head>
+
 <body>
 
 <header>
+<h1>GHL</h1>
 
-<div class="nav">
-
-<a class="brand" href="index.html">
-
-<img src="GHL.png">
-
-<span>GHL</span>
-
-</a>
-
-<div class="links">
-
+<nav>
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
@@ -172,391 +19,320 @@ display:inline-block;
 <a href="schedule.html">Schedule</a>
 <a href="playoffs.html">Playoffs</a>
 <a href="draft.html">Draft</a>
-<a href="finance.html">Finances</a>
-
-</div>
-
-</div>
-
+<a href="finance.html">Finance</a>
+</nav>
 </header>
 
-<div class="container">
+<main>
 
-<div class="finance-header">
+<h1>League Finance</h1>
 
-<div class="page-title">
+<section>
+<h2>League Salary Info</h2>
 
-League Finances
-
-</div>
-
-<div class="finance-subtitle">
-
-Salary cap:
-<strong>$80M</strong>
-
-&nbsp;&nbsp;•&nbsp;&nbsp;
-
-Minimum payroll:
-<strong>$60M</strong>
-
-</div>
-
-</div>
-
-<div class="finance-wrapper">
-
-<table
-class="finance-table"
-id="financeTable">
-
+<table>
 <thead>
-
 <tr>
+<th>Salary Cap</th>
+<th>Minimum Payroll</th>
+<th>Luxury Payroll</th>
+<th>Minimum Contract</th>
+<th>Maximum Contract</th>
+</tr>
+</thead>
 
+<tbody id="leagueFinanceBody"></tbody>
+</table>
+
+</section>
+
+<section>
+<h2>Team Finance</h2>
+
+<table id="financeTable">
+<thead>
+<tr>
 <th>Team</th>
-<th>Pop</th>
-<th>Attendance</th>
-<th>Ticket Price</th>
-<th>Revenue</th>
-<th>Profit</th>
+<th>Population</th>
+<th>Strategy</th>
 <th>Cash</th>
 <th>Payroll</th>
 <th>Cap Space</th>
 <th>Roster Spots</th>
-<th>Strategy</th>
-<th>Trade</th>
+<th>Revenue</th>
+<th>Profit</th>
+<th>Attendance</th>
+<th>Ticket Price</th>
 <th>Scouting</th>
 <th>Coaching</th>
 <th>Health</th>
 <th>Facilities</th>
-
 </tr>
-
 </thead>
 
 <tbody id="financeBody"></tbody>
-
 </table>
 
-</div>
+</section>
 
-</div>
+</main>
 
 <script>
-function money(value) {
 
-    if (value === undefined) {
-
-        return "$0";
-
-    }
-
-    if (Math.abs(value) >= 1000) {
-
-        return `$${(
-            value / 1000
-        ).toFixed(2)}M`;
-
-    }
-
-    return `$${value}k`;
-
+async function loadLeague() {
+    const response = await fetch("league.json");
+    return await response.json();
 }
 
-function sortableTable(tableId) {
+function currentSeason(data) {
+    return data.gameAttributes?.season || 0;
+}
 
-    const table =
-        document.getElementById(tableId);
+function currentSeasonTeam(team, data) {
+    const season = currentSeason(data);
 
-    const headers =
-        table.querySelectorAll("th");
+    return team.seasons?.find(s => {
+        return s.season === season;
+    }) || {};
+}
+
+function teamName(team) {
+    if (!team) {
+        return "Unknown Team";
+    }
+
+    return `${team.region} ${team.name}`;
+}
+
+function money(value) {
+    if (value === undefined || value === null || isNaN(value)) {
+        return "$0";
+    }
+
+    const amount = Number(value);
+
+    if (Math.abs(amount) >= 1000) {
+        return `$${(amount / 1000).toFixed(2)}M`;
+    }
+
+    return `$${amount.toLocaleString()}k`;
+}
+
+function number(value) {
+    if (value === undefined || value === null || isNaN(value)) {
+        return "0";
+    }
+
+    return Number(value).toLocaleString();
+}
+
+function percent(value) {
+    if (value === undefined || value === null || isNaN(value)) {
+        return "0%";
+    }
+
+    return `${Number(value).toFixed(1)}%`;
+}
+
+function getPayroll(team) {
+    return (
+        team.payrollEndOfSeason ||
+        team.payroll ||
+        0
+    );
+}
+
+function getRosterCount(team, data) {
+    return data.players.filter(player => {
+        return player.tid === team.tid;
+    }).length;
+}
+
+function getRevenue(teamSeason) {
+    if (teamSeason.revenue !== undefined) {
+        return teamSeason.revenue;
+    }
+
+    if (teamSeason.revenues) {
+        return Object.values(teamSeason.revenues).reduce((sum, value) => {
+            return sum + (value || 0);
+        }, 0);
+    }
+
+    return 0;
+}
+
+function getExpenses(teamSeason) {
+    if (teamSeason.expenses) {
+        return Object.values(teamSeason.expenses).reduce((sum, value) => {
+            return sum + (value || 0);
+        }, 0);
+    }
+
+    return 0;
+}
+
+function getProfit(teamSeason) {
+    if (teamSeason.profit !== undefined) {
+        return teamSeason.profit;
+    }
+
+    return getRevenue(teamSeason) - getExpenses(teamSeason);
+}
+
+function getSalaryCap(data) {
+    return (
+        data.gameAttributes?.salaryCap ||
+        data.gameAttributes?.salaryCapDefault ||
+        0
+    );
+}
+
+function getMinPayroll(data) {
+    return (
+        data.gameAttributes?.minPayroll ||
+        data.gameAttributes?.minPayrollDefault ||
+        0
+    );
+}
+
+function getLuxuryPayroll(data) {
+    return (
+        data.gameAttributes?.luxuryPayroll ||
+        data.gameAttributes?.luxuryPayrollDefault ||
+        0
+    );
+}
+
+function getMinContract(data) {
+    return (
+        data.gameAttributes?.minContract ||
+        data.gameAttributes?.minContractDefault ||
+        0
+    );
+}
+
+function getMaxContract(data) {
+    return (
+        data.gameAttributes?.maxContract ||
+        data.gameAttributes?.maxContractDefault ||
+        0
+    );
+}
+
+function makeTableSortable(table) {
+    const headers = table.querySelectorAll("th");
 
     headers.forEach((header, index) => {
+        header.addEventListener("click", () => {
+            const tbody = table.querySelector("tbody");
+            const rows = [...tbody.querySelectorAll("tr")];
 
-        header.onclick = () => {
-
-            const tbody =
-                table.querySelector("tbody");
-
-            const rows = [
-                ...tbody.querySelectorAll("tr")
-            ];
-
-            const asc =
-                !header.classList.contains(
-                    "asc"
-                );
+            const ascending = !header.classList.contains("asc");
 
             headers.forEach(h => {
-
-                h.classList.remove(
-                    "asc"
-                );
-
-                h.classList.remove(
-                    "desc"
-                );
-
+                h.classList.remove("asc");
+                h.classList.remove("desc");
             });
 
-            header.classList.add(
-                asc ? "asc" : "desc"
-            );
+            header.classList.add(ascending ? "asc" : "desc");
 
             rows.sort((a, b) => {
+                const aText = a.children[index].innerText.trim();
+                const bText = b.children[index].innerText.trim();
 
-                const aText =
-                    a.children[index]
-                    .innerText
-                    .replace(/[$,%Mkg]/g,"")
-                    .trim();
+                const aNum = parseFloat(
+                    aText.replace(/[$,%Mk]/g, "")
+                );
 
-                const bText =
-                    b.children[index]
-                    .innerText
-                    .replace(/[$,%Mkg]/g,"")
-                    .trim();
+                const bNum = parseFloat(
+                    bText.replace(/[$,%Mk]/g, "")
+                );
 
-                const aNum =
-                    parseFloat(aText);
-
-                const bNum =
-                    parseFloat(bText);
-
-                if (
-                    !isNaN(aNum) &&
-                    !isNaN(bNum)
-                ) {
-
-                    return asc
-                        ? aNum - bNum
-                        : bNum - aNum;
-
+                if (!isNaN(aNum) && !isNaN(bNum)) {
+                    return ascending ? aNum - bNum : bNum - aNum;
                 }
 
-                return asc
-                    ? aText.localeCompare(
-                        bText
-                    )
-                    : bText.localeCompare(
-                        aText
-                    );
-
+                return ascending
+                    ? aText.localeCompare(bText)
+                    : bText.localeCompare(aText);
             });
 
             tbody.innerHTML = "";
 
             rows.forEach(row => {
-
                 tbody.appendChild(row);
-
             });
-
-        };
-
+        });
     });
+}
 
+function renderLeagueFinance(data) {
+    return `
+        <tr>
+            <td>${money(getSalaryCap(data))}</td>
+            <td>${money(getMinPayroll(data))}</td>
+            <td>${money(getLuxuryPayroll(data))}</td>
+            <td>${money(getMinContract(data))}</td>
+            <td>${money(getMaxContract(data))}</td>
+        </tr>
+    `;
+}
+
+function renderTeamFinance(data) {
+    const salaryCap = getSalaryCap(data);
+
+    return [...data.teams]
+        .sort((a, b) => {
+            return teamName(a).localeCompare(teamName(b));
+        })
+        .map(team => {
+            const season = currentSeasonTeam(team, data);
+
+            const payroll = getPayroll(team);
+            const capSpace = salaryCap ? salaryCap - payroll : 0;
+            const rosterCount = getRosterCount(team, data);
+
+            const revenue = getRevenue(season);
+            const profit = getProfit(season);
+
+            return `
+                <tr>
+                    <td>
+                        <a href="team.html?tid=${team.tid}">
+                            ${teamName(team)}
+                        </a>
+                    </td>
+                    <td>${number(team.pop)}</td>
+                    <td>${team.strategy || ""}</td>
+                    <td>${money(team.cash)}</td>
+                    <td>${money(payroll)}</td>
+                    <td>${money(capSpace)}</td>
+                    <td>${rosterCount}</td>
+                    <td>${money(revenue)}</td>
+                    <td>${money(profit)}</td>
+                    <td>${number(season.att)}</td>
+                    <td>${money(season.ticketPrice)}</td>
+                    <td>${team.budget?.scouting || 0}</td>
+                    <td>${team.budget?.coaching || 0}</td>
+                    <td>${team.budget?.health || 0}</td>
+                    <td>${team.budget?.facilities || 0}</td>
+                </tr>
+            `;
+        })
+        .join("");
 }
 
 loadLeague().then(data => {
-
-    const body =
-        document.getElementById(
-            "financeBody"
-        );
-
-    const teams =
-        [...data.teams]
-        .sort((a, b) => {
-
-            return (
-                latestSeason(b).revenues
-                ?.merch || 0
-            ) - (
-                latestSeason(a).revenues
-                ?.merch || 0
-            );
-
-        });
-
-    body.innerHTML =
-        teams.map(team => {
-
-            const s =
-                currentSeasonTeam(team, data);
-
-            const payroll =
-                (team.payroll || 0) / 1000;
-
-            const capSpace =
-                80000 - payroll;
-
-            return `
-
-            <tr>
-
-                <td>
-
-                    <a
-                    href="team.html?tid=${team.tid}">
-
-                        <div class="team-cell">
-
-                            <img
-                            src="${getTeamLogo(team)}">
-
-                            <span>
-
-                                ${getTeamName(team)}
-
-                            </span>
-
-                        </div>
-
-                    </a>
-
-                </td>
-
-                <td>
-
-                    ${(
-                        team.pop || 0
-                    ).toLocaleString()}
-
-                </td>
-
-                <td>
-
-                    ${(
-                        s.att || 0
-                    ).toLocaleString()}
-
-                </td>
-
-                <td>
-
-                    $${(
-                        s.ticketPrice || 0
-                    ).toFixed(2)}
-
-                </td>
-
-                <td>
-
-                    ${money(
-                        s.revenue || 0
-                    )}
-
-                </td>
-
-                <td class="${
-                    (s.profit || 0) >= 0
-                    ? "positive"
-                    : "negative"
-                }">
-
-                    ${money(
-                        s.profit || 0
-                    )}
-
-                </td>
-
-                <td class="${
-                    (team.cash || 0) >= 0
-                    ? "positive"
-                    : "negative"
-                }">
-
-                    ${money(
-                        team.cash || 0
-                    )}
-
-                </td>
-
-                <td>
-
-                    ${money(payroll)}
-
-                </td>
-
-                <td>
-
-                    ${money(capSpace)}
-
-                </td>
-
-                <td>
-
-                    ${15 - (
-                        team.players?.length || 0
-                    )}
-
-                </td>
-
-                <td>
-
-                    ${
-                        team.strategy ||
-                        "Rebuilding"
-                    }
-
-                </td>
-
-                <td>
-
-                    <span class="trade-button">
-
-                        Trade With
-
-                    </span>
-
-                </td>
-
-                <td>
-
-                    ${
-                        team.budget?.scouting ||
-                        0
-                    }
-
-                </td>
-
-                <td>
-
-                    ${
-                        team.budget?.coaching ||
-                        0
-                    }
-
-                </td>
-
-                <td>
-
-                    ${
-                        team.budget?.health ||
-                        0
-                    }
-
-                </td>
-
-                <td>
-
-                    ${
-                        team.budget?.facilities ||
-                        0
-                    }
-
-                </td>
-
-            </tr>
-
-            `;
-
-        }).join("");
-
-    sortableTable("financeTable");
-
+    document.getElementById("leagueFinanceBody").innerHTML =
+        renderLeagueFinance(data);
+
+    document.getElementById("financeBody").innerHTML =
+        renderTeamFinance(data);
+
+    makeTableSortable(
+        document.getElementById("financeTable")
+    );
 });
 
 </script>

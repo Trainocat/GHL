@@ -1,436 +1,216 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Teams</title>
-
-<link rel="stylesheet" href="style.css">
-<script src="helpers.js"></script>
-
-<style>
-
-.teams-grid{
-
-display:grid;
-
-grid-template-columns:
-repeat(auto-fill,minmax(240px,1fr));
-
-gap:24px;
-
-}
-
-.team-card{
-
-position:relative;
-
-background:#111827;
-
-border:
-1px solid #334155;
-
-border-radius:16px;
-
-overflow:hidden;
-
-transition:.18s;
-
-min-height:260px;
-
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-
-padding:24px;
-
-}
-
-.team-card:hover{
-
-transform:translateY(-4px);
-
-border-color:#ef4444;
-
-box-shadow:
-0 10px 30px
-rgba(0,0,0,.35);
-
-}
-
-.team-card-bg{
-
-position:absolute;
-
-inset:0;
-
-opacity:.14;
-
-pointer-events:none;
-
-}
-
-.team-card-content{
-
-position:relative;
-
-z-index:2;
-
-display:flex;
-flex-direction:column;
-align-items:center;
-
-text-align:center;
-
-width:100%;
-
-}
-
-.team-logo{
-
-width:110px;
-height:110px;
-
-object-fit:contain;
-
-margin-bottom:20px;
-
-filter:
-drop-shadow(
-0 4px 10px
-rgba(0,0,0,.35)
-);
-
-}
-
-.team-name{
-
-font-size:28px;
-font-weight:900;
-
-line-height:1.1;
-
-margin-bottom:6px;
-
-}
-
-.team-region{
-
-font-size:16px;
-font-weight:700;
-
-color:#cbd5e1;
-
-margin-bottom:18px;
-
-}
-
-.team-meta{
-
-display:flex;
-justify-content:center;
-
-gap:14px;
-
-flex-wrap:wrap;
-
-font-size:14px;
-
-}
-
-.team-pill{
-
-padding:6px 10px;
-
-border-radius:999px;
-
-background:
-rgba(255,255,255,.08);
-
-border:
-1px solid rgba(255,255,255,.08);
-
-font-weight:700;
-
-}
-
-.team-record{
-
-margin-top:18px;
-
-font-size:34px;
-font-weight:900;
-
-}
-
-.team-points{
-
-font-size:14px;
-
-color:#cbd5e1;
-
-margin-top:6px;
-
-}
-
-@media(max-width:700px){
-
-.team-card{
-
-min-height:220px;
-
-padding:18px;
-
-}
-
-.team-logo{
-
-width:80px;
-height:80px;
-
-}
-
-.team-name{
-
-font-size:24px;
-
-}
-
-.team-record{
-
-font-size:28px;
-
-}
-
-}
-
-</style>
-
 </head>
+
 <body>
 
 <header>
+<h1>GHL</h1>
 
-<div class="nav">
-
-<a class="brand" href="index.html">
-
-<img src="GHL.png">
-
-<span>GHL</span>
-
-</a>
-
-<div class="links">
-
+<nav>
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
-<a href="teams.html" class="active">Teams</a>
+<a href="teams.html">Teams</a>
 <a href="players.html">Players</a>
 <a href="schedule.html">Schedule</a>
 <a href="playoffs.html">Playoffs</a>
 <a href="draft.html">Draft</a>
 <a href="finance.html">Finance</a>
-
-</div>
-
-</div>
-
+</nav>
 </header>
 
-<div class="container">
+<main>
 
-<div class="page-title">
+<h1>Teams</h1>
 
-Teams
+<section>
+<h2>League Teams</h2>
 
-</div>
+<div id="teamsList"></div>
+</section>
 
-<div
-class="teams-grid"
-id="teamsGrid">
-
-</div>
-
-</div>
+</main>
 
 <script>
-function getPrimaryColor(team) {
 
-    if (
-        team.colors &&
-        team.colors.length > 0
-    ) {
+async function loadLeague() {
+    const response = await fetch("league.json");
+    return await response.json();
+}
 
-        return team.colors[0];
+function currentSeason(data) {
+    return data.gameAttributes?.season || 0;
+}
 
+function currentSeasonTeam(team, data) {
+    const season = currentSeason(data);
+
+    return team.seasons?.find(s => {
+        return s.season === season;
+    }) || {};
+}
+
+function getConferences(data) {
+    return data.gameAttributes?.confs || [];
+}
+
+function getDivisions(data) {
+    return data.gameAttributes?.divs || [];
+}
+
+function conferenceName(data, cid) {
+    const conference = getConferences(data).find(conf => {
+        return conf.cid === cid;
+    });
+
+    return conference?.name || "";
+}
+
+function divisionName(data, did) {
+    const division = getDivisions(data).find(div => {
+        return div.did === did;
+    });
+
+    return division?.name || "";
+}
+
+function teamName(team) {
+    if (!team) {
+        return "Unknown Team";
     }
 
-    return "#dc2626";
+    return `${team.region} ${team.name}`;
+}
 
+function teamLogo(team) {
+    return (
+        team.imgURL ||
+        team.imgURLSmall ||
+        "GHL.png"
+    );
+}
+
+function teamColors(team) {
+    if (!team.colors || team.colors.length === 0) {
+        return "";
+    }
+
+    return team.colors.join(", ");
+}
+
+function gamesPlayed(season) {
+    return (
+        (season.won || 0) +
+        (season.lost || 0) +
+        (season.otl || 0)
+    );
+}
+
+function goalDiff(season) {
+    return (
+        (season.gf || 0) -
+        (season.ga || 0)
+    );
+}
+
+function renderTeam(team, data) {
+    const season = currentSeasonTeam(team, data);
+    const diff = goalDiff(season);
+
+    return `
+        <article>
+            <h3>
+                <a href="team.html?tid=${team.tid}">
+                    ${teamName(team)}
+                </a>
+            </h3>
+
+            <p>
+                <a href="team.html?tid=${team.tid}">
+                    <img src="${teamLogo(team)}" alt="${teamName(team)} logo">
+                </a>
+            </p>
+
+            <table>
+                <tbody>
+                    <tr>
+                        <th>Abbreviation</th>
+                        <td>${team.abbrev || ""}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Conference</th>
+                        <td>${conferenceName(data, team.cid)}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Division</th>
+                        <td>${divisionName(data, team.did)}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Record</th>
+                        <td>${season.won || 0}-${season.lost || 0}-${season.otl || 0}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Games Played</th>
+                        <td>${gamesPlayed(season)}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Points</th>
+                        <td>${season.pts || 0}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Goals For</th>
+                        <td>${season.gf || 0}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Goals Against</th>
+                        <td>${season.ga || 0}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Goal Differential</th>
+                        <td>${diff > 0 ? "+" : ""}${diff}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Streak</th>
+                        <td>${season.streak || "-"}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Colors</th>
+                        <td>${teamColors(team)}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </article>
+    `;
+}
+
+function renderTeams(data) {
+    return [...data.teams]
+        .sort((a, b) => {
+            return teamName(a).localeCompare(teamName(b));
+        })
+        .map(team => {
+            return renderTeam(team, data);
+        })
+        .join("");
 }
 
 loadLeague().then(data => {
-
-    const grid =
-        document.getElementById(
-            "teamsGrid"
-        );
-
-    const conferences =
-        data.gameAttributes
-        ?.confs || [];
-
-    const divisions =
-        data.gameAttributes
-        ?.divs || [];
-
-    // =========================
-    // ALPHABETICAL SORT
-    // =========================
-
-    const teams =
-        [...data.teams]
-        .sort((a, b) => {
-
-            const nameA =
-                `${a.region} ${a.name}`;
-
-            const nameB =
-                `${b.region} ${b.name}`;
-
-            return nameA.localeCompare(
-                nameB
-            );
-
-        });
-
-    // =========================
-    // RENDER
-    // =========================
-
-    grid.innerHTML =
-        teams.map(team => {
-
-            const season =
-                currentSeasonTeam(team, data);
-
-            const conference =
-                conferences.find(c => {
-
-                    return c.cid === team.cid;
-
-                });
-
-            const division =
-                divisions.find(d => {
-
-                    return d.did === team.did;
-
-                });
-
-            const color =
-                getPrimaryColor(team);
-
-            return `
-
-            <a
-            href="team.html?tid=${team.tid}">
-
-                <div class="team-card">
-
-                    <!-- BG -->
-
-                    <div
-                    class="team-card-bg"
-                    style="
-                    background:
-                    radial-gradient(
-                    circle at top,
-                    ${color},
-                    transparent 70%
-                    );
-                    ">
-
-                    </div>
-
-                    <!-- CONTENT -->
-
-                    <div class="team-card-content">
-
-                        <img
-                        class="team-logo"
-                        src="${
-                            team.imgURL ||
-                            team.imgURLSmall ||
-                            "GHL.png"
-                        }">
-
-                        <div class="team-name">
-
-                            ${team.name}
-
-                        </div>
-
-                        <div class="team-region">
-
-                            ${team.region}
-
-                        </div>
-
-                        <div class="team-meta">
-
-                            <div class="team-pill">
-
-                                ${
-                                    conference?.name ||
-                                    ""
-                                }
-
-                            </div>
-
-                            <div class="team-pill">
-
-                                ${
-                                    division?.name ||
-                                    ""
-                                }
-
-                            </div>
-
-                        </div>
-
-                        <div class="team-record">
-
-                            ${season.won || 0}-
-                            ${season.lost || 0}-
-                            ${season.otl || 0}
-
-                        </div>
-
-                        <div class="team-points">
-
-                            ${season.pts || 0}
-                            Points
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </a>
-
-            `;
-
-        }).join("");
-
+    document.getElementById("teamsList").innerHTML =
+        renderTeams(data);
 });
 
 </script>

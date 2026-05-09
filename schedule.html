@@ -1,174 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Schedule</title>
-
-<link rel="stylesheet" href="style.css">
-<script src="helpers.js"></script>
-
-<style>
-
-.schedule-day{
-
-margin-bottom:28px;
-
-}
-
-.schedule-date{
-
-font-size:28px;
-font-weight:800;
-
-margin-bottom:14px;
-
-padding-bottom:8px;
-
-border-bottom:
-2px solid #334155;
-
-}
-
-.schedule-game{
-
-display:flex;
-align-items:center;
-justify-content:space-between;
-
-background:#1b2432;
-
-border:
-1px solid #334155;
-
-border-radius:10px;
-
-padding:14px 18px;
-
-margin-bottom:10px;
-
-transition:.15s;
-
-}
-
-.schedule-game:hover{
-
-background:#243246;
-
-transform:translateY(-1px);
-
-}
-
-.schedule-team{
-
-display:flex;
-align-items:center;
-gap:10px;
-
-width:260px;
-
-}
-
-.schedule-team img{
-
-width:34px;
-height:34px;
-
-object-fit:contain;
-
-}
-
-.schedule-team-name{
-
-font-weight:700;
-
-}
-
-.schedule-center{
-
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-
-min-width:160px;
-
-}
-
-.schedule-score{
-
-font-size:26px;
-font-weight:900;
-
-}
-
-.schedule-time{
-
-font-size:14px;
-color:#94a3b8;
-
-margin-top:4px;
-
-}
-
-.final-badge{
-
-display:inline-block;
-
-padding:4px 8px;
-
-border-radius:6px;
-
-background:#16a34a;
-
-font-size:12px;
-font-weight:700;
-
-margin-top:4px;
-
-}
-
-.upcoming-badge{
-
-display:inline-block;
-
-padding:4px 8px;
-
-border-radius:6px;
-
-background:#2563eb;
-
-font-size:12px;
-font-weight:700;
-
-margin-top:4px;
-
-}
-
-</style>
-
 </head>
+
 <body>
 
 <header>
+<h1>GHL</h1>
 
-<div class="nav">
-
-<a class="brand" href="index.html">
-
-<img src="GHL.png">
-
-<span>GHL</span>
-
-</a>
-
-<div class="links">
-
+<nav>
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
@@ -177,307 +20,412 @@ margin-top:4px;
 <a href="playoffs.html">Playoffs</a>
 <a href="draft.html">Draft</a>
 <a href="finance.html">Finance</a>
-
-</div>
-
-</div>
-
+</nav>
 </header>
 
-<div class="container">
+<main>
 
-<div class="page-title">
+<h1>League Schedule</h1>
 
-League Schedule
+<section>
+<h2>Upcoming Games</h2>
 
-</div>
+<table id="upcomingTable">
+<thead>
+<tr>
+<th>Date</th>
+<th>Away</th>
+<th>Home</th>
+<th>Status</th>
+</tr>
+</thead>
 
-<div id="scheduleContainer"></div>
+<tbody id="upcomingBody"></tbody>
+</table>
+</section>
 
-</div>
+<section>
+<h2>Completed Games</h2>
+
+<table id="completedTable">
+<thead>
+<tr>
+<th>Date</th>
+<th>Away</th>
+<th>Score</th>
+<th>Home</th>
+<th>Status</th>
+</tr>
+</thead>
+
+<tbody id="completedBody"></tbody>
+</table>
+</section>
+
+<section>
+<h2>Full Schedule</h2>
+
+<table id="scheduleTable">
+<thead>
+<tr>
+<th>Date</th>
+<th>Away</th>
+<th>Score</th>
+<th>Home</th>
+<th>Status</th>
+</tr>
+</thead>
+
+<tbody id="scheduleBody"></tbody>
+</table>
+</section>
+
+</main>
 
 <script>
-function formatDate(timestamp) {
 
-    if (!timestamp) {
-
-        return "Unknown Date";
-
-    }
-
-    return new Date(timestamp)
-    .toLocaleDateString(
-        "en-US",
-        {
-
-            weekday:"long",
-            month:"long",
-            day:"numeric",
-            year:"numeric"
-
-        }
-    );
-
+async function loadLeague() {
+    const response = await fetch("league.json");
+    return await response.json();
 }
 
-function formatTime(timestamp) {
-
-    if (!timestamp) {
-
-        return "";
-
-    }
-
-    return new Date(timestamp)
-    .toLocaleTimeString(
-        "en-US",
-        {
-
-            hour:"numeric",
-            minute:"2-digit"
-
-        }
-    );
-
-}
-
-loadLeague().then(data => {
-
-    const container =
-        document.getElementById(
-            "scheduleContainer"
-        );
-
+function buildTeamMap(data) {
     const teams = {};
 
     data.teams.forEach(team => {
-
         teams[team.tid] = team;
-
     });
 
-    // =========================
-    // COMBINE PLAYED + FUTURE
-    // =========================
+    return teams;
+}
 
-    let allGames = [];
-
-    // COMPLETED GAMES
-
-    if (data.games) {
-
-        data.games.forEach(game => {
-
-            allGames.push({
-
-                gid:game.gid,
-
-                awayTid:game.awayTid,
-
-                homeTid:game.homeTid,
-
-                awayPts:game.awayPts,
-
-                homePts:game.homePts,
-
-                time:game.day,
-
-                played:true
-
-            });
-
-        });
-
+function teamName(team) {
+    if (!team) {
+        return "Unknown Team";
     }
 
-    // FUTURE SCHEDULE
+    return `${team.region} ${team.name}`;
+}
 
-    if (data.schedule) {
-
-        data.schedule.forEach(game => {
-
-            allGames.push({
-
-                gid:game.gid,
-
-                awayTid:game.awayTid,
-
-                homeTid:game.homeTid,
-
-                time:game.day,
-
-                played:false
-
-            });
-
-        });
-
+function teamAbbrev(team) {
+    if (!team) {
+        return "";
     }
 
-    // =========================
-    // SORT BY DATE
-    // =========================
+    return team.abbrev || team.name || "";
+}
 
-    allGames.sort((a, b) => {
+function formatDate(day) {
+    if (day === undefined || day === null) {
+        return "";
+    }
 
-        return a.time - b.time;
-
+    return new Date(day).toLocaleDateString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric"
     });
+}
 
-    // =========================
-    // GROUP BY DATE
-    // =========================
+function getAwayTid(game) {
+    return game.awayTid ?? game.away?.tid ?? game.lost?.tid ?? game.teams?.[0]?.tid;
+}
 
-    const grouped = {};
+function getHomeTid(game) {
+    return game.homeTid ?? game.home?.tid ?? game.won?.tid ?? game.teams?.[1]?.tid;
+}
 
-    allGames.forEach(game => {
+function getAwayPts(game) {
+    return game.awayPts ?? game.away?.pts ?? game.lost?.pts;
+}
 
-        const date =
-            formatDate(game.time);
+function getHomePts(game) {
+    return game.homePts ?? game.home?.pts ?? game.won?.pts;
+}
 
-        if (!grouped[date]) {
+function isCompletedGame(game) {
+    return (
+        getAwayTid(game) !== undefined &&
+        getHomeTid(game) !== undefined &&
+        getAwayPts(game) !== undefined &&
+        getHomePts(game) !== undefined
+    );
+}
 
-            grouped[date] = [];
+function getCompletedGames(data) {
+    return (data.games || [])
+        .filter(game => {
+            return isCompletedGame(game);
+        })
+        .sort((a, b) => {
+            return (a.day || 0) - (b.day || 0);
+        });
+}
 
-        }
+function getUpcomingGames(data) {
+    return (data.schedule || [])
+        .filter(game => {
+            return (
+                getAwayTid(game) !== undefined &&
+                getHomeTid(game) !== undefined
+            );
+        })
+        .sort((a, b) => {
+            return (a.day || 0) - (b.day || 0);
+        });
+}
 
-        grouped[date].push(game);
+function getFullSchedule(data) {
+    const completed =
+        getCompletedGames(data)
+        .map(game => {
+            return {
+                type: "completed",
+                game
+            };
+        });
 
-    });
+    const upcoming =
+        getUpcomingGames(data)
+        .map(game => {
+            return {
+                type: "upcoming",
+                game
+            };
+        });
 
-    // =========================
-    // RENDER
-    // =========================
+    return [...completed, ...upcoming]
+        .sort((a, b) => {
+            return (a.game.day || 0) - (b.game.day || 0);
+        });
+}
 
-    container.innerHTML =
-        Object.entries(grouped)
-        .map(([date, games]) => {
+function gameStatus(game, completed) {
+    if (!completed) {
+        return "Upcoming";
+    }
 
-            return `
+    if (game.overtimes) {
+        return `${game.overtimes}OT`;
+    }
 
-            <div class="schedule-day">
+    return "Final";
+}
 
-                <div class="schedule-date">
+function renderUpcomingGames(data, teams) {
+    const games =
+        getUpcomingGames(data);
 
-                    ${date}
+    if (games.length === 0) {
+        return `
+            <tr>
+                <td colspan="4">No upcoming games scheduled.</td>
+            </tr>
+        `;
+    }
 
-                </div>
+    return games.map(game => {
+        const awayTeam =
+            teams[getAwayTid(game)];
 
-                ${games.map(game => {
+        const homeTeam =
+            teams[getHomeTid(game)];
 
-                    const away =
-                        teams[game.awayTid];
+        return `
+            <tr>
+                <td>${formatDate(game.day)}</td>
 
-                    const home =
-                        teams[game.homeTid];
-
-                    return `
-
-                    <a
-                    href="game.html?gid=${game.gid}">
-
-                        <div class="schedule-game">
-
-                            <!-- AWAY -->
-
-                            <div class="schedule-team">
-
-                                <img
-                                src="${getTeamLogo(away)}">
-
-                                <div>
-
-                                    <div class="schedule-team-name">
-
-                                        ${getTeamName(away)}
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <!-- CENTER -->
-
-                            <div class="schedule-center">
-
-                                ${
-                                    game.played
-                                    ? `
-
-                                    <div class="schedule-score">
-
-                                        ${game.awayPts}
-                                        -
-                                        ${game.homePts}
-
-                                    </div>
-
-                                    <div class="final-badge">
-
-                                        FINAL
-
-                                    </div>
-
-                                    `
-                                    : `
-
-                                    <div class="schedule-score">
-
-                                        VS
-
-                                    </div>
-
-                                    <div class="upcoming-badge">
-
-                                        UPCOMING
-
-                                    </div>
-
-                                    `
-                                }
-
-                                <div class="schedule-time">
-
-                                    ${formatTime(game.time)}
-
-                                </div>
-
-                            </div>
-
-                            <!-- HOME -->
-
-                            <div class="schedule-team">
-
-                                <img
-                                src="${getTeamLogo(home)}">
-
-                                <div>
-
-                                    <div class="schedule-team-name">
-
-                                        ${getTeamName(home)}
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
+                <td>
+                    <a href="team.html?tid=${getAwayTid(game)}">
+                        ${teamName(awayTeam)}
                     </a>
+                </td>
 
-                    `;
+                <td>
+                    <a href="team.html?tid=${getHomeTid(game)}">
+                        ${teamName(homeTeam)}
+                    </a>
+                </td>
 
-                }).join("")}
+                <td>Upcoming</td>
+            </tr>
+        `;
+    }).join("");
+}
 
-            </div>
+function renderCompletedGames(data, teams) {
+    const games =
+        getCompletedGames(data)
+        .slice()
+        .reverse();
 
-            `;
+    if (games.length === 0) {
+        return `
+            <tr>
+                <td colspan="5">No completed games available.</td>
+            </tr>
+        `;
+    }
 
-        }).join("");
+    return games.map(game => {
+        const awayTeam =
+            teams[getAwayTid(game)];
 
+        const homeTeam =
+            teams[getHomeTid(game)];
+
+        return `
+            <tr>
+                <td>${formatDate(game.day)}</td>
+
+                <td>
+                    <a href="team.html?tid=${getAwayTid(game)}">
+                        ${teamName(awayTeam)}
+                    </a>
+                </td>
+
+                <td>
+                    <a href="game.html?gid=${game.gid}">
+                        ${getAwayPts(game)} - ${getHomePts(game)}
+                    </a>
+                </td>
+
+                <td>
+                    <a href="team.html?tid=${getHomeTid(game)}">
+                        ${teamName(homeTeam)}
+                    </a>
+                </td>
+
+                <td>${gameStatus(game, true)}</td>
+            </tr>
+        `;
+    }).join("");
+}
+
+function renderFullSchedule(data, teams) {
+    const games =
+        getFullSchedule(data);
+
+    if (games.length === 0) {
+        return `
+            <tr>
+                <td colspan="5">No schedule available.</td>
+            </tr>
+        `;
+    }
+
+    return games.map(item => {
+        const game =
+            item.game;
+
+        const completed =
+            item.type === "completed";
+
+        const awayTeam =
+            teams[getAwayTid(game)];
+
+        const homeTeam =
+            teams[getHomeTid(game)];
+
+        return `
+            <tr>
+                <td>${formatDate(game.day)}</td>
+
+                <td>
+                    <a href="team.html?tid=${getAwayTid(game)}">
+                        ${teamName(awayTeam)}
+                    </a>
+                </td>
+
+                <td>
+                    ${
+                        completed
+                        ? `<a href="game.html?gid=${game.gid}">
+                            ${getAwayPts(game)} - ${getHomePts(game)}
+                           </a>`
+                        : "vs"
+                    }
+                </td>
+
+                <td>
+                    <a href="team.html?tid=${getHomeTid(game)}">
+                        ${teamName(homeTeam)}
+                    </a>
+                </td>
+
+                <td>${gameStatus(game, completed)}</td>
+            </tr>
+        `;
+    }).join("");
+}
+
+function makeTableSortable(table) {
+    const headers = table.querySelectorAll("th");
+
+    headers.forEach((header, index) => {
+        header.addEventListener("click", () => {
+            const tbody = table.querySelector("tbody");
+            const rows = [...tbody.querySelectorAll("tr")];
+
+            const ascending = !header.classList.contains("asc");
+
+            headers.forEach(h => {
+                h.classList.remove("asc");
+                h.classList.remove("desc");
+            });
+
+            header.classList.add(ascending ? "asc" : "desc");
+
+            rows.sort((a, b) => {
+                const aText = a.children[index].innerText.trim();
+                const bText = b.children[index].innerText.trim();
+
+                const aNum = parseFloat(aText.replace(/[^\d.-]/g, ""));
+                const bNum = parseFloat(bText.replace(/[^\d.-]/g, ""));
+
+                if (!isNaN(aNum) && !isNaN(bNum)) {
+                    return ascending ? aNum - bNum : bNum - aNum;
+                }
+
+                return ascending
+                    ? aText.localeCompare(bText)
+                    : bText.localeCompare(aText);
+            });
+
+            tbody.innerHTML = "";
+
+            rows.forEach(row => {
+                tbody.appendChild(row);
+            });
+        });
+    });
+}
+
+loadLeague().then(data => {
+    const teams =
+        buildTeamMap(data);
+
+    document.getElementById("upcomingBody").innerHTML =
+        renderUpcomingGames(data, teams);
+
+    document.getElementById("completedBody").innerHTML =
+        renderCompletedGames(data, teams);
+
+    document.getElementById("scheduleBody").innerHTML =
+        renderFullSchedule(data, teams);
+
+    makeTableSortable(
+        document.getElementById("upcomingTable")
+    );
+
+    makeTableSortable(
+        document.getElementById("completedTable")
+    );
+
+    makeTableSortable(
+        document.getElementById("scheduleTable")
+    );
 });
 
 </script>

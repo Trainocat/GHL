@@ -1,233 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Playoffs</title>
-
-<link rel="stylesheet" href="style.css">
-<script src="helpers.js"></script>
-
-<style>
-
-.playoff-wrapper{
-
-overflow-x:auto;
-
-padding-bottom:20px;
-
-}
-
-.bracket{
-
-display:flex;
-gap:40px;
-align-items:flex-start;
-
-min-width:max-content;
-
-}
-
-.conference{
-
-display:flex;
-gap:24px;
-
-}
-
-.round{
-
-display:flex;
-flex-direction:column;
-justify-content:space-around;
-
-gap:20px;
-
-}
-
-.round-title{
-
-font-size:24px;
-font-weight:800;
-
-margin-bottom:16px;
-
-}
-
-.series{
-
-width:240px;
-
-background:#1b2432;
-
-border:
-1px solid #334155;
-
-border-radius:8px;
-
-overflow:hidden;
-
-}
-
-.series-team{
-
-display:flex;
-align-items:center;
-justify-content:space-between;
-
-padding:10px 12px;
-
-border-bottom:
-1px solid #334155;
-
-}
-
-.series-team:last-child{
-
-border-bottom:none;
-
-}
-
-.series-team.winner{
-
-background:
-rgba(0,128,255,0.12);
-
-}
-
-.series-team img{
-
-width:28px;
-height:28px;
-
-object-fit:contain;
-
-margin-right:8px;
-
-}
-
-.series-left{
-
-display:flex;
-align-items:center;
-gap:8px;
-
-}
-
-.seed{
-
-font-weight:700;
-color:#94a3b8;
-
-width:22px;
-
-}
-
-.team-name{
-
-font-weight:700;
-
-}
-
-.team-record{
-
-font-size:13px;
-color:#94a3b8;
-
-margin-top:2px;
-
-}
-
-.series-score{
-
-font-size:20px;
-font-weight:900;
-
-color:#f59e0b;
-
-}
-
-.playoff-center{
-
-display:flex;
-align-items:center;
-justify-content:center;
-
-padding-top:140px;
-
-}
-
-.cup-box{
-
-width:260px;
-
-background:#1b2432;
-
-border:
-2px solid #475569;
-
-border-radius:12px;
-
-padding:20px;
-
-text-align:center;
-
-}
-
-.cup-box h2{
-
-margin-top:0;
-
-font-size:30px;
-
-}
-
-.champion{
-
-font-size:28px;
-font-weight:900;
-
-margin-top:10px;
-
-color:#f8fafc;
-
-}
-
-.champion img{
-
-width:70px;
-height:70px;
-
-object-fit:contain;
-
-margin-bottom:12px;
-
-}
-
-</style>
-
 </head>
+
 <body>
 
 <header>
+<h1>GHL</h1>
 
-<div class="nav">
-
-<a class="brand" href="index.html">
-
-<img src="GHL.png">
-
-<span>GHL</span>
-
-</a>
-
-<div class="links">
-
+<nav>
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
@@ -236,395 +20,597 @@ margin-bottom:12px;
 <a href="playoffs.html">Playoffs</a>
 <a href="draft.html">Draft</a>
 <a href="finance.html">Finance</a>
-
-</div>
-
-</div>
-
+</nav>
 </header>
 
-<div class="container">
+<main>
 
-<div class="page-title">
+<h1>Playoffs</h1>
 
-Playoffs
+<section>
+<h2>Playoff Bracket</h2>
+<div id="playoffBracket"></div>
+</section>
 
-</div>
+<section>
+<h2>Playoff Series</h2>
 
-<div class="playoff-wrapper">
+<table id="seriesTable">
+<thead>
+<tr>
+<th>Round</th>
+<th>Series</th>
+<th>Team 1</th>
+<th>Wins</th>
+<th>Team 2</th>
+<th>Wins</th>
+<th>Status</th>
+</tr>
+</thead>
 
-<div class="bracket">
+<tbody id="seriesBody"></tbody>
+</table>
 
-<!-- =========================
-     WEST
-========================= -->
+</section>
 
-<div class="conference">
+<section>
+<h2>Playoff Teams</h2>
 
-<div class="round">
+<table id="playoffTeamsTable">
+<thead>
+<tr>
+<th>Seed</th>
+<th>Team</th>
+<th>Conference</th>
+<th>Division</th>
+<th>W</th>
+<th>L</th>
+<th>OTL</th>
+<th>PTS</th>
+<th>GF</th>
+<th>GA</th>
+<th>DIFF</th>
+</tr>
+</thead>
 
-<div class="round-title">
+<tbody id="playoffTeamsBody"></tbody>
+</table>
 
-Western Conference
+</section>
 
-</div>
+<section>
+<h2>Playoff Games</h2>
 
-<div id="westRound1"></div>
+<table id="playoffGamesTable">
+<thead>
+<tr>
+<th>Date</th>
+<th>Round</th>
+<th>Away</th>
+<th>Score</th>
+<th>Home</th>
+<th>Status</th>
+</tr>
+</thead>
 
-</div>
+<tbody id="playoffGamesBody"></tbody>
+</table>
 
-<div class="round">
+</section>
 
-<div class="round-title">
-
-Round 2
-
-</div>
-
-<div id="westRound2"></div>
-
-</div>
-
-<div class="round">
-
-<div class="round-title">
-
-Conference Final
-
-</div>
-
-<div id="westFinal"></div>
-
-</div>
-
-</div>
-
-<!-- =========================
-     CUP FINAL
-========================= -->
-
-<div class="playoff-center">
-
-<div class="cup-box">
-
-<h2>GHL Final</h2>
-
-<div id="finalSeries"></div>
-
-</div>
-
-</div>
-
-<!-- =========================
-     EAST
-========================= -->
-
-<div class="conference">
-
-<div class="round">
-
-<div class="round-title">
-
-Conference Final
-
-</div>
-
-<div id="eastFinal"></div>
-
-</div>
-
-<div class="round">
-
-<div class="round-title">
-
-Round 2
-
-</div>
-
-<div id="eastRound2"></div>
-
-</div>
-
-<div class="round">
-
-<div class="round-title">
-
-Eastern Conference
-
-</div>
-
-<div id="eastRound1"></div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
+</main>
 
 <script>
-function createSeries(
-    teamA,
-    teamB,
-    winsA,
-    winsB,
-    seedA,
-    seedB
-) {
 
-    const winnerA =
-        winsA > winsB
-        ? "winner"
-        : "";
-
-    const winnerB =
-        winsB > winsA
-        ? "winner"
-        : "";
-
-    return `
-
-    <div class="series">
-
-        <div class="series-team ${winnerA}">
-
-            <div class="series-left">
-
-                <div class="seed">
-
-                    ${seedA}.
-
-                </div>
-
-                <img
-                src="${getTeamLogo(teamA)}">
-
-                <div>
-
-                    <div class="team-name">
-
-                        ${teamA.region}
-
-                    </div>
-
-                    <div class="team-record">
-
-                        ${latestSeason(teamA).won || 0}-
-                        ${latestSeason(teamA).lost || 0}-
-                        ${latestSeason(teamA).otl || 0}
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="series-score">
-
-                ${winsA}
-
-            </div>
-
-        </div>
-
-        <div class="series-team ${winnerB}">
-
-            <div class="series-left">
-
-                <div class="seed">
-
-                    ${seedB}.
-
-                </div>
-
-                <img
-                src="${getTeamLogo(teamB)}">
-
-                <div>
-
-                    <div class="team-name">
-
-                        ${teamB.region}
-
-                    </div>
-
-                    <div class="team-record">
-
-                        ${latestSeason(teamB).won || 0}-
-                        ${latestSeason(teamB).lost || 0}-
-                        ${latestSeason(teamB).otl || 0}
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="series-score">
-
-                ${winsB}
-
-            </div>
-
-        </div>
-
-    </div>
-
-    `;
-
+async function loadLeague() {
+    const response = await fetch("league.json");
+    return await response.json();
 }
 
-loadLeague().then(data => {
+function currentSeason(data) {
+    return data.gameAttributes?.season || 0;
+}
 
+function currentSeasonTeam(team, data) {
+    const season = currentSeason(data);
+
+    return team.seasons?.find(s => {
+        return s.season === season;
+    }) || {};
+}
+
+function buildTeamMap(data) {
     const teams = {};
 
     data.teams.forEach(team => {
-
         teams[team.tid] = team;
-
     });
 
-    // =========================
-    // SAMPLE BRACKET
-    // Replace with playoffSeries
-    // =========================
+    return teams;
+}
 
-    document
-    .getElementById("westRound1")
-    .innerHTML =
+function teamName(team) {
+    if (!team) {
+        return "Unknown Team";
+    }
 
-        createSeries(
-            teams[1],
-            teams[8],
-            4,
-            1,
-            1,
-            8
-        ) +
+    return `${team.region} ${team.name}`;
+}
 
-        createSeries(
-            teams[3],
-            teams[6],
-            4,
-            0,
-            3,
-            6
-        ) +
+function teamAbbrev(team) {
+    if (!team) {
+        return "";
+    }
 
-        createSeries(
-            teams[2],
-            teams[7],
-            0,
-            4,
-            2,
-            7
-        );
+    return team.abbrev || team.name || "";
+}
 
-    document
-    .getElementById("westRound2")
-    .innerHTML =
+function formatDate(day) {
+    if (day === undefined || day === null) {
+        return "";
+    }
 
-        createSeries(
-            teams[1],
-            teams[3],
-            4,
-            3,
-            1,
-            3
-        );
+    return new Date(day).toLocaleDateString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+    });
+}
 
-    document
-    .getElementById("westFinal")
-    .innerHTML =
+function getConferences(data) {
+    return data.gameAttributes?.confs || [];
+}
 
-        createSeries(
-            teams[1],
-            teams[7],
-            4,
-            3,
-            1,
-            7
-        );
+function getDivisions(data) {
+    return data.gameAttributes?.divs || [];
+}
 
-    document
-    .getElementById("eastRound1")
-    .innerHTML =
+function conferenceName(data, cid) {
+    const conf = getConferences(data).find(c => {
+        return c.cid === cid;
+    });
 
-        createSeries(
-            teams[0],
-            teams[9],
-            4,
-            3,
-            1,
-            8
-        ) +
+    return conf?.name || "";
+}
 
-        createSeries(
-            teams[4],
-            teams[5],
-            4,
-            1,
-            4,
-            5
-        ) +
+function divisionName(data, did) {
+    const div = getDivisions(data).find(d => {
+        return d.did === did;
+    });
 
-        createSeries(
-            teams[2],
-            teams[6],
-            4,
-            0,
-            3,
-            6
-        );
+    return div?.name || "";
+}
 
-    document
-    .getElementById("eastRound2")
-    .innerHTML =
+function getGoalDiff(team, data) {
+    const season = currentSeasonTeam(team, data);
 
-        createSeries(
-            teams[0],
-            teams[4],
-            4,
-            3,
-            1,
-            4
-        );
+    return (season.gf || 0) - (season.ga || 0);
+}
 
-    document
-    .getElementById("eastFinal")
-    .innerHTML =
+function getPlayoffTeams(data) {
+    const playoffTeams =
+        data.playoffTeams ||
+        data.playoffSeeding ||
+        [];
 
-        createSeries(
-            teams[0],
-            teams[2],
-            4,
-            2,
-            1,
-            2
-        );
+    if (playoffTeams.length > 0) {
+        return playoffTeams
+            .map((entry, index) => {
+                const team = data.teams.find(t => {
+                    return t.tid === entry.tid;
+                });
 
-    document
-    .getElementById("finalSeries")
-    .innerHTML = `
+                return {
+                    seed: entry.seed || index + 1,
+                    team,
+                    round: entry.round || 1
+                };
+            })
+            .filter(entry => entry.team);
+    }
 
-    <div class="champion">
+    const teamsByConference = {};
 
-        <img
-        src="${getTeamLogo(teams[0])}">
+    data.teams.forEach(team => {
+        if (!teamsByConference[team.cid]) {
+            teamsByConference[team.cid] = [];
+        }
 
-        <div>
+        teamsByConference[team.cid].push(team);
+    });
 
-            ${getTeamName(teams[0])}
+    const playoffSeeds = [];
 
-        </div>
+    Object.keys(teamsByConference).forEach(cid => {
+        teamsByConference[cid]
+            .sort((a, b) => {
+                const aSeason = currentSeasonTeam(a, data);
+                const bSeason = currentSeasonTeam(b, data);
 
-    </div>
+                return (bSeason.pts || 0) - (aSeason.pts || 0);
+            })
+            .slice(0, 8)
+            .forEach((team, index) => {
+                playoffSeeds.push({
+                    seed: index + 1,
+                    team,
+                    round: 1
+                });
+            });
+    });
 
-    `;
+    return playoffSeeds;
+}
 
+function getPlayoffSeries(data) {
+    return (
+        data.playoffSeries ||
+        data.playoffSeriesBySeason?.[currentSeason(data)] ||
+        data.playoffs?.series ||
+        []
+    );
+}
+
+function getSeriesTeam(series, teams, side) {
+    const tid =
+        side === 0
+            ? series.tids?.[0] ??
+              series.team0Tid ??
+              series.awayTid ??
+              series.highSeedTid
+            : series.tids?.[1] ??
+              series.team1Tid ??
+              series.homeTid ??
+              series.lowSeedTid;
+
+    return teams[tid];
+}
+
+function getSeriesWins(series, side) {
+    if (series.wins) {
+        return series.wins[side] || 0;
+    }
+
+    if (side === 0) {
+        return series.wins0 || series.awayWins || series.highSeedWins || 0;
+    }
+
+    return series.wins1 || series.homeWins || series.lowSeedWins || 0;
+}
+
+function getSeriesRound(series) {
+    return (
+        series.round ||
+        series.currentRound ||
+        series.rnd ||
+        1
+    );
+}
+
+function getSeriesStatus(series) {
+    if (series.winnerTid !== undefined) {
+        return "Final";
+    }
+
+    if (series.completed) {
+        return "Final";
+    }
+
+    return "In Progress";
+}
+
+function getPlayoffGames(data) {
+    return (data.games || []).filter(game => {
+        return game.playoffs;
+    });
+}
+
+function getAwayTid(game) {
+    return game.awayTid ?? game.away?.tid ?? game.lost?.tid ?? game.teams?.[0]?.tid;
+}
+
+function getHomeTid(game) {
+    return game.homeTid ?? game.home?.tid ?? game.won?.tid ?? game.teams?.[1]?.tid;
+}
+
+function getAwayPts(game) {
+    return game.awayPts ?? game.away?.pts ?? game.lost?.pts ?? 0;
+}
+
+function getHomePts(game) {
+    return game.homePts ?? game.home?.pts ?? game.won?.pts ?? 0;
+}
+
+function renderBracket(data, teams) {
+    const series = getPlayoffSeries(data);
+
+    if (series.length > 0) {
+        const grouped = {};
+
+        series.forEach(item => {
+            const round = getSeriesRound(item);
+
+            if (!grouped[round]) {
+                grouped[round] = [];
+            }
+
+            grouped[round].push(item);
+        });
+
+        return Object.keys(grouped)
+            .sort((a, b) => Number(a) - Number(b))
+            .map(round => {
+                return `
+                    <section>
+                        <h3>Round ${round}</h3>
+
+                        ${
+                            grouped[round].map((item, index) => {
+                                const teamA = getSeriesTeam(item, teams, 0);
+                                const teamB = getSeriesTeam(item, teams, 1);
+
+                                return `
+                                    <p>
+                                        Series ${index + 1}:
+                                        ${teamName(teamA)}
+                                        (${getSeriesWins(item, 0)})
+                                        vs
+                                        ${teamName(teamB)}
+                                        (${getSeriesWins(item, 1)})
+                                    </p>
+                                `;
+                            }).join("")
+                        }
+                    </section>
+                `;
+            })
+            .join("");
+    }
+
+    const playoffTeams = getPlayoffTeams(data);
+
+    if (playoffTeams.length === 0) {
+        return "<p>No playoff bracket available.</p>";
+    }
+
+    const groupedByConference = {};
+
+    playoffTeams.forEach(entry => {
+        const cid = entry.team.cid;
+
+        if (!groupedByConference[cid]) {
+            groupedByConference[cid] = [];
+        }
+
+        groupedByConference[cid].push(entry);
+    });
+
+    return Object.keys(groupedByConference)
+        .map(cid => {
+            const entries = groupedByConference[cid]
+                .sort((a, b) => a.seed - b.seed);
+
+            return `
+                <section>
+                    <h3>${conferenceName(data, Number(cid)) || "Conference"}</h3>
+
+                    ${
+                        entries.map(entry => {
+                            return `
+                                <p>
+                                    ${entry.seed}. ${teamName(entry.team)}
+                                </p>
+                            `;
+                        }).join("")
+                    }
+                </section>
+            `;
+        })
+        .join("");
+}
+
+function renderSeriesRows(data, teams) {
+    const series = getPlayoffSeries(data);
+
+    if (series.length === 0) {
+        return `
+            <tr>
+                <td colspan="7">No playoff series available.</td>
+            </tr>
+        `;
+    }
+
+    return series.map((item, index) => {
+        const teamA = getSeriesTeam(item, teams, 0);
+        const teamB = getSeriesTeam(item, teams, 1);
+
+        return `
+            <tr>
+                <td>${getSeriesRound(item)}</td>
+                <td>${index + 1}</td>
+                <td>
+                    ${
+                        teamA
+                            ? `<a href="team.html?tid=${teamA.tid}">${teamName(teamA)}</a>`
+                            : "Unknown Team"
+                    }
+                </td>
+                <td>${getSeriesWins(item, 0)}</td>
+                <td>
+                    ${
+                        teamB
+                            ? `<a href="team.html?tid=${teamB.tid}">${teamName(teamB)}</a>`
+                            : "Unknown Team"
+                    }
+                </td>
+                <td>${getSeriesWins(item, 1)}</td>
+                <td>${getSeriesStatus(item)}</td>
+            </tr>
+        `;
+    }).join("");
+}
+
+function renderPlayoffTeams(data) {
+    const playoffTeams = getPlayoffTeams(data);
+
+    if (playoffTeams.length === 0) {
+        return `
+            <tr>
+                <td colspan="11">No playoff teams available.</td>
+            </tr>
+        `;
+    }
+
+    return playoffTeams
+        .sort((a, b) => {
+            if (a.team.cid !== b.team.cid) {
+                return a.team.cid - b.team.cid;
+            }
+
+            return a.seed - b.seed;
+        })
+        .map(entry => {
+            const team = entry.team;
+            const season = currentSeasonTeam(team, data);
+            const diff = getGoalDiff(team, data);
+
+            return `
+                <tr>
+                    <td>${entry.seed}</td>
+                    <td>
+                        <a href="team.html?tid=${team.tid}">
+                            ${teamName(team)}
+                        </a>
+                    </td>
+                    <td>${conferenceName(data, team.cid)}</td>
+                    <td>${divisionName(data, team.did)}</td>
+                    <td>${season.won || 0}</td>
+                    <td>${season.lost || 0}</td>
+                    <td>${season.otl || 0}</td>
+                    <td>${season.pts || 0}</td>
+                    <td>${season.gf || 0}</td>
+                    <td>${season.ga || 0}</td>
+                    <td>${diff > 0 ? "+" : ""}${diff}</td>
+                </tr>
+            `;
+        })
+        .join("");
+}
+
+function renderPlayoffGames(data, teams) {
+    const games = getPlayoffGames(data);
+
+    if (games.length === 0) {
+        return `
+            <tr>
+                <td colspan="6">No playoff games available.</td>
+            </tr>
+        `;
+    }
+
+    return games
+        .sort((a, b) => {
+            return (a.day || 0) - (b.day || 0);
+        })
+        .map(game => {
+            const awayTeam = teams[getAwayTid(game)];
+            const homeTeam = teams[getHomeTid(game)];
+
+            return `
+                <tr>
+                    <td>${formatDate(game.day)}</td>
+                    <td>${game.round || game.playoffRound || ""}</td>
+                    <td>
+                        <a href="team.html?tid=${getAwayTid(game)}">
+                            ${teamName(awayTeam)}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="game.html?gid=${game.gid}">
+                            ${getAwayPts(game)} - ${getHomePts(game)}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="team.html?tid=${getHomeTid(game)}">
+                            ${teamName(homeTeam)}
+                        </a>
+                    </td>
+                    <td>${game.overtimes ? `${game.overtimes}OT` : "Final"}</td>
+                </tr>
+            `;
+        })
+        .join("");
+}
+
+function makeTableSortable(table) {
+    const headers = table.querySelectorAll("th");
+
+    headers.forEach((header, index) => {
+        header.addEventListener("click", () => {
+            const tbody = table.querySelector("tbody");
+            const rows = [...tbody.querySelectorAll("tr")];
+
+            const ascending = !header.classList.contains("asc");
+
+            headers.forEach(h => {
+                h.classList.remove("asc");
+                h.classList.remove("desc");
+            });
+
+            header.classList.add(ascending ? "asc" : "desc");
+
+            rows.sort((a, b) => {
+                const aText = a.children[index].innerText.trim();
+                const bText = b.children[index].innerText.trim();
+
+                const aNum = parseFloat(aText.replace(/[^\d.-]/g, ""));
+                const bNum = parseFloat(bText.replace(/[^\d.-]/g, ""));
+
+                if (!isNaN(aNum) && !isNaN(bNum)) {
+                    return ascending ? aNum - bNum : bNum - aNum;
+                }
+
+                return ascending
+                    ? aText.localeCompare(bText)
+                    : bText.localeCompare(aText);
+            });
+
+            tbody.innerHTML = "";
+
+            rows.forEach(row => {
+                tbody.appendChild(row);
+            });
+        });
+    });
+}
+
+loadLeague().then(data => {
+    const teams = buildTeamMap(data);
+
+    document.getElementById("playoffBracket").innerHTML =
+        renderBracket(data, teams);
+
+    document.getElementById("seriesBody").innerHTML =
+        renderSeriesRows(data, teams);
+
+    document.getElementById("playoffTeamsBody").innerHTML =
+        renderPlayoffTeams(data);
+
+    document.getElementById("playoffGamesBody").innerHTML =
+        renderPlayoffGames(data, teams);
+
+    makeTableSortable(
+        document.getElementById("seriesTable")
+    );
+
+    makeTableSortable(
+        document.getElementById("playoffTeamsTable")
+    );
+
+    makeTableSortable(
+        document.getElementById("playoffGamesTable")
+    );
 });
 
 </script>

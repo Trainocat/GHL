@@ -1,294 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GHL</title>
-
-<link rel="stylesheet" href="style.css">
-<script src="helpers.js"></script>
-
-<style>
-
-.home-layout{
-
-display:grid;
-
-grid-template-columns:
-2fr 1fr;
-
-gap:24px;
-
-}
-
-.home-column{
-
-display:flex;
-flex-direction:column;
-
-gap:24px;
-
-}
-
-.home-card{
-
-background:#111827;
-
-border:
-1px solid #334155;
-
-border-radius:14px;
-
-overflow:hidden;
-
-}
-
-.home-card-header{
-
-display:flex;
-align-items:center;
-justify-content:space-between;
-
-padding:16px 20px;
-
-background:#172033;
-
-border-bottom:
-1px solid #334155;
-
-}
-
-.home-card-title{
-
-font-size:28px;
-font-weight:900;
-
-}
-
-.home-card-body{
-
-padding:18px;
-
-}
-
-/* =========================
-   NEWS
-========================= */
-
-.news-list{
-
-display:flex;
-flex-direction:column;
-
-gap:16px;
-
-}
-
-.news-item{
-
-padding-bottom:16px;
-
-border-bottom:
-1px solid #334155;
-
-}
-
-.news-item:last-child{
-
-border-bottom:none;
-padding-bottom:0;
-
-}
-
-.news-headline{
-
-font-size:20px;
-font-weight:800;
-
-line-height:1.4;
-
-margin-bottom:8px;
-
-}
-
-.news-meta{
-
-font-size:14px;
-color:#94a3b8;
-
-margin-bottom:10px;
-
-}
-
-.news-text{
-
-font-size:15px;
-
-line-height:1.6;
-
-color:#e2e8f0;
-
-}
-
-/* =========================
-   GAMES
-========================= */
-
-.games-list{
-
-display:flex;
-flex-direction:column;
-
-gap:12px;
-
-}
-
-.game-card{
-
-display:flex;
-align-items:center;
-justify-content:space-between;
-
-background:#1b2432;
-
-border:
-1px solid #334155;
-
-border-radius:12px;
-
-padding:14px 18px;
-
-transition:.15s;
-
-}
-
-.game-card:hover{
-
-background:#243246;
-
-transform:translateY(-1px);
-
-}
-
-.game-team{
-
-display:flex;
-align-items:center;
-
-gap:12px;
-
-width:220px;
-
-}
-
-.game-team img{
-
-width:40px;
-height:40px;
-
-object-fit:contain;
-
-}
-
-.game-team-name{
-
-font-size:17px;
-font-weight:700;
-
-}
-
-.game-center{
-
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-
-gap:4px;
-
-min-width:160px;
-
-}
-
-.game-score{
-
-font-size:30px;
-font-weight:900;
-
-}
-
-.game-status{
-
-font-size:13px;
-font-weight:700;
-
-color:#94a3b8;
-
-}
-
-.game-date{
-
-font-size:13px;
-
-color:#94a3b8;
-
-}
-
-@media(max-width:1200px){
-
-.home-layout{
-
-grid-template-columns:1fr;
-
-}
-
-}
-
-@media(max-width:850px){
-
-.game-card{
-
-flex-direction:column;
-
-gap:14px;
-
-}
-
-.game-team{
-
-width:100%;
-
-justify-content:center;
-
-}
-
-}
-
-</style>
-
 </head>
+
 <body>
 
 <header>
+<h1>GHL</h1>
 
-<div class="nav">
-
-<a class="brand" href="index.html">
-
-<img src="GHL.png">
-
-<span>GHL</span>
-
-</a>
-
-<div class="links">
-
-<a href="index.html" class="active">Home</a>
+<nav>
+<a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
 <a href="players.html">Players</a>
@@ -296,468 +20,312 @@ justify-content:center;
 <a href="playoffs.html">Playoffs</a>
 <a href="draft.html">Draft</a>
 <a href="finance.html">Finance</a>
-
-</div>
-
-</div>
-
+</nav>
 </header>
 
-<div class="container">
+<main>
 
-<div class="page-title">
+<h1>Global Hockey League</h1>
 
-Global Hockey League
+<section>
+<h2>News</h2>
+<div id="news"></div>
+</section>
 
-</div>
+<section>
+<h2>Recent Games</h2>
+<div id="recentGames"></div>
+</section>
 
-<div class="home-layout">
+<section>
+<h2>Upcoming Games</h2>
+<div id="upcomingGames"></div>
+</section>
 
-<!-- =========================
-     LEFT
-========================= -->
-
-<div class="home-column">
-
-<!-- NEWS -->
-
-<div class="home-card">
-
-<div class="home-card-header">
-
-<div class="home-card-title">
-
-League News
-
-</div>
-
-</div>
-
-<div
-class="home-card-body"
-id="newsFeed">
-
-</div>
-
-</div>
-
-<!-- RECENT GAMES -->
-
-<div class="home-card">
-
-<div class="home-card-header">
-
-<div class="home-card-title">
-
-Recent Games
-
-</div>
-
-</div>
-
-<div
-class="home-card-body"
-id="recentGames">
-
-</div>
-
-</div>
-
-</div>
-
-<!-- =========================
-     RIGHT
-========================= -->
-
-<div class="home-column">
-
-<!-- UPCOMING -->
-
-<div class="home-card">
-
-<div class="home-card-header">
-
-<div class="home-card-title">
-
-Upcoming Games
-
-</div>
-
-</div>
-
-<div
-class="home-card-body"
-id="upcomingGames">
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
+</main>
 
 <script>
-function getPlayerPoints(stats) {
 
+async function loadLeague() {
+    const response = await fetch("league.json");
+    return await response.json();
+}
+
+function currentSeason(data) {
+    return data.gameAttributes?.season || 0;
+}
+
+function currentSeasonStats(player, data) {
+    const season = currentSeason(data);
+
+    const stats = player.stats?.filter(stat => {
+        return stat.season === season && !stat.playoffs;
+    }) || [];
+
+    if (stats.length > 1) {
+        return stats.find(stat => {
+            return stat.tid === player.tid;
+        }) || stats[0];
+    }
+
+    return stats[0] || {};
+}
+
+function currentSeasonTeam(team, data) {
+    const season = currentSeason(data);
+
+    return team.seasons?.find(s => {
+        return s.season === season;
+    }) || {};
+}
+
+function buildTeamMap(data) {
+    const teams = {};
+
+    data.teams.forEach(team => {
+        teams[team.tid] = team;
+    });
+
+    return teams;
+}
+
+function teamName(team) {
+    if (!team) {
+        return "Unknown Team";
+    }
+
+    return `${team.region} ${team.name}`;
+}
+
+function playerName(player) {
+    return `${player.firstName} ${player.lastName}`;
+}
+
+function getGoals(stats) {
     return (
         (stats.evG || 0) +
         (stats.ppG || 0) +
-        (stats.shG || 0) +
+        (stats.shG || 0)
+    );
+}
+
+function getAssists(stats) {
+    return (
         (stats.evA || 0) +
         (stats.ppA || 0) +
         (stats.shA || 0)
     );
+}
 
+function getPoints(stats) {
+    return getGoals(stats) + getAssists(stats);
+}
+
+function getAwayTid(game) {
+    return game.awayTid ?? game.away?.tid ?? game.lost?.tid ?? game.teams?.[0]?.tid;
+}
+
+function getHomeTid(game) {
+    return game.homeTid ?? game.home?.tid ?? game.won?.tid ?? game.teams?.[1]?.tid;
+}
+
+function getAwayPts(game) {
+    return game.awayPts ?? game.away?.pts ?? game.lost?.pts ?? 0;
+}
+
+function getHomePts(game) {
+    return game.homePts ?? game.home?.pts ?? game.won?.pts ?? 0;
 }
 
 function formatDate(day) {
-
-    if (!day) {
-
+    if (day === undefined || day === null) {
         return "";
-
     }
 
-    return new Date(day)
-    .toLocaleDateString(
-        "en-US",
-        {
-
-            weekday:"short",
-            month:"short",
-            day:"numeric"
-
-        }
-    );
-
+    return new Date(day).toLocaleDateString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+    });
 }
 
-loadLeague().then(data => {
+function completedGames(data) {
+    return (data.games || []).filter(game => {
+        return (
+            getAwayTid(game) !== undefined &&
+            getHomeTid(game) !== undefined &&
+            (
+                game.awayPts !== undefined ||
+                game.away?.pts !== undefined ||
+                game.lost?.pts !== undefined
+            ) &&
+            (
+                game.homePts !== undefined ||
+                game.home?.pts !== undefined ||
+                game.won?.pts !== undefined
+            )
+        );
+    });
+}
 
-    const teams = {};
+function upcomingGames(data) {
+    return data.schedule || [];
+}
 
-    data.teams.forEach(team => {
+function getTopPlayers(data, limit = 5) {
+    return [...data.players]
+        .filter(player => {
+            return player.tid >= 0;
+        })
+        .map(player => {
+            const stats = currentSeasonStats(player, data);
 
-        teams[team.tid] = team;
+            return {
+                player,
+                stats,
+                goals: getGoals(stats),
+                assists: getAssists(stats),
+                points: getPoints(stats)
+            };
+        })
+        .sort((a, b) => {
+            return b.points - a.points;
+        })
+        .slice(0, limit);
+}
 
+function getTopTeams(data, limit = 5) {
+    return [...data.teams]
+        .map(team => {
+            const season = currentSeasonTeam(team, data);
+
+            return {
+                team,
+                season,
+                points: season.pts || 0
+            };
+        })
+        .sort((a, b) => {
+            return b.points - a.points;
+        })
+        .slice(0, limit);
+}
+
+function renderNews(data, teams) {
+    const leaders = getTopPlayers(data, 5);
+    const topTeams = getTopTeams(data, 3);
+
+    const items = [];
+
+    leaders.forEach(leader => {
+        const player = leader.player;
+        const team = teams[player.tid];
+
+        items.push(`
+            <article>
+                <h3>
+                    <a href="player.html?pid=${player.pid}">
+                        ${playerName(player)}
+                    </a>
+                </h3>
+
+                <p>
+                    ${teamName(team)} forward has ${leader.points} points,
+                    ${leader.goals} goals, and ${leader.assists} assists this season.
+                </p>
+            </article>
+        `);
     });
 
-    // =========================
-    // NEWS
-    // =========================
+    topTeams.forEach(entry => {
+        const team = entry.team;
+        const season = entry.season;
 
-    const leaders =
-        [...data.players]
-        .sort((a, b) => {
-
-            return (
-                getPlayerPoints(
-                    latestStats(b)
-                )
-            ) - (
-                getPlayerPoints(
-                    latestStats(a)
-                )
-            );
-
-        })
-        .slice(0,6);
-
-    document
-    .getElementById("newsFeed")
-    .innerHTML =
-        `
-        <div class="news-list">
-
-        ${leaders.map(player => {
-
-            const stats =
-                currentSeasonStats(player, data);
-
-            const team =
-                teams[player.tid];
-
-            return `
-
-            <div class="news-item">
-
-                <div class="news-headline">
-
-                    <a
-                    href="player.html?pid=${player.pid}">
-
-                        ${player.firstName}
-                        ${player.lastName}
-
+        items.push(`
+            <article>
+                <h3>
+                    <a href="team.html?tid=${team.tid}">
+                        ${teamName(team)}
                     </a>
+                </h3>
 
-                    continues dominant season
+                <p>
+                    ${teamName(team)} has ${season.pts || 0} points with a
+                    ${season.won || 0}-${season.lost || 0}-${season.otl || 0} record.
+                </p>
+            </article>
+        `);
+    });
 
-                </div>
+    if (items.length === 0) {
+        return "<p>No news available.</p>";
+    }
 
-                <div class="news-meta">
+    return items.join("");
+}
 
-                    ${
-                        team?.region || ""
-                    }
-                    ${
-                        team?.name || ""
-                    }
-
-                </div>
-
-                <div class="news-text">
-
-                    ${
-                        player.firstName
-                    }
-                    ${
-                        player.lastName
-                    }
-
-                    now has
-
-                    <strong>
-
-                        ${
-                            getPlayerPoints(
-                                stats
-                            )
-                        }
-                        points
-
-                    </strong>
-
-                    in
-
-                    ${
-                        stats.gp || 0
-                    }
-                    games this season.
-
-                </div>
-
-            </div>
-
-            `;
-
-        }).join("")}
-
-        </div>
-        `;
-
-    // =========================
-    // RECENT GAMES
-    // =========================
-
-    const completedGames =
-        [...data.games]
-        .filter(game => {
-
-            return (
-                game.homePts !== undefined
-            );
-
-        })
+function renderRecentGames(data, teams) {
+    const games = completedGames(data)
         .slice(-10)
         .reverse();
 
-    document
-    .getElementById("recentGames")
-    .innerHTML =
-        `
-        <div class="games-list">
+    if (games.length === 0) {
+        return "<p>No recent games available.</p>";
+    }
 
-        ${completedGames.map(game => {
+    return games.map(game => {
+        const awayTeam = teams[getAwayTid(game)];
+        const homeTeam = teams[getHomeTid(game)];
 
-            const home =
-                teams[game.homeTid];
-
-            const away =
-                teams[game.awayTid];
-
-            return `
-
-            <a
-            href="game.html?gid=${game.gid}">
-
-                <div class="game-card">
-
-                    <!-- AWAY -->
-
-                    <div class="game-team">
-
-                        <img
-                        src="${
-                            away.imgURL ||
-                            away.imgURLSmall ||
-                            "GHL.png"
-                        }">
-
-                        <div class="game-team-name">
-
-                            ${away.region}
-
-                        </div>
-
-                    </div>
-
-                    <!-- CENTER -->
-
-                    <div class="game-center">
-
-                        <div class="game-score">
-
-                            ${game.awayPts}
-                            -
-                            ${game.homePts}
-
-                        </div>
-
-                        <div class="game-status">
-
-                            FINAL
-
-                        </div>
-
-                        <div class="game-date">
-
-                            ${formatDate(game.day)}
-
-                        </div>
-
-                    </div>
-
-                    <!-- HOME -->
-
-                    <div class="game-team">
-
-                        <img
-                        src="${
-                            home.imgURL ||
-                            home.imgURLSmall ||
-                            "GHL.png"
-                        }">
-
-                        <div class="game-team-name">
-
-                            ${home.region}
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </a>
-
-            `;
-
-        }).join("")}
-
-        </div>
+        return `
+            <p>
+                <a href="game.html?gid=${game.gid}">
+                    ${teamName(awayTeam)}
+                    ${getAwayPts(game)}
+                    -
+                    ${getHomePts(game)}
+                    ${teamName(homeTeam)}
+                </a>
+                ${game.day !== undefined ? ` — ${formatDate(game.day)}` : ""}
+            </p>
         `;
+    }).join("");
+}
 
-    // =========================
-    // UPCOMING GAMES
-    // =========================
+function renderUpcomingGames(data, teams) {
+    const games = upcomingGames(data).slice(0, 10);
 
-    const upcoming =
-        (data.schedule || [])
-        .slice(0,10);
+    if (games.length === 0) {
+        return "<p>No upcoming games scheduled.</p>";
+    }
 
-    document
-    .getElementById("upcomingGames")
-    .innerHTML =
-        `
-        <div class="games-list">
+    return games.map(game => {
+        const awayTeam = teams[getAwayTid(game)];
+        const homeTeam = teams[getHomeTid(game)];
 
-        ${upcoming.map(game => {
-
-            const home =
-                teams[game.homeTid];
-
-            const away =
-                teams[game.awayTid];
-
-            return `
-
-            <div class="game-card">
-
-                <!-- AWAY -->
-
-                <div class="game-team">
-
-                    <img
-                    src="${
-                        away.imgURL ||
-                        away.imgURLSmall ||
-                        "GHL.png"
-                    }">
-
-                    <div class="game-team-name">
-
-                        ${away.region}
-
-                    </div>
-
-                </div>
-
-                <!-- CENTER -->
-
-                <div class="game-center">
-
-                    <div class="game-score">
-
-                        VS
-
-                    </div>
-
-                    <div class="game-status">
-
-                        UPCOMING
-
-                    </div>
-
-                    <div class="game-date">
-
-                        ${formatDate(game.day)}
-
-                    </div>
-
-                </div>
-
-                <!-- HOME -->
-
-                <div class="game-team">
-
-                    <img
-                    src="${
-                        home.imgURL ||
-                        home.imgURLSmall ||
-                        "GHL.png"
-                    }">
-
-                    <div class="game-team-name">
-
-                        ${home.region}
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            `;
-
-        }).join("")}
-
-        </div>
+        return `
+            <p>
+                ${teamName(awayTeam)}
+                @
+                ${teamName(homeTeam)}
+                ${game.day !== undefined ? ` — ${formatDate(game.day)}` : ""}
+            </p>
         `;
+    }).join("");
+}
 
+loadLeague().then(data => {
+    const teams = buildTeamMap(data);
+
+    document.getElementById("news").innerHTML =
+        renderNews(data, teams);
+
+    document.getElementById("recentGames").innerHTML =
+        renderRecentGames(data, teams);
+
+    document.getElementById("upcomingGames").innerHTML =
+        renderUpcomingGames(data, teams);
 });
 
 </script>

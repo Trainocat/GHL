@@ -1,352 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Draft</title>
-
-<link rel="stylesheet" href="style.css">
-<script src="helpers.js"></script>
-
-<style>
-
-.draft-grid{
-
-display:grid;
-
-grid-template-columns:
-1fr 2fr;
-
-gap:24px;
-
-margin-bottom:24px;
-
-}
-
-.draft-card{
-
-background:#111827;
-
-border:
-1px solid #334155;
-
-border-radius:12px;
-
-overflow:hidden;
-
-}
-
-.draft-card-title{
-
-background:#172033;
-
-padding:14px 18px;
-
-font-size:22px;
-font-weight:800;
-
-}
-
-.draft-card-body{
-
-padding:18px;
-
-}
-
-.lottery-row{
-
-display:flex;
-align-items:center;
-justify-content:space-between;
-
-padding:12px 0;
-
-border-bottom:
-1px solid #334155;
-
-}
-
-.lottery-row:last-child{
-
-border-bottom:none;
-
-}
-
-.pick-number{
-
-font-size:24px;
-font-weight:900;
-
-color:#ef4444;
-
-width:50px;
-
-}
-
-.pick-team{
-
-display:flex;
-align-items:center;
-
-gap:10px;
-
-font-weight:700;
-
-flex:1;
-
-}
-
-.pick-team img{
-
-width:34px;
-height:34px;
-
-object-fit:contain;
-
-}
-
-.pick-change{
-
-font-weight:700;
-
-font-size:14px;
-
-}
-
-.pick-up{
-
-color:#22c55e;
-
-}
-
-.pick-down{
-
-color:#ef4444;
-
-}
-
-.table-wrapper{
-
-overflow-x:auto;
-
-background:#111827;
-
-border:
-1px solid #334155;
-
-border-radius:12px;
-
-}
-
-.draft-table{
-
-width:100%;
-
-border-collapse:collapse;
-
-min-width:1200px;
-
-}
-
-.draft-table th,
-.draft-table td{
-
-padding:10px;
-
-border-bottom:
-1px solid #334155;
-
-text-align:left;
-
-white-space:nowrap;
-
-}
-
-.draft-table th{
-
-background:#172033;
-
-cursor:pointer;
-
-position:sticky;
-top:78px;
-
-z-index:2;
-
-}
-
-.draft-table tr:nth-child(even){
-
-background:
-rgba(255,255,255,0.02);
-
-}
-
-.draft-table tr:hover td{
-
-background:#1b2432;
-
-}
-
-.player-cell{
-
-display:flex;
-align-items:center;
-
-gap:10px;
-
-font-weight:700;
-
-}
-
-.player-face{
-
-width:38px;
-height:38px;
-
-border-radius:6px;
-
-background:#1b2432;
-
-padding:2px;
-
-}
-
-.rating{
-
-display:inline-block;
-
-padding:4px 8px;
-
-border-radius:6px;
-
-background:#1e293b;
-
-font-size:13px;
-font-weight:700;
-
-}
-
-@media(max-width:1200px){
-
-.draft-grid{
-
-grid-template-columns:1fr;
-
-}
-
-}
-
-</style>
-
 </head>
+
 <body>
 
 <header>
+<h1>GHL</h1>
 
-<div class="nav">
-
-<a class="brand" href="index.html">
-
-<img src="GHL.png">
-
-<span>GHL</span>
-
-</a>
-
-<div class="links">
-
+<nav>
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
 <a href="players.html">Players</a>
 <a href="schedule.html">Schedule</a>
 <a href="playoffs.html">Playoffs</a>
-<a href="draft.html" class="active">Draft</a>
-
-</div>
-
-</div>
-
+<a href="draft.html">Draft</a>
+<a href="finance.html">Finance</a>
+</nav>
 </header>
 
-<div class="container">
+<main>
 
-<div class="page-title">
+<h1>GHL Draft</h1>
 
-GHL Draft
+<section>
+<h2>Draft Lottery Results</h2>
+<div id="lotteryResults"></div>
+</section>
 
-</div>
+<section>
+<h2>Full Draft Order</h2>
+<div id="draftOrder"></div>
+</section>
 
-<!-- =========================
-     TOP GRID
-========================= -->
+<section>
+<h2>Draft Scouting</h2>
 
-<div class="draft-grid">
-
-<!-- LOTTERY -->
-
-<div class="draft-card">
-
-<div class="draft-card-title">
-
-Draft Lottery Results
-
-</div>
-
-<div
-class="draft-card-body"
-id="lotteryResults">
-
-</div>
-
-</div>
-
-<!-- DRAFT ORDER -->
-
-<div class="draft-card">
-
-<div class="draft-card-title">
-
-First Round Draft Order
-
-</div>
-
-<div
-class="draft-card-body"
-id="draftOrder">
-
-</div>
-
-</div>
-
-</div>
-
-<!-- =========================
-     PROSPECTS
-========================= -->
-
-<div class="table-wrapper">
-
-<table
-class="draft-table"
-id="prospectsTable">
-
+<table id="prospectsTable">
 <thead>
-
 <tr>
-
 <th>Rank</th>
 <th>Player</th>
 <th>Pos</th>
 <th>Age</th>
 <th>OVR</th>
 <th>POT</th>
+<th>Draft Year</th>
+<th>Round</th>
+<th>Pick</th>
 <th>Team</th>
 <th>GP</th>
 <th>G</th>
@@ -354,425 +59,372 @@ id="prospectsTable">
 <th>PTS</th>
 <th>Shots</th>
 <th>+/-</th>
-
 </tr>
-
 </thead>
 
 <tbody id="prospectsBody"></tbody>
-
 </table>
 
-</div>
+</section>
 
-</div>
+</main>
 
 <script>
-function getGoals(stats) {
 
+async function loadLeague() {
+    const response = await fetch("league.json");
+    return await response.json();
+}
+
+function currentSeason(data) {
+    return data.gameAttributes?.season || 0;
+}
+
+function currentSeasonTeam(team, data) {
+    const season = currentSeason(data);
+
+    return team.seasons?.find(s => {
+        return s.season === season;
+    }) || {};
+}
+
+function currentSeasonStats(player, data) {
+    const season = currentSeason(data);
+
+    const stats = player.stats?.filter(stat => {
+        return stat.season === season && !stat.playoffs;
+    }) || [];
+
+    if (stats.length > 1) {
+        return stats.find(stat => {
+            return stat.tid === player.tid;
+        }) || stats[0];
+    }
+
+    return stats[0] || {};
+}
+
+function latestRating(player) {
+    return player.ratings?.[
+        player.ratings.length - 1
+    ] || {};
+}
+
+function getGoals(stats) {
     return (
         (stats.evG || 0) +
         (stats.ppG || 0) +
         (stats.shG || 0)
     );
-
 }
 
 function getAssists(stats) {
-
     return (
         (stats.evA || 0) +
         (stats.ppA || 0) +
         (stats.shA || 0)
     );
-
 }
 
 function getPoints(stats) {
-
-    return (
-        getGoals(stats) +
-        getAssists(stats)
-    );
-
+    return getGoals(stats) + getAssists(stats);
 }
 
-function sortableTable(table) {
+function buildTeamMap(data) {
+    const teams = {};
 
-    const headers =
-        table.querySelectorAll("th");
+    data.teams.forEach(team => {
+        teams[team.tid] = team;
+    });
 
-    headers.forEach((header, index) => {
+    return teams;
+}
 
-        header.onclick = () => {
+function teamName(team) {
+    if (!team) {
+        return "Unknown Team";
+    }
 
-            const tbody =
-                table.querySelector("tbody");
+    return `${team.region} ${team.name}`;
+}
 
-            const rows = [
-                ...tbody.querySelectorAll("tr")
-            ];
+function getDraftPicksForSeason(data) {
+    const season = currentSeason(data);
 
-            const asc =
-                !header.classList.contains(
-                    "asc"
-                );
+    return (data.draftPicks || []).filter(pick => {
+        return pick.season === season || pick.season === season + 1;
+    });
+}
 
-            headers.forEach(h => {
+function getReverseStandingsOrder(data) {
+    return [...data.teams].sort((a, b) => {
+        const aSeason = currentSeasonTeam(a, data);
+        const bSeason = currentSeasonTeam(b, data);
 
-                h.classList.remove(
-                    "asc"
-                );
+        return (aSeason.pts || 0) - (bSeason.pts || 0);
+    });
+}
 
-                h.classList.remove(
-                    "desc"
-                );
+function getFullDraftOrder(data, teams) {
+    const picks = getDraftPicksForSeason(data);
 
-            });
-
-            header.classList.add(
-                asc ? "asc" : "desc"
-            );
-
-            rows.sort((a, b) => {
-
-                const aText =
-                    a.children[index]
-                    .innerText
-                    .replace(/[^\d.-]/g,"");
-
-                const bText =
-                    b.children[index]
-                    .innerText
-                    .replace(/[^\d.-]/g,"");
-
-                const aNum =
-                    parseFloat(aText);
-
-                const bNum =
-                    parseFloat(bText);
-
-                if (
-                    !isNaN(aNum) &&
-                    !isNaN(bNum)
-                ) {
-
-                    return asc
-                        ? aNum - bNum
-                        : bNum - aNum;
-
+    if (picks.length > 0) {
+        return picks
+            .sort((a, b) => {
+                if ((a.round || 0) !== (b.round || 0)) {
+                    return (a.round || 0) - (b.round || 0);
                 }
 
-                return asc
-                    ? a.children[index]
-                        .innerText
-                        .localeCompare(
-                            b.children[index]
-                            .innerText
-                        )
-                    : b.children[index]
-                        .innerText
-                        .localeCompare(
-                            a.children[index]
-                            .innerText
-                        );
+                return (a.pick || 0) - (b.pick || 0);
+            })
+            .map((pick, index) => {
+                const owningTeam = teams[pick.tid];
+                const originalTeam = teams[pick.originalTid];
 
+                return {
+                    round: pick.round || 1,
+                    pick: pick.pick || index + 1,
+                    team: owningTeam || originalTeam,
+                    originalTeam,
+                    note:
+                        owningTeam &&
+                        originalTeam &&
+                        owningTeam.tid !== originalTeam.tid
+                            ? `From ${originalTeam.abbrev}`
+                            : ""
+                };
+            })
+            .filter(item => item.team);
+    }
+
+    const order = [];
+    const reverseStandings = getReverseStandingsOrder(data);
+    const rounds = data.gameAttributes?.numDraftRounds || 7;
+
+    for (let round = 1; round <= rounds; round++) {
+        reverseStandings.forEach((team, index) => {
+            order.push({
+                round,
+                pick: index + 1,
+                team,
+                originalTeam: team,
+                note: "Projected"
+            });
+        });
+    }
+
+    return order;
+}
+
+function getLotteryResults(data, teams, fullDraftOrder) {
+    const lottery =
+        data.draftLotteryResults ||
+        data.lotteryResults ||
+        data.draftLottery ||
+        [];
+
+    if (lottery.length > 0) {
+        return lottery
+            .slice(0, 16)
+            .map((result, index) => {
+                const team =
+                    teams[result.tid] ||
+                    teams[result.originalTid];
+
+                return {
+                    round: 1,
+                    pick:
+                        result.pick ||
+                        result.draftPick ||
+                        index + 1,
+                    team,
+                    originalTeam: team,
+                    note:
+                        result.odds !== undefined
+                            ? `${result.odds}% odds`
+                            : ""
+                };
+            })
+            .filter(item => item.team);
+    }
+
+    return fullDraftOrder
+        .filter(item => item.round === 1)
+        .slice(0, 16);
+}
+
+function renderPick(item) {
+    return `
+        <p>
+            ${item.pick}. ${teamName(item.team)}
+            ${item.note ? ` — ${item.note}` : ""}
+        </p>
+    `;
+}
+
+function renderDraftOrder(order) {
+    const grouped = {};
+
+    order.forEach(item => {
+        if (!grouped[item.round]) {
+            grouped[item.round] = [];
+        }
+
+        grouped[item.round].push(item);
+    });
+
+    return Object.keys(grouped)
+        .sort((a, b) => Number(a) - Number(b))
+        .map(round => {
+            return `
+                <h3>Round ${round}</h3>
+                ${grouped[round].map(renderPick).join("")}
+            `;
+        })
+        .join("");
+}
+
+function getProspects(data) {
+    return [...data.players]
+        .filter(player => {
+            const rating = latestRating(player);
+            const draft = player.draft || {};
+
+            return (
+                player.tid < 0 ||
+                draft.year >= currentSeason(data) ||
+                (rating.pot >= 55 && player.tid < 0)
+            );
+        })
+        .sort((a, b) => {
+            const aRating = latestRating(a);
+            const bRating = latestRating(b);
+
+            return (bRating.pot || 0) - (aRating.pot || 0);
+        });
+}
+
+function renderProspects(data) {
+    const prospects = getProspects(data);
+
+    if (prospects.length === 0) {
+        return `
+            <tr>
+                <td colspan="16">No draft scouting players found.</td>
+            </tr>
+        `;
+    }
+
+    return prospects
+        .slice(0, 200)
+        .map((player, index) => {
+            const rating = latestRating(player);
+            const stats = currentSeasonStats(player, data);
+            const draft = player.draft || {};
+
+            const goals = getGoals(stats);
+            const assists = getAssists(stats);
+            const points = getPoints(stats);
+
+            const age = player.born?.year
+                ? currentSeason(data) - player.born.year
+                : "-";
+
+            return `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>
+                        <a href="player.html?pid=${player.pid}">
+                            ${player.firstName} ${player.lastName}
+                        </a>
+                    </td>
+                    <td>${rating.pos || ""}</td>
+                    <td>${age}</td>
+                    <td>${rating.ovr || 0}</td>
+                    <td>${rating.pot || 0}</td>
+                    <td>${draft.year || "-"}</td>
+                    <td>${draft.round || "-"}</td>
+                    <td>${draft.pick || "-"}</td>
+                    <td>${stats.abbrev || "-"}</td>
+                    <td>${stats.gp || 0}</td>
+                    <td>${goals}</td>
+                    <td>${assists}</td>
+                    <td>${points}</td>
+                    <td>${stats.s || 0}</td>
+                    <td>${stats.pm || 0}</td>
+                </tr>
+            `;
+        })
+        .join("");
+}
+
+function makeTableSortable(table) {
+    const headers = table.querySelectorAll("th");
+
+    headers.forEach((header, index) => {
+        header.addEventListener("click", () => {
+            const tbody = table.querySelector("tbody");
+            const rows = [...tbody.querySelectorAll("tr")];
+
+            const ascending = !header.classList.contains("asc");
+
+            headers.forEach(h => {
+                h.classList.remove("asc");
+                h.classList.remove("desc");
+            });
+
+            header.classList.add(ascending ? "asc" : "desc");
+
+            rows.sort((a, b) => {
+                const aText = a.children[index].innerText.trim();
+                const bText = b.children[index].innerText.trim();
+
+                const aNum = parseFloat(aText.replace(/[^\d.-]/g, ""));
+                const bNum = parseFloat(bText.replace(/[^\d.-]/g, ""));
+
+                if (!isNaN(aNum) && !isNaN(bNum)) {
+                    return ascending ? aNum - bNum : bNum - aNum;
+                }
+
+                return ascending
+                    ? aText.localeCompare(bText)
+                    : bText.localeCompare(aText);
             });
 
             tbody.innerHTML = "";
 
             rows.forEach(row => {
-
                 tbody.appendChild(row);
-
             });
-
-        };
-
+        });
     });
-
 }
 
 loadLeague().then(data => {
+    const teams = buildTeamMap(data);
 
-    const teams = {};
+    const fullDraftOrder = getFullDraftOrder(data, teams);
 
-    data.teams.forEach(team => {
-
-        teams[team.tid] = team;
-
-    });
-
-    // =========================
-    // DRAFT ORDER
-    // =========================
-
-    const draftTeams =
-        [...data.teams]
-        .sort((a, b) => {
-
-            return (
-                (a.seasons?.at(-1)?.pts || 0)
-                -
-                (b.seasons?.at(-1)?.pts || 0)
-            );
-
-        });
-
-    // LOTTERY RESULTS
-
-    document
-    .getElementById("lotteryResults")
-    .innerHTML =
-        draftTeams
-        .slice(0,10)
-        .map((team, index) => {
-
-            return `
-
-            <div class="lottery-row">
-
-                <div class="pick-number">
-
-                    ${index + 1}
-
-                </div>
-
-                <div class="pick-team">
-
-                    <img
-                    src="${
-                        team.imgURL ||
-                        team.imgURLSmall ||
-                        "GHL.png"
-                    }">
-
-                    <span>
-
-                        ${team.region}
-                        ${team.name}
-
-                    </span>
-
-                </div>
-
-                <div class="pick-change pick-up">
-
-                    ▲ ${Math.floor(
-                        0 * 3
-                    )}
-
-                </div>
-
-            </div>
-
-            `;
-
-        }).join("");
-
-    // DRAFT ORDER
-
-    document
-    .getElementById("draftOrder")
-    .innerHTML =
-        draftTeams
-        .slice(0,16)
-        .map((team, index) => {
-
-            return `
-
-            <div class="lottery-row">
-
-                <div class="pick-number">
-
-                    ${index + 1}
-
-                </div>
-
-                <div class="pick-team">
-
-                    <img
-                    src="${
-                        team.imgURL ||
-                        team.imgURLSmall ||
-                        "GHL.png"
-                    }">
-
-                    <span>
-
-                        ${team.region}
-                        ${team.name}
-
-                    </span>
-
-                </div>
-
-            </div>
-
-            `;
-
-        }).join("");
-
-    // =========================
-    // PROSPECTS
-    // =========================
-
-    const prospects =
-        [...data.players]
-        .filter(player => {
-
-            const rating =
-                latestRating(player);
-
-            return (
-                player.tid < 0 ||
-                rating.pot >= 60
-            );
-
-        })
-        .sort((a, b) => {
-
-            return (
-                latestRating(b).pot || 0
-            ) - (
-                latestRating(a).pot || 0
-            );
-
-        });
-
-    document
-    .getElementById("prospectsBody")
-    .innerHTML =
-        prospects
-        .slice(0,100)
-        .map((player, index) => {
-
-            const rating =
-                latestRating(player);
-
-            const stats =
-                currentSeasonStats(player, data);
-
-            return `
-
-            <tr>
-
-                <td>
-
-                    ${index + 1}
-
-                </td>
-
-                <td>
-
-                    <a
-                    href="player.html?pid=${player.pid}">
-
-                        <div class="player-cell">
-
-                            <img
-                            class="player-face"
-                            src="https://zengm.com/files/facegen/default.svg">
-
-                            <span>
-
-                                ${player.firstName}
-                                ${player.lastName}
-
-                            </span>
-
-                        </div>
-
-                    </a>
-
-                </td>
-
-                <td>
-
-                    ${rating.pos || ""}
-
-                </td>
-
-                <td>
-
-                    ${
-                        data.gameAttributes.season
-                        -
-                        player.born.year
-                    }
-
-                </td>
-
-                <td>
-
-                    <span class="rating">
-
-                        ${rating.ovr || 0}
-
-                    </span>
-
-                </td>
-
-                <td>
-
-                    ${rating.pot || 0}
-
-                </td>
-
-                <td>
-
-                    ${stats.abbrev || "-"}
-
-                </td>
-
-                <td>
-
-                    ${stats.gp || 0}
-
-                </td>
-
-                <td>
-
-                    ${getGoals(stats)}
-
-                </td>
-
-                <td>
-
-                    ${getAssists(stats)}
-
-                </td>
-
-                <td>
-
-                    ${getPoints(stats)}
-
-                </td>
-
-                <td>
-
-                    ${stats.s || 0}
-
-                </td>
-
-                <td>
-
-                    ${stats.pm || 0}
-
-                </td>
-
-            </tr>
-
-            `;
-
-        }).join("");
-
-    sortableTable(
-        document.getElementById(
-            "prospectsTable"
-        )
+    const lotteryResults = getLotteryResults(
+        data,
+        teams,
+        fullDraftOrder
     );
 
+    document.getElementById("lotteryResults").innerHTML =
+        lotteryResults.map(renderPick).join("");
+
+    document.getElementById("draftOrder").innerHTML =
+        fullDraftOrder.length
+            ? renderDraftOrder(fullDraftOrder)
+            : "<p>No draft order data found.</p>";
+
+    document.getElementById("prospectsBody").innerHTML =
+        renderProspects(data);
+
+    makeTableSortable(
+        document.getElementById("prospectsTable")
+    );
 });
 
 </script>

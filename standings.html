@@ -1,35 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Standings</title>
-
-<link rel="stylesheet" href="style.css">
-<script src="helpers.js"></script>
-
 </head>
+
 <body>
 
 <header>
+<h1>GHL</h1>
 
-<div class="nav">
-
-<a class="brand" href="index.html">
-
-<img src="GHL.png">
-
-<span>GHL</span>
-
-</a>
-
-<div class="links">
-
+<nav>
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
@@ -38,421 +20,342 @@ content="width=device-width, initial-scale=1.0">
 <a href="playoffs.html">Playoffs</a>
 <a href="draft.html">Draft</a>
 <a href="finance.html">Finance</a>
-
-</div>
-
-</div>
-
+</nav>
 </header>
 
-<div class="container">
+<main>
 
-<div class="standings-header">
+<h1>Standings</h1>
 
-<div class="page-title">
+<section>
+<h2>League Standings</h2>
 
-Standings
+<table id="leagueStandingsTable">
+<thead>
+<tr>
+<th>Team</th>
+<th>GP</th>
+<th>W</th>
+<th>L</th>
+<th>OTL</th>
+<th>PTS</th>
+<th>PTS%</th>
+<th>GF</th>
+<th>GA</th>
+<th>DIFF</th>
+<th>Streak</th>
+</tr>
+</thead>
 
-</div>
+<tbody id="leagueStandingsBody"></tbody>
+</table>
+</section>
 
-<div class="filters">
+<section>
+<h2>Conference Standings</h2>
 
-<button
-class="mode active"
-data-mode="league">
+<div id="conferenceStandings"></div>
+</section>
 
-League
+<section>
+<h2>Division Standings</h2>
 
-</button>
+<div id="divisionStandings"></div>
+</section>
 
-<button
-class="mode"
-data-mode="conference">
-
-Conference
-
-</button>
-
-<button
-class="mode"
-data-mode="division">
-
-Division
-
-</button>
-
-</div>
-
-</div>
-
-<div id="standingsContent"></div>
-
-</div>
+</main>
 
 <script>
-function sortTable(table, column) {
 
-    const tbody =
-        table.querySelector("tbody");
-
-    const rows = [
-        ...tbody.querySelectorAll("tr")
-    ];
-
-    const current =
-        table.dataset.sortDir || "desc";
-
-    const asc =
-        current !== "asc";
-
-    table.dataset.sortDir =
-        asc ? "asc" : "desc";
-
-    rows.sort((a, b) => {
-
-        const aText =
-            a.children[column]
-            .innerText
-            .trim();
-
-        const bText =
-            b.children[column]
-            .innerText
-            .trim();
-
-        const aNum =
-            parseFloat(aText);
-
-        const bNum =
-            parseFloat(bText);
-
-        if (
-            !isNaN(aNum) &&
-            !isNaN(bNum)
-        ) {
-
-            return asc
-                ? aNum - bNum
-                : bNum - aNum;
-
-        }
-
-        return asc
-            ? aText.localeCompare(bText)
-            : bText.localeCompare(aText);
-
-    });
-
-    tbody.innerHTML = "";
-
-    rows.forEach(row => {
-
-        tbody.appendChild(row);
-
-    });
-
+async function loadLeague() {
+    const response = await fetch("league.json");
+    return await response.json();
 }
 
-function createStandingsTable(
-    title,
-    teams
-) {
+function currentSeason(data) {
+    return data.gameAttributes?.season || 0;
+}
 
-    return `
+function currentSeasonTeam(team, data) {
+    const season = currentSeason(data);
 
-    <div class="standings-section">
+    return team.seasons?.find(s => {
+        return s.season === season;
+    }) || {};
+}
 
-        <h2 class="standings-group-title">
+function teamName(team) {
+    if (!team) {
+        return "Unknown Team";
+    }
 
-            ${title}
+    return `${team.region} ${team.name}`;
+}
 
-        </h2>
+function getConferences(data) {
+    return data.gameAttributes?.confs || [];
+}
 
-        <table class="sortable standings-table">
+function getDivisions(data) {
+    return data.gameAttributes?.divs || [];
+}
 
-            <thead>
+function conferenceName(data, cid) {
+    const conference = getConferences(data).find(conf => {
+        return conf.cid === cid;
+    });
 
+    return conference?.name || "";
+}
+
+function divisionName(data, did) {
+    const division = getDivisions(data).find(div => {
+        return div.did === did;
+    });
+
+    return division?.name || "";
+}
+
+function gamesPlayed(season) {
+    return (
+        (season.won || 0) +
+        (season.lost || 0) +
+        (season.otl || 0)
+    );
+}
+
+function pointsPct(season) {
+    const gp = gamesPlayed(season);
+
+    if (!gp) {
+        return ".000";
+    }
+
+    return (
+        (season.pts || 0) /
+        (gp * 2)
+    ).toFixed(3);
+}
+
+function goalDiff(season) {
+    return (
+        (season.gf || 0) -
+        (season.ga || 0)
+    );
+}
+
+function sortTeamsByStandings(data, teams) {
+    return [...teams].sort((a, b) => {
+        const aSeason = currentSeasonTeam(a, data);
+        const bSeason = currentSeasonTeam(b, data);
+
+        const bPts = bSeason.pts || 0;
+        const aPts = aSeason.pts || 0;
+
+        if (bPts !== aPts) {
+            return bPts - aPts;
+        }
+
+        const bPct = Number(pointsPct(bSeason));
+        const aPct = Number(pointsPct(aSeason));
+
+        if (bPct !== aPct) {
+            return bPct - aPct;
+        }
+
+        const bWins = bSeason.won || 0;
+        const aWins = aSeason.won || 0;
+
+        if (bWins !== aWins) {
+            return bWins - aWins;
+        }
+
+        return goalDiff(bSeason) - goalDiff(aSeason);
+    });
+}
+
+function renderStandingsRows(data, teams) {
+    if (!teams || teams.length === 0) {
+        return `
+            <tr>
+                <td colspan="11">No standings available.</td>
+            </tr>
+        `;
+    }
+
+    return sortTeamsByStandings(data, teams)
+        .map(team => {
+            const season = currentSeasonTeam(team, data);
+            const gp = gamesPlayed(season);
+            const diff = goalDiff(season);
+
+            return `
                 <tr>
-
-                    <th>Team</th>
-                    <th>W</th>
-                    <th>L</th>
-                    <th>OTL</th>
-                    <th>PTS</th>
-                    <th>PTS%</th>
-                    <th>GF</th>
-                    <th>GA</th>
-                    <th>DIFF</th>
-                    <th>STREAK</th>
-
+                    <td>
+                        <a href="team.html?tid=${team.tid}">
+                            ${teamName(team)}
+                        </a>
+                    </td>
+                    <td>${gp}</td>
+                    <td>${season.won || 0}</td>
+                    <td>${season.lost || 0}</td>
+                    <td>${season.otl || 0}</td>
+                    <td>${season.pts || 0}</td>
+                    <td>${pointsPct(season)}</td>
+                    <td>${season.gf || 0}</td>
+                    <td>${season.ga || 0}</td>
+                    <td>${diff > 0 ? "+" : ""}${diff}</td>
+                    <td>${season.streak || "-"}</td>
                 </tr>
+            `;
+        })
+        .join("");
+}
 
-            </thead>
+function renderConferenceStandings(data) {
+    const conferences = getConferences(data);
 
-            <tbody>
+    if (conferences.length === 0) {
+        return "<p>No conferences found.</p>";
+    }
 
-                ${teams.map(team => {
+    return conferences.map(conf => {
+        const teams = data.teams.filter(team => {
+            return team.cid === conf.cid;
+        });
 
-                    const s =
-                        currentSeasonTeam(team, data);
+        return `
+            <section>
+                <h3>${conf.name}</h3>
 
-                    const games =
-                        (s.won || 0) +
-                        (s.lost || 0) +
-                        (s.otl || 0);
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>GP</th>
+                            <th>W</th>
+                            <th>L</th>
+                            <th>OTL</th>
+                            <th>PTS</th>
+                            <th>PTS%</th>
+                            <th>GF</th>
+                            <th>GA</th>
+                            <th>DIFF</th>
+                            <th>Streak</th>
+                        </tr>
+                    </thead>
 
-                    const ptsPct =
-                        games > 0
-                        ? (
-                            (s.pts || 0) /
-                            (games * 2)
-                        ).toFixed(3)
-                        : ".000";
+                    <tbody>
+                        ${renderStandingsRows(data, teams)}
+                    </tbody>
+                </table>
+            </section>
+        `;
+    }).join("");
+}
 
-                    const diff =
-                        (s.gf || 0) -
-                        (s.ga || 0);
+function renderDivisionStandings(data) {
+    const divisions = getDivisions(data);
 
-                    return `
+    if (divisions.length === 0) {
+        return "<p>No divisions found.</p>";
+    }
 
-                    <tr>
+    return divisions.map(div => {
+        const teams = data.teams.filter(team => {
+            return team.did === div.did;
+        });
 
-                        <td>
+        return `
+            <section>
+                <h3>${div.name}</h3>
 
-                            <a
-                            href="team.html?tid=${team.tid}">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>GP</th>
+                            <th>W</th>
+                            <th>L</th>
+                            <th>OTL</th>
+                            <th>PTS</th>
+                            <th>PTS%</th>
+                            <th>GF</th>
+                            <th>GA</th>
+                            <th>DIFF</th>
+                            <th>Streak</th>
+                        </tr>
+                    </thead>
 
-                                <div class="teamcell">
+                    <tbody>
+                        ${renderStandingsRows(data, teams)}
+                    </tbody>
+                </table>
+            </section>
+        `;
+    }).join("");
+}
 
-                                    <img
-                                    class="logo"
-                                    src="${getTeamLogo(team)}">
+function makeTableSortable(table) {
+    const headers = table.querySelectorAll("th");
 
-                                    <span>
+    headers.forEach((header, index) => {
+        header.addEventListener("click", () => {
+            const tbody = table.querySelector("tbody");
 
-                                        ${getTeamName(team)}
+            if (!tbody) {
+                return;
+            }
 
-                                    </span>
+            const rows = [...tbody.querySelectorAll("tr")];
 
-                                </div>
+            const ascending = !header.classList.contains("asc");
 
-                            </a>
+            headers.forEach(h => {
+                h.classList.remove("asc");
+                h.classList.remove("desc");
+            });
 
-                        </td>
+            header.classList.add(ascending ? "asc" : "desc");
 
-                        <td>${s.won || 0}</td>
-                        <td>${s.lost || 0}</td>
-                        <td>${s.otl || 0}</td>
-                        <td>${s.pts || 0}</td>
+            rows.sort((a, b) => {
+                const aText = a.children[index].innerText.trim();
+                const bText = b.children[index].innerText.trim();
 
-                        <td>
+                const aNum = parseFloat(aText.replace(/[^\d.-]/g, ""));
+                const bNum = parseFloat(bText.replace(/[^\d.-]/g, ""));
 
-                            ${ptsPct}
+                if (!isNaN(aNum) && !isNaN(bNum)) {
+                    return ascending ? aNum - bNum : bNum - aNum;
+                }
 
-                        </td>
+                return ascending
+                    ? aText.localeCompare(bText)
+                    : bText.localeCompare(aText);
+            });
 
-                        <td>${s.gf || 0}</td>
-                        <td>${s.ga || 0}</td>
+            tbody.innerHTML = "";
 
-                        <td class="${
-                            diff > 0
-                            ? "positive"
-                            : diff < 0
-                            ? "negative"
-                            : ""
-                        }">
-
-                            ${diff > 0 ? "+" : ""}
-                            ${diff}
-
-                        </td>
-
-                        <td>
-
-                            ${s.streak || "-"}
-
-                        </td>
-
-                    </tr>
-
-                    `;
-
-                }).join("")}
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-    `;
-
+            rows.forEach(row => {
+                tbody.appendChild(row);
+            });
+        });
+    });
 }
 
 loadLeague().then(data => {
+    document.getElementById("leagueStandingsBody").innerHTML =
+        renderStandingsRows(data, data.teams);
 
-    const standings =
-        document.getElementById(
-            "standingsContent"
-        );
+    document.getElementById("conferenceStandings").innerHTML =
+        renderConferenceStandings(data);
 
-    const conferences =
-        data.gameAttributes
-        ?.confs || [];
+    document.getElementById("divisionStandings").innerHTML =
+        renderDivisionStandings(data);
 
-    const divisions =
-        data.gameAttributes
-        ?.divs || [];
-
-    let mode = "league";
-
-    function render() {
-
-        const sortedTeams =
-            [...data.teams]
-            .sort((a, b) => {
-
-                return (
-                    latestSeason(b).pts || 0
-                ) - (
-                    latestSeason(a).pts || 0
-                );
-
-            });
-
-        let html = "";
-
-        // =====================
-        // LEAGUE
-        // =====================
-
-        if (mode === "league") {
-
-            html += createStandingsTable(
-                "League",
-                sortedTeams
-            );
-
-        }
-
-        // =====================
-        // CONFERENCE
-        // =====================
-
-        if (mode === "conference") {
-
-            conferences.forEach(conf => {
-
-                const teams =
-                    sortedTeams.filter(team => {
-
-                        return (
-                            team.cid === conf.cid
-                        );
-
-                    });
-
-                html += createStandingsTable(
-                    conf.name,
-                    teams
-                );
-
-            });
-
-        }
-
-        // =====================
-        // DIVISION
-        // =====================
-
-        if (mode === "division") {
-
-            divisions.forEach(div => {
-
-                const teams =
-                    sortedTeams.filter(team => {
-
-                        return (
-                            team.did === div.did
-                        );
-
-                    });
-
-                html += createStandingsTable(
-                    div.name,
-                    teams
-                );
-
-            });
-
-        }
-
-        standings.innerHTML = html;
-
-        // =====================
-        // SORTABLE TABLES
-        // =====================
-
-        document
-        .querySelectorAll(
-            ".sortable"
-        )
-        .forEach(table => {
-
-            table
-            .querySelectorAll("th")
-            .forEach((th, index) => {
-
-                th.onclick = () => {
-
-                    sortTable(
-                        table,
-                        index
-                    );
-
-                };
-
-            });
-
-        });
-
-    }
-
-    render();
-
-    // =====================
-    // FILTER BUTTONS
-    // =====================
-
-    document
-    .querySelectorAll(".mode")
-    .forEach(button => {
-
-        button.onclick = () => {
-
-            document
-            .querySelectorAll(".mode")
-            .forEach(btn => {
-
-                btn.classList.remove(
-                    "active"
-                );
-
-            });
-
-            button.classList.add(
-                "active"
-            );
-
-            mode =
-                button.dataset.mode;
-
-            render();
-
-        };
-
+    document.querySelectorAll("table").forEach(table => {
+        makeTableSortable(table);
     });
-
 });
 
 </script>
