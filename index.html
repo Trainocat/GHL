@@ -1,12 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GHL Game Debug</title>
+  <style>
+    body { font-family: Arial; background:#0b1020; color:white; padding:20px; }
+    pre { background:#111; padding:10px; overflow:auto; }
+    .box { padding:8px; border-bottom:1px solid #27314f; }
+  </style>
+</head>
+<body>
+
+<h1>RAW GAMES DEBUG</h1>
+
+<div id="out">Loading...</div>
+
+<script>
 fetch("league.json")
 .then(r => r.json())
 .then(data => {
 
-  console.log("ALL KEYS:", Object.keys(data));
-  console.log("GAMES ARRAY:", data.games);
+  const games = data.games;
 
-  document.body.innerHTML = `
-    <h2>Games Debug</h2>
-    <pre>${JSON.stringify(data.games?.[0], null, 2)}</pre>
-  `;
+  document.getElementById("out").innerHTML =
+    "<h3>First 5 raw game objects:</h3>" +
+    games.slice(0,5).map(g =>
+      `<pre>${JSON.stringify(g, null, 2)}</pre>`
+    ).join("");
+
 });
+</script>
+
+</body>
+</html>
