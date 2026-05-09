@@ -1,29 +1,206 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>GHL Debug Final</title>
+  <title>GHL Home</title>
+
   <style>
-    body { font-family: Arial; background:#0b1020; color:white; padding:20px; }
-    pre { background:#111; padding:10px; overflow:auto; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b1020;
+      color: white;
+    }
+
+    header {
+      background: #11182d;
+      padding: 15px 25px;
+      border-bottom: 2px solid #1f2b4d;
+    }
+
+    nav {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 15px;
+    }
+
+    .game-card {
+      background: #151c33;
+      border-radius: 12px;
+      padding: 15px;
+      border: 1px solid #243152;
+      transition: 0.2s;
+    }
+
+    .game-card:hover {
+      transform: translateY(-2px);
+      border-color: #3b82f6;
+    }
+
+    .team-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+    }
+
+    .team-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: bold;
+    }
+
+    .team-logo {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+      padding: 2px;
+    }
+
+    .score {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .winner {
+      color: #4ade80;
+    }
+
+    .loser {
+      color: #f87171;
+      opacity: 0.8;
+    }
+
+    .meta {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #9ca3af;
+      border-top: 1px solid #243152;
+      padding-top: 8px;
+    }
   </style>
 </head>
+
 <body>
 
-<h1>FINAL GAME STRUCTURE CHECK</h1>
+<header>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="standings.html">Standings</a>
+    <a href="teams.html">Teams</a>
+    <a href="players.html">Players</a>
+    <a href="schedule.html">Schedule</a>
+    <a href="playoffs.html">Playoffs</a>
+  </nav>
+</header>
 
-<div id="out">Loading...</div>
+<div class="container">
+
+  <h1>Latest Games</h1>
+
+  <div id="games" class="games-grid">
+    Loading...
+  </div>
+
+</div>
 
 <script>
 fetch("league.json")
 .then(r => r.json())
 .then(data => {
 
-  const g = data.games?.[0];
+  const teams = data.teams || [];
+  const games = data.games || [];
 
-  document.getElementById("out").innerHTML =
-    "<h3>First game object (RAW):</h3>" +
-    "<pre>" + JSON.stringify(g, null, 2) + "</pre>";
+  // TEAM LOOKUP
+  const teamMap = {};
 
+  teams.forEach(t => {
+    teamMap[t.tid] = {
+      name: `${t.region} ${t.name}`.trim(),
+      logo: t.imgURL
+    };
+  });
+
+  // SORT NEWEST FIRST
+  games.sort((a, b) => (b.day || 0) - (a.day || 0));
+
+  const html = games.slice(0, 20).map(g => {
+
+    const winTid = g.won?.tid;
+    const loseTid = g.lost?.tid;
+
+    const winner = teamMap[winTid];
+    const loser = teamMap[loseTid];
+
+    if (!winner || !loser) return "";
+
+    const winPts = g.won?.pts ?? 0;
+    const losePts = g.lost?.pts ?? 0;
+
+    return `
+      <div class="game-card">
+
+        <div class="team-row winner">
+          <div class="team-info">
+            <img class="team-logo" src="${winner.logo}">
+            ${winner.name}
+          </div>
+
+          <div class="score">
+            ${winPts}
+          </div>
+        </div>
+
+        <div class="team-row loser">
+          <div class="team-info">
+            <img class="team-logo" src="${loser.logo}">
+            ${loser.name}
+          </div>
+
+          <div class="score">
+            ${losePts}
+          </div>
+        </div>
+
+        <div class="meta">
+          Season ${g.season} • Day ${g.day}
+        </div>
+
+      </div>
+    `;
+  }).join("");
+
+  document.getElementById("games").innerHTML = html;
+
+})
+.catch(err => {
+  document.getElementById("games").innerHTML =
+    "Error loading league: " + err.message;
 });
 </script>
 
