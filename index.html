@@ -1,80 +1,16 @@
-
-<!DOCTYPE html>
-<html>
-<head>
-<title>GHL Home</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-
-<header>
-<div class="navbar">
-<div class="logo">GHL</div>
-
-<nav>
-<a href="index.html">Home</a>
-<a href="standings.html">Standings</a>
-<a href="teams.html">Teams</a>
-<a href="players.html">Players</a>
-<a href="schedule.html">Schedule</a>
-<a href="playoffs.html">Playoffs</a>
-</nav>
-
-</div>
-</header>
-
-
-<div class="page">
-
-<div class="page-title">Latest Games</div>
-
-<div class="games-grid" id="games"></div>
-
-</div>
-
+<!DOCTYPE html><html><head><title>GHL Home</title><link rel="stylesheet" href="style.css"></head><body>
+<header><div class="navbar"><div class="logo">GHL</div><nav>
+<a href="index.html">Home</a><a href="standings.html">Standings</a><a href="teams.html">Teams</a><a href="players.html">Players</a>
+</nav></div></header>
+<div class="page"><div class="page-title">Latest Games</div><div class="games-grid" id="games"></div></div>
 <script>
-fetch("league.json")
-.then(r=>r.json())
-.then(data=>{
-
-const teamMap = {};
-
-data.teams.forEach(t=>{
-teamMap[t.tid] = t;
-});
-
-data.games.sort((a,b)=>b.day-a.day);
-
-document.getElementById("games").innerHTML =
-data.games.slice(0,20).map(g=>`
+fetch("league.json").then(r=>r.json()).then(data=>{
+const tm={}; data.teams.forEach(t=>tm[t.tid]=t);
+document.getElementById("games").innerHTML=[...data.games].reverse().slice(0,20).map(g=>`
 <div class="game-card">
-
-<div class="team-row winner">
-<div class="team-left">
-<img class="team-logo" src="${teamMap[g.won.tid].imgURL || ''}">
-<div>${teamMap[g.won.tid].region} ${teamMap[g.won.tid].name}</div>
-</div>
-<div class="score">${g.won.pts}</div>
-</div>
-
-<div class="team-row loser">
-<div class="team-left">
-<img class="team-logo" src="${teamMap[g.lost.tid].imgURL || ''}">
-<div>${teamMap[g.lost.tid].region} ${teamMap[g.lost.tid].name}</div>
-</div>
-<div class="score">${g.lost.pts}</div>
-</div>
-
-<div class="meta">
-Season ${g.season} • Day ${g.day}
-</div>
-
-</div>
-`).join("");
-
+<div class="team-row"><div class="team-left"><img src="${tm[g.won.tid].imgURL||''}"><div>${tm[g.won.tid].region} ${tm[g.won.tid].name}</div></div><div class="score">${g.won.pts}</div></div>
+<div class="team-row"><div class="team-left"><img src="${tm[g.lost.tid].imgURL||''}"><div>${tm[g.lost.tid].region} ${tm[g.lost.tid].name}</div></div><div class="score">${g.lost.pts}</div></div>
+<div class="meta">Season ${g.season} • Day ${g.day}</div>
+</div>`).join('');
 });
-</script>
-
-</body>
-</html>
+</script></body></html>
