@@ -1,32 +1,104 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>GHL Game Debug</title>
+  <title>GHL Home</title>
   <style>
-    body { font-family: Arial; background:#0b1020; color:white; padding:20px; }
-    pre { background:#111; padding:10px; overflow:auto; }
-    .box { padding:8px; border-bottom:1px solid #27314f; }
+    body {
+      font-family: Arial;
+      background: #0b1020;
+      color: white;
+      padding: 20px;
+    }
+
+    nav a {
+      color: white;
+      margin-right: 10px;
+      text-decoration: none;
+    }
+
+    .game {
+      padding: 8px;
+      border-bottom: 1px solid #27314f;
+    }
   </style>
 </head>
 <body>
 
-<h1>RAW GAMES DEBUG</h1>
+<nav>
+  <a href="index.html">Home</a>
+  <a href="standings.html">Standings</a>
+  <a href="teams.html">Teams</a>
+  <a href="players.html">Players</a>
+  <a href="schedule.html">Schedule</a>
+  <a href="playoffs.html">Playoffs</a>
+</nav>
 
-<div id="out">Loading...</div>
+<h1>Latest Games</h1>
+
+<div id="games">Loading...</div>
 
 <script>
 fetch("league.json")
 .then(r => r.json())
 .then(data => {
 
-  const games = data.games;
+  const games = data.games || [];
+  const teams = data.teams || [];
 
-  document.getElementById("out").innerHTML =
-    "<h3>First 5 raw game objects:</h3>" +
-    games.slice(0,5).map(g =>
-      `<pre>${JSON.stringify(g, null, 2)}</pre>`
-    ).join("");
+  // Build team map safely
+  const teamMap = {};
+  teams.forEach(t => {
+    const name = ((t.region || "") + " " + (t.name || "")).trim();
+    teamMap[t.id] = name || t.name || t.id;
+  });
 
+  function getTeamName(id) {
+    return teamMap[id] || "Team " + id;
+  }
+
+  function getAway(g) {
+    return getTeamName(
+      g.awayTid ?? g.tids?.[0] ?? g.t?.[0] ?? g.awayTeamId
+    );
+  }
+
+  function getHome(g) {
+    return getTeamName(
+      g.homeTid ?? g.tids?.[1] ?? g.t?.[1] ?? g.homeTeamId
+    );
+  }
+
+  function getAwayScore(g) {
+    return g.awayScore ??
+           g.scores?.[0] ??
+           g.s?.[0] ??
+           "–";
+  }
+
+  function getHomeScore(g) {
+    return g.homeScore ??
+           g.scores?.[1] ??
+           g.s?.[1] ??
+           "–";
+  }
+
+  const html = games.slice(0, 25).map(g => {
+    const away = getAway(g);
+    const home = getHome(g);
+    const as = getAwayScore(g);
+    const hs = getHomeScore(g);
+
+    return `<div class="game">
+      ${away} ${as} - ${hs} ${home}
+    </div>`;
+  }).join("");
+
+  document.getElementById("games").innerHTML = html;
+
+})
+.catch(err => {
+  document.getElementById("games").innerHTML =
+    "Error: " + err.message;
 });
 </script>
 
