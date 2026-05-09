@@ -1,41 +1,81 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>GHL Home</title>
-  <style>
-    body {
-      font-family: Arial;
-      background: #0b1020;
-      color: white;
-      padding: 20px;
-    }
+<title>GHL - Home</title>
 
-    nav a {
-      color: white;
-      margin-right: 10px;
-      text-decoration: none;
-    }
+<style>
+body {
+  font-family: Arial;
+  background: #0b1020;
+  color: white;
+  margin: 0;
+}
 
-    .game {
-      padding: 8px;
-      border-bottom: 1px solid #27314f;
-    }
-  </style>
+header {
+  padding: 15px;
+  background: #151c33;
+}
+
+nav a {
+  color: white;
+  margin-right: 12px;
+  text-decoration: none;
+}
+
+.container {
+  padding: 20px;
+}
+
+.game-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: #151c33;
+  margin-bottom: 10px;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.team {
+  width: 40%;
+  font-weight: bold;
+}
+
+.score {
+  width: 20%;
+  text-align: center;
+  font-size: 20px;
+}
+
+.winner {
+  color: #4ade80;
+}
+
+.loser {
+  color: #f87171;
+}
+</style>
+
 </head>
+
 <body>
 
-<nav>
-  <a href="index.html">Home</a>
-  <a href="standings.html">Standings</a>
-  <a href="teams.html">Teams</a>
-  <a href="players.html">Players</a>
-  <a href="schedule.html">Schedule</a>
-  <a href="playoffs.html">Playoffs</a>
-</nav>
+<header>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="standings.html">Standings</a>
+    <a href="teams.html">Teams</a>
+    <a href="players.html">Players</a>
+    <a href="schedule.html">Schedule</a>
+    <a href="playoffs.html">Playoffs</a>
+  </nav>
+</header>
 
-<h1>Latest Games</h1>
-
-<div id="games">Loading...</div>
+<div class="container">
+  <h1>Latest Games</h1>
+  <div id="games">Loading...</div>
+</div>
 
 <script>
 fetch("league.json")
@@ -45,60 +85,41 @@ fetch("league.json")
   const games = data.games || [];
   const teams = data.teams || [];
 
-  // Build team map safely
   const teamMap = {};
   teams.forEach(t => {
-    const name = ((t.region || "") + " " + (t.name || "")).trim();
-    teamMap[t.id] = name || t.name || t.id;
+    teamMap[t.id] = (t.region + " " + t.name).trim();
   });
 
-  function getTeamName(id) {
-    return teamMap[id] || "Team " + id;
-  }
+  const getName = id => teamMap[id] || ("Team " + id);
 
-  function getAway(g) {
-    return getTeamName(
-      g.awayTid ?? g.tids?.[0] ?? g.t?.[0] ?? g.awayTeamId
-    );
-  }
+  const html = games.slice(0, 20).map(g => {
 
-  function getHome(g) {
-    return getTeamName(
-      g.homeTid ?? g.tids?.[1] ?? g.t?.[1] ?? g.homeTeamId
-    );
-  }
+    const win = g.won?.tid;
+    const lose = g.lost?.tid;
 
-  function getAwayScore(g) {
-    return g.awayScore ??
-           g.scores?.[0] ??
-           g.s?.[0] ??
-           "–";
-  }
+    const winName = getName(win);
+    const loseName = getName(lose);
 
-  function getHomeScore(g) {
-    return g.homeScore ??
-           g.scores?.[1] ??
-           g.s?.[1] ??
-           "–";
-  }
+    const winPts = g.won?.pts ?? 0;
+    const losePts = g.lost?.pts ?? 0;
 
-  const html = games.slice(0, 25).map(g => {
-    const away = getAway(g);
-    const home = getHome(g);
-    const as = getAwayScore(g);
-    const hs = getHomeScore(g);
+    return `
+      <div class="game-card">
 
-    return `<div class="game">
-      ${away} ${as} - ${hs} ${home}
-    </div>`;
+        <div class="team winner">${winName}</div>
+
+        <div class="score">
+          ${winPts} - ${losePts}
+        </div>
+
+        <div class="team loser">${loseName}</div>
+
+      </div>
+    `;
   }).join("");
 
   document.getElementById("games").innerHTML = html;
 
-})
-.catch(err => {
-  document.getElementById("games").innerHTML =
-    "Error: " + err.message;
 });
 </script>
 
