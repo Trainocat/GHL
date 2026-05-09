@@ -34,6 +34,7 @@
 <table id="upcomingTable">
 <thead>
 <tr>
+<th>Day</th>
 <th>Away</th>
 <th>Home</th>
 <th>Status</th>
@@ -50,6 +51,7 @@
 <table id="completedTable">
 <thead>
 <tr>
+<th>Day</th>
 <th>Away</th>
 <th>Score</th>
 <th>Home</th>
@@ -67,6 +69,7 @@
 <table id="scheduleTable">
 <thead>
 <tr>
+<th>Day</th>
 <th>Away</th>
 <th>Score</th>
 <th>Home</th>
@@ -99,26 +102,114 @@ function buildTeamMap(data) {
 
 function teamName(team) {
     if (!team) {
-        return "Unknown Team";
+        return "TBD";
     }
 
     return `${team.region} ${team.name}`;
 }
 
 function getAwayTid(game) {
-    return game.awayTid ?? game.away?.tid ?? game.lost?.tid ?? game.teams?.[0]?.tid;
+    return (
+        game.awayTid ??
+        game.away?.tid ??
+        game.lost?.tid ??
+        game.teams?.[0]?.tid
+    );
 }
 
 function getHomeTid(game) {
-    return game.homeTid ?? game.home?.tid ?? game.won?.tid ?? game.teams?.[1]?.tid;
+    return (
+        game.homeTid ??
+        game.home?.tid ??
+        game.won?.tid ??
+        game.teams?.[1]?.tid
+    );
 }
 
 function getAwayPts(game) {
-    return game.awayPts ?? game.away?.pts ?? game.lost?.pts;
+    return (
+        game.awayPts ??
+        game.away?.pts ??
+        game.lost?.pts
+    );
 }
 
 function getHomePts(game) {
-    return game.homePts ?? game.home?.pts ?? game.won?.pts;
+    return (
+        game.homePts ??
+        game.home?.pts ??
+        game.won?.pts
+    );
+}
+
+function getGameDay(game) {
+    if (game.day !== undefined) {
+        return game.day;
+    }
+
+    if (game.dayNum !== undefined) {
+        return game.dayNum;
+    }
+
+    if (game.gameDay !== undefined) {
+        return game.gameDay;
+    }
+
+    if (game.date !== undefined) {
+        return game.date;
+    }
+
+    return 0;
+}
+
+function getDayNumber(game) {
+    const rawDay =
+        getGameDay(game);
+
+    if (typeof rawDay === "number") {
+        return rawDay;
+    }
+
+    if (typeof rawDay === "string") {
+        const match =
+            rawDay.match(/\d+/);
+
+        if (match) {
+            return Number(match[0]);
+        }
+    }
+
+    return 0;
+}
+
+function displayDay(game) {
+    const day =
+        getGameDay(game);
+
+    if (day === undefined || day === null || day === "") {
+        return "-";
+    }
+
+    if (typeof day === "number") {
+        return `Day ${day}`;
+    }
+
+    const text =
+        String(day);
+
+    if (/^day\s*\d+$/i.test(text)) {
+        return text.replace(/^day/i, "Day ");
+    }
+
+    if (/^day\d+$/i.test(text)) {
+        return text.replace(/^day/i, "Day ");
+    }
+
+    if (/^\d+$/.test(text)) {
+        return `Day ${text}`;
+    }
+
+    return text;
 }
 
 function isCompletedGame(game) {
@@ -130,14 +221,16 @@ function isCompletedGame(game) {
     );
 }
 
+function sortByDay(a, b) {
+    return getDayNumber(a) - getDayNumber(b);
+}
+
 function getCompletedGames(data) {
     return (data.games || [])
         .filter(game => {
             return isCompletedGame(game);
         })
-        .sort((a, b) => {
-            return (a.day || 0) - (b.day || 0);
-        });
+        .sort(sortByDay);
 }
 
 function getUpcomingGames(data) {
@@ -148,9 +241,7 @@ function getUpcomingGames(data) {
                 getHomeTid(game) !== undefined
             );
         })
-        .sort((a, b) => {
-            return (a.day || 0) - (b.day || 0);
-        });
+        .sort(sortByDay);
 }
 
 function getFullSchedule(data) {
@@ -174,7 +265,10 @@ function getFullSchedule(data) {
 
     return [...completed, ...upcoming]
         .sort((a, b) => {
-            return (a.game.day || 0) - (b.game.day || 0);
+            return (
+                getDayNumber(a.game) -
+                getDayNumber(b.game)
+            );
         });
 }
 
@@ -197,7 +291,7 @@ function renderUpcomingGames(data, teams) {
     if (games.length === 0) {
         return `
             <tr>
-                <td colspan="3">No upcoming games scheduled.</td>
+                <td colspan="4">No upcoming games scheduled.</td>
             </tr>
         `;
     }
@@ -211,6 +305,8 @@ function renderUpcomingGames(data, teams) {
 
         return `
             <tr>
+                <td>${displayDay(game)}</td>
+
                 <td>
                     <a href="team.html?tid=${getAwayTid(game)}">
                         ${teamName(awayTeam)}
@@ -238,7 +334,7 @@ function renderCompletedGames(data, teams) {
     if (games.length === 0) {
         return `
             <tr>
-                <td colspan="4">No completed games available.</td>
+                <td colspan="5">No completed games available.</td>
             </tr>
         `;
     }
@@ -252,6 +348,8 @@ function renderCompletedGames(data, teams) {
 
         return `
             <tr>
+                <td>${displayDay(game)}</td>
+
                 <td>
                     <a href="team.html?tid=${getAwayTid(game)}">
                         ${teamName(awayTeam)}
@@ -283,7 +381,7 @@ function renderFullSchedule(data, teams) {
     if (games.length === 0) {
         return `
             <tr>
-                <td colspan="4">No schedule available.</td>
+                <td colspan="5">No schedule available.</td>
             </tr>
         `;
     }
@@ -303,6 +401,8 @@ function renderFullSchedule(data, teams) {
 
         return `
             <tr>
+                <td>${displayDay(game)}</td>
+
                 <td>
                     <a href="team.html?tid=${getAwayTid(game)}">
                         ${teamName(awayTeam)}
@@ -351,17 +451,34 @@ function makeTableSortable(table) {
                 h.classList.remove("desc");
             });
 
-            header.classList.add(ascending ? "asc" : "desc");
+            header.classList.add(
+                ascending ? "asc" : "desc"
+            );
 
             rows.sort((a, b) => {
-                const aText = a.children[index].innerText.trim();
-                const bText = b.children[index].innerText.trim();
+                const aText =
+                    a.children[index].innerText.trim();
 
-                const aNum = parseFloat(aText.replace(/[^\d.-]/g, ""));
-                const bNum = parseFloat(bText.replace(/[^\d.-]/g, ""));
+                const bText =
+                    b.children[index].innerText.trim();
 
-                if (!isNaN(aNum) && !isNaN(bNum)) {
-                    return ascending ? aNum - bNum : bNum - aNum;
+                const aNum =
+                    parseFloat(
+                        aText.replace(/[^\d.-]/g, "")
+                    );
+
+                const bNum =
+                    parseFloat(
+                        bText.replace(/[^\d.-]/g, "")
+                    );
+
+                if (
+                    !isNaN(aNum) &&
+                    !isNaN(bNum)
+                ) {
+                    return ascending
+                        ? aNum - bNum
+                        : bNum - aNum;
                 }
 
                 return ascending

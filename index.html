@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Draft</title>
+<title>GHL</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -75,9 +75,34 @@ function currentSeasonStats(player, data) {
 function currentSeasonTeam(team, data) {
     const season = currentSeason(data);
 
-    return team.seasons?.find(s => {
+    const seasons = team.seasons || [];
+
+    const exact = seasons.find(s => {
         return s.season === season;
-    }) || {};
+    });
+
+    if (exact) {
+        return exact;
+    }
+
+    const beforeOrEqual =
+        seasons
+        .filter(s => {
+            return s.season <= season;
+        })
+        .sort((a, b) => {
+            return b.season - a.season;
+        })[0];
+
+    if (beforeOrEqual) {
+        return beforeOrEqual;
+    }
+
+    return seasons
+        .slice()
+        .sort((a, b) => {
+            return (b.season || 0) - (a.season || 0);
+        })[0] || {};
 }
 
 function buildTeamMap(data) {
@@ -92,7 +117,7 @@ function buildTeamMap(data) {
 
 function teamName(team) {
     if (!team) {
-        return "Unknown Team";
+        return "TBD";
     }
 
     return `${team.region} ${team.name}`;
@@ -123,55 +148,135 @@ function getPoints(stats) {
 }
 
 function getAwayTid(game) {
-    return game.awayTid ?? game.away?.tid ?? game.lost?.tid ?? game.teams?.[0]?.tid;
+    return (
+        game.awayTid ??
+        game.away?.tid ??
+        game.lost?.tid ??
+        game.teams?.[0]?.tid
+    );
 }
 
 function getHomeTid(game) {
-    return game.homeTid ?? game.home?.tid ?? game.won?.tid ?? game.teams?.[1]?.tid;
+    return (
+        game.homeTid ??
+        game.home?.tid ??
+        game.won?.tid ??
+        game.teams?.[1]?.tid
+    );
 }
 
 function getAwayPts(game) {
-    return game.awayPts ?? game.away?.pts ?? game.lost?.pts ?? 0;
+    return (
+        game.awayPts ??
+        game.away?.pts ??
+        game.lost?.pts
+    );
 }
 
 function getHomePts(game) {
-    return game.homePts ?? game.home?.pts ?? game.won?.pts ?? 0;
+    return (
+        game.homePts ??
+        game.home?.pts ??
+        game.won?.pts
+    );
 }
 
-function formatDate(day) {
-    if (day === undefined || day === null) {
-        return "";
+function getGameDay(game) {
+    if (game.day !== undefined) {
+        return game.day;
     }
 
-    return new Date(day).toLocaleDateString("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-    });
+    if (game.dayNum !== undefined) {
+        return game.dayNum;
+    }
+
+    if (game.gameDay !== undefined) {
+        return game.gameDay;
+    }
+
+    if (game.date !== undefined) {
+        return game.date;
+    }
+
+    return 0;
+}
+
+function getDayNumber(game) {
+    const rawDay =
+        getGameDay(game);
+
+    if (typeof rawDay === "number") {
+        return rawDay;
+    }
+
+    if (typeof rawDay === "string") {
+        const match =
+            rawDay.match(/\d+/);
+
+        if (match) {
+            return Number(match[0]);
+        }
+    }
+
+    return 0;
+}
+
+function displayDay(game) {
+    const day =
+        getGameDay(game);
+
+    if (day === undefined || day === null || day === "") {
+        return "-";
+    }
+
+    if (typeof day === "number") {
+        return `Day ${day}`;
+    }
+
+    const text =
+        String(day);
+
+    if (/^day\s*\d+$/i.test(text)) {
+        return text.replace(/^day/i, "Day ");
+    }
+
+    if (/^day\d+$/i.test(text)) {
+        return text.replace(/^day/i, "Day ");
+    }
+
+    if (/^\d+$/.test(text)) {
+        return `Day ${text}`;
+    }
+
+    return text;
+}
+
+function sortByDay(a, b) {
+    return getDayNumber(a) - getDayNumber(b);
 }
 
 function completedGames(data) {
-    return (data.games || []).filter(game => {
-        return (
-            getAwayTid(game) !== undefined &&
-            getHomeTid(game) !== undefined &&
-            (
-                game.awayPts !== undefined ||
-                game.away?.pts !== undefined ||
-                game.lost?.pts !== undefined
-            ) &&
-            (
-                game.homePts !== undefined ||
-                game.home?.pts !== undefined ||
-                game.won?.pts !== undefined
-            )
-        );
-    });
+    return (data.games || [])
+        .filter(game => {
+            return (
+                getAwayTid(game) !== undefined &&
+                getHomeTid(game) !== undefined &&
+                getAwayPts(game) !== undefined &&
+                getHomePts(game) !== undefined
+            );
+        })
+        .sort(sortByDay);
 }
 
 function upcomingGames(data) {
-    return data.schedule || [];
+    return (data.schedule || [])
+        .filter(game => {
+            return (
+                getAwayTid(game) !== undefined &&
+                getHomeTid(game) !== undefined
+            );
+        })
+        .sort(sortByDay);
 }
 
 function getTopPlayers(data, limit = 5) {
@@ -204,7 +309,7 @@ function getTopTeams(data, limit = 5) {
             return {
                 team,
                 season,
-                points: season.pts || 0
+                points: season.pts || ((season.won || 0) * 2) + (season.otl || 0)
             };
         })
         .sort((a, b) => {
@@ -252,7 +357,7 @@ function renderNews(data, teams) {
                 </h3>
 
                 <p>
-                    ${teamName(team)} has ${season.pts || 0} points with a
+                    ${teamName(team)} has ${entry.points} points with a
                     ${season.won || 0}-${season.lost || 0}-${season.otl || 0} record.
                 </p>
             </article>
@@ -267,7 +372,8 @@ function renderNews(data, teams) {
 }
 
 function renderRecentGames(data, teams) {
-    const games = completedGames(data)
+    const games =
+        completedGames(data)
         .slice(-10)
         .reverse();
 
@@ -282,6 +388,7 @@ function renderRecentGames(data, teams) {
         return `
             <p>
                 <a href="game.html?gid=${game.gid}">
+                    ${displayDay(game)} —
                     ${teamName(awayTeam)}
                     ${getAwayPts(game)}
                     -
@@ -294,7 +401,9 @@ function renderRecentGames(data, teams) {
 }
 
 function renderUpcomingGames(data, teams) {
-    const games = upcomingGames(data).slice(0, 10);
+    const games =
+        upcomingGames(data)
+        .slice(0, 10);
 
     if (games.length === 0) {
         return "<p>No upcoming games scheduled.</p>";
@@ -306,10 +415,10 @@ function renderUpcomingGames(data, teams) {
 
         return `
             <p>
+                ${displayDay(game)} —
                 ${teamName(awayTeam)}
                 @
                 ${teamName(homeTeam)}
-                ${game.day !== undefined ? ` — ${formatDate(game.day)}` : ""}
             </p>
         `;
     }).join("");

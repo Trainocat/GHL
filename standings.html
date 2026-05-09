@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Draft</title>
+<title>Standings</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -80,14 +80,41 @@ function currentSeason(data) {
 function currentSeasonTeam(team, data) {
     const season = currentSeason(data);
 
-    return team.seasons?.find(s => {
-        return s.season === season;
-    }) || {};
+    const seasons =
+        team.seasons || [];
+
+    const exact =
+        seasons.find(s => {
+            return s.season === season;
+        });
+
+    if (exact) {
+        return exact;
+    }
+
+    const beforeOrEqual =
+        seasons
+        .filter(s => {
+            return s.season <= season;
+        })
+        .sort((a, b) => {
+            return b.season - a.season;
+        })[0];
+
+    if (beforeOrEqual) {
+        return beforeOrEqual;
+    }
+
+    return seasons
+        .slice()
+        .sort((a, b) => {
+            return (b.season || 0) - (a.season || 0);
+        })[0] || {};
 }
 
 function teamName(team) {
     if (!team) {
-        return "Unknown Team";
+        return "TBD";
     }
 
     return `${team.region} ${team.name}`;
@@ -118,9 +145,24 @@ function divisionName(data, did) {
 }
 
 function gamesPlayed(season) {
+    if (season.gp !== undefined) {
+        return season.gp;
+    }
+
     return (
         (season.won || 0) +
         (season.lost || 0) +
+        (season.otl || 0)
+    );
+}
+
+function getPoints(season) {
+    if (season.pts !== undefined) {
+        return season.pts;
+    }
+
+    return (
+        ((season.won || 0) * 2) +
         (season.otl || 0)
     );
 }
@@ -133,15 +175,41 @@ function pointsPct(season) {
     }
 
     return (
-        (season.pts || 0) /
+        getPoints(season) /
         (gp * 2)
-    ).toFixed(3);
+    ).toFixed(3).replace(/^0/, "");
+}
+
+function goalsFor(season) {
+    return (
+        season.gf ||
+        season.goalsFor ||
+        season.f ||
+        0
+    );
+}
+
+function goalsAgainst(season) {
+    return (
+        season.ga ||
+        season.goalsAgainst ||
+        season.a ||
+        0
+    );
 }
 
 function goalDiff(season) {
     return (
-        (season.gf || 0) -
-        (season.ga || 0)
+        goalsFor(season) -
+        goalsAgainst(season)
+    );
+}
+
+function getStreak(season) {
+    return (
+        season.streak ||
+        season.strk ||
+        "-"
     );
 }
 
@@ -150,8 +218,8 @@ function sortTeamsByStandings(data, teams) {
         const aSeason = currentSeasonTeam(a, data);
         const bSeason = currentSeasonTeam(b, data);
 
-        const bPts = bSeason.pts || 0;
-        const aPts = aSeason.pts || 0;
+        const aPts = getPoints(aSeason);
+        const bPts = getPoints(bSeason);
 
         if (bPts !== aPts) {
             return bPts - aPts;
@@ -187,8 +255,12 @@ function renderStandingsRows(data, teams) {
     return sortTeamsByStandings(data, teams)
         .map(team => {
             const season = currentSeasonTeam(team, data);
+
             const gp = gamesPlayed(season);
-            const diff = goalDiff(season);
+            const pts = getPoints(season);
+            const gf = goalsFor(season);
+            const ga = goalsAgainst(season);
+            const diff = gf - ga;
 
             return `
                 <tr>
@@ -201,12 +273,12 @@ function renderStandingsRows(data, teams) {
                     <td>${season.won || 0}</td>
                     <td>${season.lost || 0}</td>
                     <td>${season.otl || 0}</td>
-                    <td>${season.pts || 0}</td>
+                    <td>${pts}</td>
                     <td>${pointsPct(season)}</td>
-                    <td>${season.gf || 0}</td>
-                    <td>${season.ga || 0}</td>
+                    <td>${gf}</td>
+                    <td>${ga}</td>
                     <td>${diff > 0 ? "+" : ""}${diff}</td>
-                    <td>${season.streak || "-"}</td>
+                    <td>${getStreak(season)}</td>
                 </tr>
             `;
         })
