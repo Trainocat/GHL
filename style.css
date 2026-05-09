@@ -159,3 +159,32 @@ margin-bottom:20px;
 .gamehero{grid-template-columns:1fr}
 .score{font-size:52px}
 }
+.group-row td{
+
+background:#152b4e;
+
+font-size:22px;
+font-weight:800;
+
+color:white;
+
+}
+
+.filter.active{
+
+border-color:var(--accent);
+background:var(--accent);
+
+}
+
+th.asc::after{
+
+content:" ▲";
+
+}
+
+th.desc::after{
+
+content:" ▼";
+
+}
