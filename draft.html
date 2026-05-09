@@ -1,50 +1,256 @@
+
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Draft</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>GHL Draft</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header>
-<div class="navbar">
+<div class="nav">
+
 <div class="brand">
 <img src="GHL.png">
-<div class="brand-text">GHL</div>
+<span>GHL</span>
 </div>
-<nav>
+
+<div class="links">
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
 <a href="players.html">Players</a>
 <a href="draft.html">Draft</a>
 <a href="schedule.html">Schedule</a>
-</nav>
+</div>
+
 </div>
 </header>
 
 <div class="page">
 
-<div class="section-title">Draft Lottery</div>
-<div class="grid" id="draft"></div>
+<div class="section">
+GHL Draft Centre
+</div>
+
+<div class="hero">
+
+<div>
+<h1>2026 Entry Draft</h1>
+<p>
+Draft order, lottery results, and top prospects.
+</p>
+</div>
+
+<img src="GHL.png">
 
 </div>
+
+<div class="section">
+Draft Order
+</div>
+
+<table>
+
+<thead>
+<tr>
+<th>#</th>
+<th>Team</th>
+<th>Record</th>
+<th>Points</th>
+</tr>
+</thead>
+
+<tbody id="draftOrder"></tbody>
+
+</table>
+
+<div class="section">
+Top Prospects
+</div>
+
+<div class="grid" id="prospects"></div>
+
+</div>
+
 <script>
 
-fetch('league.json').then(r=>r.json()).then(data=>{
-const teams={};
-data.teams.forEach(t=>teams[t.tid]=t);
+fetch("league.json")
+.then(r => r.json())
+.then(data => {
 
-document.getElementById('draft').innerHTML=
-(data.draftLotteryResults||[]).map((d,i)=>`
+const teams = {};
+data.teams.forEach(t => teams[t.tid] = t);
+
+const standings = [...data.teams].sort((a,b) => {
+
+const sa = a.seasons?.at(-1) || {};
+const sb = b.seasons?.at(-1) || {};
+
+return (sa.pts || 0) - (sb.pts || 0);
+
+});
+
+document.getElementById("draftOrder").innerHTML =
+standings.map((t,i) => {
+
+const s = t.seasons?.at(-1) || {};
+
+return `
+
+<tr>
+
+<td>
+${i+1}
+</td>
+
+<td>
+
+<div class="teamcell">
+
+<img
+class="logo"
+src="${t.imgURL || ''}">
+
+<a href="team.html?tid=${t.tid}">
+
+${t.region} ${t.name}
+
+</a>
+
+</div>
+
+</td>
+
+<td>
+${s.won || 0}-${s.lost || 0}-${s.otl || 0}
+</td>
+
+<td>
+${s.pts || 0}
+</td>
+
+</tr>
+
+`;
+
+}).join("");
+
+
+const prospects = data.players
+.filter(p => {
+
+const age =
+2026 - (p.born?.year || 2000);
+
+return age <= 20;
+
+})
+.map(p => {
+
+const rating =
+p.ratings?.at(-1) || {};
+
+const stats =
+p.stats?.at(-1) || {};
+
+const goals =
+(stats.evG || 0) +
+(stats.ppG || 0) +
+(stats.shG || 0);
+
+const assists =
+(stats.evA || 0) +
+(stats.ppA || 0) +
+(stats.shA || 0);
+
+return {
+
+pid:p.pid,
+
+name:
+p.firstName +
+' ' +
+p.lastName,
+
+pos:
+rating.pos || '',
+
+ovr:
+rating.ovr || 0,
+
+pot:
+rating.pot || 0,
+
+goals,
+assists,
+
+points:
+goals + assists,
+
+age:
+2026 - (p.born?.year || 2000)
+
+};
+
+})
+.sort((a,b) => b.pot - a.pot)
+.slice(0,40);
+
+document.getElementById("prospects").innerHTML =
+prospects.map(p => `
+
+<a href="player.html?pid=${p.pid}">
+
 <div class="card">
-<div class="meta">Pick #${i+1}</div>
-<div class="title">${teams[d.tid]?.region} ${teams[d.tid]?.name}</div>
-</div>`).join('');
+
+<div class="meta">
+TOP PROSPECT
+</div>
+
+<div class="title">
+${p.name}
+</div>
+
+<div class="meta">
+${p.pos} • Age ${p.age}
+</div>
+
+<div class="stats">
+
+<div class="stat">
+<div class="label">OVR</div>
+<div class="value">${p.ovr}</div>
+</div>
+
+<div class="stat">
+<div class="label">POT</div>
+<div class="value">${p.pot}</div>
+</div>
+
+<div class="stat">
+<div class="label">PTS</div>
+<div class="value">${p.points}</div>
+</div>
+
+<div class="stat">
+<div class="label">G</div>
+<div class="value">${p.goals}</div>
+</div>
+
+</div>
+
+</div>
+
+</a>
+
+`).join("");
+
 });
 
 </script>
+
 </body>
 </html>
