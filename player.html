@@ -1,1 +1,132 @@
-<!DOCTYPE html><html><head><title>Player</title><link rel='stylesheet' href='style.css'></head><body><div class='page'><div id='player'></div></div><script>const pid=new URLSearchParams(location.search).get('pid');fetch('league.json').then(r=>r.json()).then(data=>{const p=data.players.find(x=>x.pid==pid);const s=p.stats?.at(-1)||{};const g=(s.evG||0)+(s.ppG||0)+(s.shG||0);const a=(s.evA||0)+(s.ppA||0)+(s.shA||0);document.getElementById('player').innerHTML=`<div class='player-card'><div class='player-name'>${p.firstName} ${p.lastName}</div><div class='meta'>${p.ratings?.at(-1)?.pos||''}</div><div class='stat-grid'><div class='stat-box'><div class='stat-label'>Goals</div><div class='stat-value'>${g}</div></div><div class='stat-box'><div class='stat-label'>Assists</div><div class='stat-value'>${a}</div></div><div class='stat-box'><div class='stat-label'>Points</div><div class='stat-value'>${g+a}</div></div></div></div>`})</script></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Player</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+<div class="nav">
+<div class="brand">
+<img src="GHL.png">
+<span>GHL</span>
+</div>
+
+<div class="links">
+<a href="index.html">Home</a>
+<a href="standings.html">Standings</a>
+<a href="teams.html">Teams</a>
+<a href="players.html">Players</a>
+<a href="draft.html">Draft</a>
+<a href="schedule.html">Schedule</a>
+</div>
+</div>
+</header>
+
+<div class="page">
+<div id="player"></div>
+</div>
+
+<script>
+
+const pid = new URLSearchParams(location.search).get("pid");
+
+fetch("league.json")
+.then(r => r.json())
+.then(data => {
+
+const p = data.players.find(x => x.pid == pid);
+
+const stats = p.stats?.at(-1) || {};
+
+const goals =
+(stats.evG || 0) +
+(stats.ppG || 0) +
+(stats.shG || 0);
+
+const assists =
+(stats.evA || 0) +
+(stats.ppA || 0) +
+(stats.shA || 0);
+
+const points = goals + assists;
+
+document.getElementById("player").innerHTML = `
+
+<div class="card">
+
+<div class="title">
+${p.firstName} ${p.lastName}
+</div>
+
+<div class="meta">
+${p.ratings?.at(-1)?.pos || ""} • ${p.born?.loc || ""}
+</div>
+
+<div class="stats">
+
+<div class="stat">
+<div class="label">GP</div>
+<div class="value">${stats.gp || 0}</div>
+</div>
+
+<div class="stat">
+<div class="label">G</div>
+<div class="value">${goals}</div>
+</div>
+
+<div class="stat">
+<div class="label">A</div>
+<div class="value">${assists}</div>
+</div>
+
+<div class="stat">
+<div class="label">PTS</div>
+<div class="value">${points}</div>
+</div>
+
+<div class="stat">
+<div class="label">+/-</div>
+<div class="value">${stats.pm || 0}</div>
+</div>
+
+<div class="stat">
+<div class="label">PIM</div>
+<div class="value">${stats.pim || 0}</div>
+</div>
+
+<div class="stat">
+<div class="label">Shots</div>
+<div class="value">${stats.s || 0}</div>
+</div>
+
+<div class="stat">
+<div class="label">Hits</div>
+<div class="value">${stats.hits || 0}</div>
+</div>
+
+<div class="stat">
+<div class="label">Blocks</div>
+<div class="value">${stats.blk || 0}</div>
+</div>
+
+<div class="stat">
+<div class="label">TOI</div>
+<div class="value">${Math.round(stats.min || 0)}</div>
+</div>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+</script>
+
+</body>
+</html>

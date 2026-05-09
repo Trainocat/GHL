@@ -2,47 +2,77 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Standings</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>GHL Standings</title>
 <link rel="stylesheet" href="style.css">
+<style>
+.sort-btn{
+background:#1e293b;
+color:white;
+border:1px solid #334155;
+padding:10px 14px;
+border-radius:10px;
+cursor:pointer;
+}
+.controls{
+display:flex;
+gap:12px;
+margin-bottom:20px;
+flex-wrap:wrap;
+}
+.active{
+border-color:#f97316;
+}
+th{
+cursor:pointer;
+}
+th:hover{
+background:#334155;
+}
+</style>
 </head>
 <body>
 
 <header>
-<div class="navbar">
+<div class="nav">
 <div class="brand">
 <img src="GHL.png">
-<div class="logo-text">GHL</div>
+<span>GHL</span>
 </div>
-<nav>
+
+<div class="links">
 <a href="index.html">Home</a>
 <a href="standings.html">Standings</a>
 <a href="teams.html">Teams</a>
 <a href="players.html">Players</a>
 <a href="draft.html">Draft</a>
 <a href="schedule.html">Schedule</a>
-</nav>
+</div>
 </div>
 </header>
 
 <div class="page">
-<div class="section-title">Standings</div>
+
+<div class="section">Standings</div>
 
 <div class="controls">
-<select id="sort">
-<option value="pts">Points</option>
-<option value="won">Wins</option>
-<option value="diff">Goal Differential</option>
-</select>
+<button class="sort-btn active" id="leagueBtn">League</button>
+<button class="sort-btn" id="conferenceBtn">Conference</button>
+<button class="sort-btn" id="divisionBtn">Division</button>
 </div>
 
-<table class="standings-table">
+<table>
 <thead>
 <tr>
-<th>Team</th>
-<th>W</th>
-<th>L</th>
-<th>OTL</th>
-<th>PTS</th>
+<th data-sort="team">Team</th>
+<th data-sort="won">W</th>
+<th data-sort="lost">L</th>
+<th data-sort="otl">OTL</th>
+<th data-sort="pts">PTS</th>
+<th data-sort="gf">GF</th>
+<th data-sort="ga">GA</th>
+<th data-sort="diff">DIFF</th>
 </tr>
 </thead>
 <tbody id="standings"></tbody>
@@ -51,46 +81,70 @@
 </div>
 
 <script>
-let teams;
+let teams=[];
+let mode='league';
+let currentSort='pts';
 
-fetch("league.json")
+fetch('league.json')
 .then(r=>r.json())
 .then(data=>{
-
-teams = data.teams;
+teams=data.teams;
 
 render();
 
-document.getElementById("sort")
-.addEventListener("change", render);
+document.querySelectorAll('.sort-btn').forEach(btn=>{
+btn.addEventListener('click',()=>{
+
+document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('active'));
+btn.classList.add('active');
+
+if(btn.id==='leagueBtn') mode='league';
+if(btn.id==='conferenceBtn') mode='conference';
+if(btn.id==='divisionBtn') mode='division';
+
+render();
+});
+});
+
+document.querySelectorAll('th[data-sort]').forEach(th=>{
+th.addEventListener('click',()=>{
+currentSort=th.dataset.sort;
+render();
+});
+});
 
 });
 
-function render(){
+function stat(team,key){
+const s=team.seasons?.at(-1)||{};
+return s[key]||0;
+}
 
-const sort = document.getElementById("sort").value;
+function sortTeams(arr){
+return arr.sort((a,b)=>{
 
-teams.sort((a,b)=>{
+if(currentSort==='team'){
+return (a.region+a.name).localeCompare(b.region+b.name);
+}
 
-const sa = a.seasons?.at(-1) || {};
-const sb = b.seasons?.at(-1) || {};
+if(currentSort==='diff'){
+return ((stat(b,'gf')-stat(b,'ga'))-(stat(a,'gf')-stat(a,'ga')));
+}
 
-if(sort==="won") return (sb.won||0)-(sa.won||0);
-
-return (sb.pts||0)-(sa.pts||0);
+return stat(b,currentSort)-stat(a,currentSort);
 
 });
+}
 
-document.getElementById("standings").innerHTML =
-teams.map(t=>{
-
+function row(t){
 const s=t.seasons?.at(-1)||{};
+const diff=(s.gf||0)-(s.ga||0);
 
 return `
 <tr>
 <td>
-<div class="team-cell">
-<img class="team-logo" src="${t.imgURL||''}">
+<div class="teamcell">
+<img class="logo" src="${t.imgURL||''}">
 <a href="team.html?tid=${t.tid}">${t.region} ${t.name}</a>
 </div>
 </td>
@@ -98,12 +152,57 @@ return `
 <td>${s.lost||0}</td>
 <td>${s.otl||0}</td>
 <td>${s.pts||0}</td>
+<td>${s.gf||0}</td>
+<td>${s.ga||0}</td>
+<td>${diff}</td>
 </tr>
 `;
+}
 
-}).join('');
+function render(){
+
+let html='';
+
+if(mode==='league'){
+
+html = sortTeams([...teams]).map(row).join('');
+
+}
+
+if(mode==='conference'){
+
+const east=teams.filter(t=>t.cid===0);
+const west=teams.filter(t=>t.cid===1);
+
+html += `<tr><td colspan="8" style="font-size:24px;font-weight:800;background:#172554">Eastern Conference</td></tr>`;
+html += sortTeams(east).map(row).join('');
+
+html += `<tr><td colspan="8" style="font-size:24px;font-weight:800;background:#172554">Western Conference</td></tr>`;
+html += sortTeams(west).map(row).join('');
+
+}
+
+if(mode==='division'){
+
+const divisions={};
+
+teams.forEach(t=>{
+const key=t.did;
+if(!divisions[key]) divisions[key]=[];
+divisions[key].push(t);
+});
+
+Object.keys(divisions).forEach(d=>{
+html += `<tr><td colspan="8" style="font-size:22px;font-weight:800;background:#172554">Division ${Number(d)+1}</td></tr>`;
+html += sortTeams(divisions[d]).map(row).join('');
+});
+
+}
+
+document.getElementById('standings').innerHTML=html;
 
 }
 </script>
+
 </body>
 </html>
